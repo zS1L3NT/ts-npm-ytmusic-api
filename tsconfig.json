@@ -1,0 +1,23 @@
+{
+	"compilerOptions": {
+		"target": "esnext",
+		"allowSyntheticDefaultImports": true,
+		"forceConsistentCasingInFileNames": true,
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"esModuleInterop": true,
+		"strict": true,
+		"alwaysStrict": true,
+		"noImplicitAny": true,
+		"noUnusedLocals": false,
+		"noUnusedParameters": false,
+		"resolveJsonModule": true,
+		"strictNullChecks": true,
+		"strictFunctionTypes": true,
+		"outDir": "build",
+		"rootDir": "src"
+	},
+	"exclude": [
+		"**/*.test.*"
+	]
+}

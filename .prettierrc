@@ -1,0 +1,8 @@
+{
+	"semi": false,
+	"arrowParens": "avoid",
+	"trailingComma": "none",
+	"jsxSingleQuote": false,
+	"jsxBracketSameLine": true,
+	"printWidth": 100
+}

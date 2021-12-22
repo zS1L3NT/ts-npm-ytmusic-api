@@ -1,0 +1,30 @@
+{
+	"name": "yt-music",
+	"version": "1.0.0",
+	"description": "YouTube Music API",
+	"main": "build/YTMusic.js",
+	"types": "build/types.d.ts",
+	"author": "zS1L3NT <zechariahtan144@gmail.com> (http://www.zectan.com)",
+	"license": "ISC",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/zS1L3NT/ts-npm-yt-music"
+	},
+	"dependencies": {
+		"axios": "^0.24.0",
+		"tough-cookie": "^4.0.0"
+	},
+	"devDependencies": {
+		"@types/node": "^16.9.2",
+		"@types/tough-cookie": "^4.0.1",
+		"http-debug": "^0.1.2",
+		"ts-node": "^10.2.1",
+		"typescript": "^4.4.3",
+		"youtube-music-api": "^1.0.6"
+	},
+	"keywords": [
+		"youtube",
+		"music",
+		"api"
+	]
+}

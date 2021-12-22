@@ -1,0 +1,22 @@
+{
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/.project": true,
+        "**/.vscode": true,
+        "**/*.cs.meta": true,
+        "**/android": true,
+        "**/ios": true,
+        "**/node_modules": false,
+        "**/__pycache__": true,
+        "**/babel.config.js": true,
+        "**/metro.config.js": true,
+        "**/.prettierrc": true,
+        "**/.editorconfig": true
+    },
+    "explorerExclude.backup": null
+}
