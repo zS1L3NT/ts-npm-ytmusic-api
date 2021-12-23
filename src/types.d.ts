@@ -35,6 +35,13 @@ declare namespace YTMusic {
 		thumbnails: ThumbnailFull[]
 	}
 
+	interface ArtistFull extends ArtistDetailed {
+		description: string
+		subscribers: number
+		topTracks: (Omit<SongDetailed, "duration">)[]
+		topAlbums: AlbumDetailed[]
+	}
+
 	interface AlbumBasic {
 		albumId: string
 		name: string
@@ -46,6 +53,11 @@ declare namespace YTMusic {
 		artists: ArtistBasic[]
 		year: number
 		thumbnails: ThumbnailFull[]
+	}
+
+	interface AlbumFull extends AlbumDetailed {
+		description: string
+		tracks: []
 	}
 
 	interface PlaylistDetailed {

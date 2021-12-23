@@ -1,5 +1,7 @@
+import ArtistParser from "./utils/ArtistParser"
 import axios, { AxiosInstance } from "axios"
-import Parser from "./utils/Parser"
+import fs from "fs"
+import SearchParser from "./utils/SearchParser"
 import traverse from "./utils/traverse"
 import { Cookie, CookieJar } from "tough-cookie"
 
@@ -198,11 +200,12 @@ export default class YTMusic {
 	 * @returns Search suggestions
 	 */
 	public async getSearchSuggestions(query: string): Promise<string[]> {
-		const res = await this.constructRequest("music/get_search_suggestions", {
-			input: query
-		})
-
-		return traverse(res, "query")
+		return traverse(
+			await this.constructRequest("music/get_search_suggestions", {
+				input: query
+			}),
+			"query"
+		)
 	}
 
 	/**
@@ -219,7 +222,7 @@ export default class YTMusic {
 	public async search(query: string, category: "PLAYLIST"): Promise<YTMusic.PlaylistDetailed[]>
 	public async search(query: string): Promise<YTMusic.SearchResult[]>
 	public async search(query: string, category?: string) {
-		const data = await this.constructRequest("search", {
+		const searchData = await this.constructRequest("search", {
 			query: query,
 			params:
 				{
@@ -231,20 +234,84 @@ export default class YTMusic {
 				}[category!] || null
 		})
 
-		const parser = new Parser(data)
+		const searchParser = new SearchParser(searchData)
 		return (
 			{
-				SONG: parser.parseSongsSearchResults,
-				VIDEO: parser.parseVideosSearchResults,
-				ARTIST: parser.parseArtistsSearchResults,
-				ALBUM: parser.parseAlbumsSearchResults,
-				PLAYLIST: parser.parsePlaylistsSearchResults
-			}[category!] || parser.parseSearchResult
-		).call(parser)
+				SONG: searchParser.parseSongs,
+				VIDEO: searchParser.parseVideos,
+				ARTIST: searchParser.parseArtists,
+				ALBUM: searchParser.parseAlbums,
+				PLAYLIST: searchParser.parsePlaylists
+			}[category!] || searchParser.parse
+		).call(searchParser)
+	}
+
+	public async getSong(videoId: string) {
+		const data = await this.constructRequest("player", { videoId })
+
+		fs.writeFileSync("data.json", JSON.stringify(data))
+	}
+
+	public async getVideo(videoId: string) {
+		const data = await this.constructRequest("player", { videoId })
+
+		fs.writeFileSync("data.json", JSON.stringify(data))
+	}
+
+	public async getArtist(artistId: string): Promise<YTMusic.ArtistFull> {
+		const data = await this.constructRequest("browse", { browseId: artistId })
+
+		return new ArtistParser(data).parse(artistId)
+	}
+
+	public async getArtistSongs(artistId: string): Promise<YTMusic.SongDetailed[]> {
+		const artistData = await this.constructRequest("browse", { browseId: artistId })
+		const browseToken = traverse(artistData, "musicShelfRenderer", "title", "browseId")
+
+		const songsData = await this.constructRequest("browse", { browseId: browseToken })
+		const continueToken = traverse(songsData, "continuation")
+		const moreSongsData = await this.constructRequest(
+			"browse",
+			{},
+			{ continuation: continueToken }
+		)
+
+		return ArtistParser.parseSongs(songsData, moreSongsData)
+	}
+
+	public async getArtistAlbums(artistId: string): Promise<YTMusic.AlbumDetailed[]> {
+		const artistData = await this.constructRequest("browse", { browseId: artistId })
+		const artistAlbumsData = traverse(artistData, "musicCarouselShelfRenderer")[0]
+		const browseBody = traverse(artistAlbumsData, "moreContentButton", "browseEndpoint")
+
+		const albumsData = await this.constructRequest("browse", browseBody)
+
+		return ArtistParser.parseAlbums(artistId, albumsData)
+	}
+
+	public async getAlbum(albumId: string) {
+		const data = await this.constructRequest("browse", { browseId: albumId })
+
+		fs.writeFileSync("data.json", JSON.stringify(data))
+	}
+
+	public async getPlaylist(playlistId: string) {
+		const data = await this.constructRequest("browse", { browseId: playlistId })
+
+		fs.writeFileSync("data.json", JSON.stringify(data))
 	}
 }
 
 const ytmusicapi = new YTMusic()
 ytmusicapi.initialize().then(async () => {
 	console.log("Initialized")
+
+	const artistDetailed = (await ytmusicapi.search("Roundworm", "ARTIST"))[0]
+	const artistFull = await ytmusicapi.getArtist(artistDetailed.artistId)
+	console.log(JSON.stringify(artistFull, null, 4))
+
+	// const artistDetailed = (await ytmusicapi.search("IU Lilac", "ARTIST"))[0]
+	// const albumDetailed = (await ytmusicapi.getArtistAlbums(artistDetailed.artistId))[0]
+	// const albumFull = await ytmusicapi.getAlbum(albumDetailed.albumId)
+	// console.log(JSON.stringify(albumFull))
 })
