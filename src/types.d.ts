@@ -19,26 +19,27 @@ declare namespace YTMusic {
 		type: "VIDEO"
 		videoId: string
 		name: string
-		artist: ArtistBasic
+		artists: ArtistBasic[]
 		views: number
 		duration: number
 		thumbnails: ThumbnailFull[]
 	}
 
 	interface ArtistBasic {
-		artistId: string
+		artistId?: string
 		name: string
 	}
 
 	interface ArtistDetailed extends ArtistBasic {
 		type: "ARTIST"
+		artistId: string
 		thumbnails: ThumbnailFull[]
 	}
 
 	interface ArtistFull extends ArtistDetailed {
 		description: string
 		subscribers: number
-		topTracks: (Omit<SongDetailed, "duration">)[]
+		topTracks: Omit<SongDetailed, "duration">[]
 		topAlbums: AlbumDetailed[]
 	}
 
@@ -57,7 +58,7 @@ declare namespace YTMusic {
 
 	interface AlbumFull extends AlbumDetailed {
 		description: string
-		tracks: []
+		tracks: SongDetailed[]
 	}
 
 	interface PlaylistDetailed {

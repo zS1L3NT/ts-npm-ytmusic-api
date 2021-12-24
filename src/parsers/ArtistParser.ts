@@ -1,5 +1,5 @@
 import Parse from "./Parser"
-import traverse from "./traverse"
+import traverse from "../utils/traverse"
 
 export default class ArtistParser {
 	private data: any
@@ -8,8 +8,20 @@ export default class ArtistParser {
 		this.data = data
 	}
 
+	public static parseSearch(item: any): YTMusic.ArtistDetailed {
+		const flexColumns = traverse(item, "flexColumns")
+		const thumbnails = traverse(item, "thumbnails")
+
+		return {
+			type: "ARTIST",
+			artistId: traverse(item, "browseId"),
+			name: traverse(flexColumns[0], "runs", "text"),
+			thumbnails: [thumbnails].flat()
+		}
+	}
+
 	public parse(artistId: string): YTMusic.ArtistFull {
-		const artistBasic: YTMusic.ArtistBasic = {
+		const artistBasic = {
 			artistId,
 			name: traverse(this.data, "header", "title", "text").at(0)
 		}
