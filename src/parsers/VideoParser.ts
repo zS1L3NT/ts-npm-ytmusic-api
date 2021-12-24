@@ -2,7 +2,7 @@ import Parser from "./Parser"
 import traverse from "../utils/traverse"
 
 export default class VideoParser {
-	public static parseSearchResult(item: any, specific: boolean): YTMusic.VideoDetailed {
+	public static parseSearchResult(item: any): YTMusic.VideoDetailed {
 		const flexColumns = traverse(item, "flexColumns")
 		const thumbnails = traverse(item, "thumbnails")
 

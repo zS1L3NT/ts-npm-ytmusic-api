@@ -18,13 +18,13 @@ export default class SearchParser {
 			| "Playlist"
 
 		return {
-			Song: () => SongParser.parseSearchResult(item),
-			Video: () => VideoParser.parseSearchResult(item, true),
-			Artist: () => ArtistParser.parseSearchResult(item),
-			EP: () => AlbumParser.parseSearchResult(item),
-			Single: () => AlbumParser.parseSearchResult(item),
-			Album: () => AlbumParser.parseSearchResult(item),
-			Playlist: () => PlaylistParser.parseSearchResult(item, true)
-		}[type]()
+			Song: SongParser.parseSearchResult,
+			Video: VideoParser.parseSearchResult,
+			Artist: ArtistParser.parseSearchResult,
+			EP: AlbumParser.parseSearchResult,
+			Single: AlbumParser.parseSearchResult,
+			Album: AlbumParser.parseSearchResult,
+			Playlist: PlaylistParser.parseSearchResult
+		}[type](item)
 	}
 }

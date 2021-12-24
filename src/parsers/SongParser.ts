@@ -27,32 +27,27 @@ export default class SongParser {
 		}
 	}
 
-	public static parseArtistSongs(songsData: any, moreSongsData: any): YTMusic.SongDetailed[] {
-		return [
-			...traverse(songsData, "musicResponsiveListItemRenderer"),
-			...traverse(moreSongsData, "musicResponsiveListItemRenderer")
-		].map((item: any) => {
-			const flexColumns = traverse(item, "flexColumns")
+	public static parseArtistSong(item: any): YTMusic.SongDetailed {
+		const flexColumns = traverse(item, "flexColumns")
 
-			return {
-				type: "SONG",
-				videoId: traverse(item, "playlistItemData", "videoId"),
-				name: traverse(flexColumns[0], "runs", "text"),
-				artists: [traverse(flexColumns[1], "runs")]
-					.flat()
-					.filter((item: any) => "navigationEndpoint" in item)
-					.map((run: any) => ({
-						name: run.text,
-						artistId: traverse(run, "browseId")
-					})),
-				album: {
-					albumId: traverse(flexColumns[2], "browseId"),
-					name: traverse(flexColumns[2], "runs", "text")
-				},
-				duration: Parser.parseDuration(traverse(item, "fixedColumns", "runs", "text")),
-				thumbnails: [traverse(item, "thumbnails")].flat()
-			}
-		})
+		return {
+			type: "SONG",
+			videoId: traverse(item, "playlistItemData", "videoId"),
+			name: traverse(flexColumns[0], "runs", "text"),
+			artists: [traverse(flexColumns[1], "runs")]
+				.flat()
+				.filter((item: any) => "navigationEndpoint" in item)
+				.map((run: any) => ({
+					name: run.text,
+					artistId: traverse(run, "browseId")
+				})),
+			album: {
+				albumId: traverse(flexColumns[2], "browseId"),
+				name: traverse(flexColumns[2], "runs", "text")
+			},
+			duration: Parser.parseDuration(traverse(item, "fixedColumns", "runs", "text")),
+			thumbnails: [traverse(item, "thumbnails")].flat()
+		}
 	}
 
 	public static parseArtistTopSong(

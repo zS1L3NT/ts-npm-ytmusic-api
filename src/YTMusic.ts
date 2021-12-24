@@ -94,19 +94,6 @@ export default class YTMusic {
 	}
 
 	/**
-	 * Asserts that the API has been initialized
-	 *
-	 * @returns Non-null config
-	 */
-	private assertInitialized() {
-		if (!this.config) {
-			throw new Error("API not initialized. Make sure to call the initialize() method first")
-		}
-
-		return this.config
-	}
-
-	/**
 	 * Constructs a basic YouTube Music API request with all essential headers
 	 * and body parameters needed to make the API work
 	 *
@@ -120,17 +107,19 @@ export default class YTMusic {
 		body: Record<string, any> = {},
 		query: Record<string, string> = {}
 	) {
-		const config = this.assertInitialized()
+		if (!this.config) {
+			throw new Error("API not initialized. Make sure to call the initialize() method first")
+		}
 
 		const headers: Record<string, any> = {
 			...this.client.defaults.headers,
 			"x-origin": this.client.defaults.baseURL,
-			"X-Goog-Visitor-Id": config.VISITOR_DATA,
-			"X-YouTube-Client-Name": config.INNERTUBE_CONTEXT_CLIENT_NAME,
-			"X-YouTube-Client-Version": config.INNERTUBE_CLIENT_VERSION,
-			"X-YouTube-Device": config.DEVICE,
-			"X-YouTube-Page-CL": config.PAGE_CL,
-			"X-YouTube-Page-Label": config.PAGE_BUILD_LABEL,
+			"X-Goog-Visitor-Id": this.config.VISITOR_DATA,
+			"X-YouTube-Client-Name": this.config.INNERTUBE_CONTEXT_CLIENT_NAME,
+			"X-YouTube-Client-Version": this.config.INNERTUBE_CLIENT_VERSION,
+			"X-YouTube-Device": this.config.DEVICE,
+			"X-YouTube-Page-CL": this.config.PAGE_CL,
+			"X-YouTube-Page-Label": this.config.PAGE_BUILD_LABEL,
 			"X-YouTube-Utc-Offset": String(-new Date().getTimezoneOffset()),
 			"X-YouTube-Time-Zone": new Intl.DateTimeFormat().resolvedOptions().timeZone
 		}
@@ -138,22 +127,21 @@ export default class YTMusic {
 		const searchParams = new URLSearchParams({
 			...query,
 			alt: "json",
-			key: config.INNERTUBE_API_KEY
+			key: this.config.INNERTUBE_API_KEY
 		})
 
-		// prettier-ignore
 		const res = await this.client.post(
-			`youtubei/${config.INNERTUBE_API_VERSION}/${endpoint}?${searchParams.toString()}`,
+			`youtubei/${this.config.INNERTUBE_API_VERSION}/${endpoint}?${searchParams.toString()}`,
 			{
 				context: {
 					capabilities: {},
 					client: {
-						clientName: config.INNERTUBE_CLIENT_NAME,
-						clientVersion: config.INNERTUBE_CLIENT_VERSION,
+						clientName: this.config.INNERTUBE_CLIENT_NAME,
+						clientVersion: this.config.INNERTUBE_CLIENT_VERSION,
 						experimentIds: [],
 						experimentsToken: "",
-						gl: config.GL,
-						hl: config.HL,
+						gl: this.config.GL,
+						hl: this.config.HL,
 						locationInfo: {
 							locationPermissionAuthorizationStatus:
 								"LOCATION_PERMISSION_AUTHORIZATION_STATUS_UNSUPPORTED"
@@ -270,7 +258,7 @@ export default class YTMusic {
 	public async getArtist(artistId: string): Promise<YTMusic.ArtistFull> {
 		const data = await this.constructRequest("browse", { browseId: artistId })
 
-		return new ArtistParser(data).parse(artistId)
+		return ArtistParser.parse(data, artistId)
 	}
 
 	/**
@@ -291,7 +279,10 @@ export default class YTMusic {
 			{ continuation: continueToken }
 		)
 
-		return SongParser.parseArtistSongs(songsData, moreSongsData)
+		return [
+			...traverse(songsData, "musicResponsiveListItemRenderer"),
+			...traverse(moreSongsData, "musicResponsiveListItemRenderer")
+		].map(SongParser.parseArtistSong)
 	}
 
 	/**
@@ -307,7 +298,12 @@ export default class YTMusic {
 
 		const albumsData = await this.constructRequest("browse", browseBody)
 
-		return AlbumParser.parseArtistAlbums(artistId, albumsData)
+		return traverse(albumsData, "musicTwoRowItemRenderer").map((item: any) =>
+			AlbumParser.parseArtistAlbum(item, {
+				artistId,
+				name: traverse(albumsData, "header", "text").at(0)
+			})
+		)
 	}
 
 	public async getAlbum(albumId: string) {

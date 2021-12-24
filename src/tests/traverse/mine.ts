@@ -3,7 +3,6 @@ const traverse = (data: any, keys: string[], single: boolean = false) => {
 		let res = []
 
 		if (data instanceof Object && key in data) {
-			if (single) return data[key]
 			res.push(data[key])
 		}
 
@@ -17,7 +16,7 @@ const traverse = (data: any, keys: string[], single: boolean = false) => {
 			)
 		}
 
-		return res
+		return res.length === 1 ? res[0] : res
 	}
 
 	let value = data

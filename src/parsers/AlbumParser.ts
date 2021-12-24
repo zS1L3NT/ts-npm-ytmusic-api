@@ -18,21 +18,19 @@ export default class AlbumParser {
 		}
 	}
 
-	public static parseArtistAlbums(artistId: string, albumsData: any): YTMusic.AlbumDetailed[] {
-		return traverse(albumsData, "musicTwoRowItemRenderer").map((item: any) => ({
+	public static parseArtistAlbum(
+		item: any,
+		artistBasic: YTMusic.ArtistBasic
+	): YTMusic.AlbumDetailed {
+		return {
 			type: "ALBUM",
 			albumId: [traverse(item, "browseId")].flat().at(-1),
 			playlistId: traverse(item, "thumbnailOverlay", "playlistId"),
 			name: traverse(item, "title", "text").at(0),
-			artists: [
-				{
-					artistId,
-					name: traverse(albumsData, "header", "text").at(0)
-				}
-			],
+			artists: [artistBasic],
 			year: +traverse(item, "subtitle", "text").at(-1),
 			thumbnails: [traverse(item, "thumbnails")].flat()
-		}))
+		}
 	}
 
 	public static parseArtistTopAlbums(
