@@ -240,11 +240,11 @@ export default class YTMusic {
 
 		return traverse(searchData, "musicResponsiveListItemRenderer").map(
 			{
-				SONG: SongParser.parseSearch,
-				VIDEO: VideoParser.parseSearch,
-				ARTIST: ArtistParser.parseSearch,
-				ALBUM: AlbumParser.parseSearch,
-				PLAYLIST: PlaylistParser.parseSearch
+				SONG: SongParser.parseSearchResult,
+				VIDEO: VideoParser.parseSearchResult,
+				ARTIST: ArtistParser.parseSearchResult,
+				ALBUM: AlbumParser.parseSearchResult,
+				PLAYLIST: PlaylistParser.parseSearchResult
 			}[category!] || SearchParser.parse
 		)
 	}
@@ -261,12 +261,24 @@ export default class YTMusic {
 		fs.writeFileSync("data.json", JSON.stringify(data))
 	}
 
+	/**
+	 * Get all possible information of an Artist
+	 *
+	 * @param artistId Artist ID
+	 * @returns Artist Data
+	 */
 	public async getArtist(artistId: string): Promise<YTMusic.ArtistFull> {
 		const data = await this.constructRequest("browse", { browseId: artistId })
 
 		return new ArtistParser(data).parse(artistId)
 	}
 
+	/**
+	 * Get all of Artist's Songs
+	 *
+	 * @param artistId Artist ID
+	 * @returns Artist's Songs
+	 */
 	public async getArtistSongs(artistId: string): Promise<YTMusic.SongDetailed[]> {
 		const artistData = await this.constructRequest("browse", { browseId: artistId })
 		const browseToken = traverse(artistData, "musicShelfRenderer", "title", "browseId")
@@ -279,9 +291,15 @@ export default class YTMusic {
 			{ continuation: continueToken }
 		)
 
-		return ArtistParser.parseSongs(songsData, moreSongsData)
+		return SongParser.parseArtistSongs(songsData, moreSongsData)
 	}
 
+	/**
+	 * Get all of Artist's Albums
+	 *
+	 * @param artistId Artist ID
+	 * @returns Artist's Albums
+	 */
 	public async getArtistAlbums(artistId: string): Promise<YTMusic.AlbumDetailed[]> {
 		const artistData = await this.constructRequest("browse", { browseId: artistId })
 		const artistAlbumsData = traverse(artistData, "musicCarouselShelfRenderer")[0]
@@ -289,7 +307,7 @@ export default class YTMusic {
 
 		const albumsData = await this.constructRequest("browse", browseBody)
 
-		return ArtistParser.parseAlbums(artistId, albumsData)
+		return AlbumParser.parseArtistAlbums(artistId, albumsData)
 	}
 
 	public async getAlbum(albumId: string) {

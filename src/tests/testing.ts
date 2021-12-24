@@ -3,6 +3,7 @@ import YTMusic from "../YTMusic"
 import {
 	ALBUM_DETAILED,
 	ARTIST_DETAILED,
+	ARTIST_FULL,
 	PLAYLIST_DETAILED,
 	SONG_DETAILED,
 	VIDEO_DETAILED
@@ -19,7 +20,13 @@ const tests: (query: string) => [() => Promise<any>, Validator<any>][] = query =
 	[
 		() => ytmusic.search(query),
 		LIST(ALBUM_DETAILED, ARTIST_DETAILED, PLAYLIST_DETAILED, SONG_DETAILED, VIDEO_DETAILED)
-	]
+	],
+	[() => ytmusic.getArtist("UCUCF7BJBzLcu_6qvgSBk7dA"), ARTIST_FULL],
+	[() => ytmusic.getArtist("UCTUR0sVEkD8T5MlSHqgaI_Q"), ARTIST_FULL],
+	[() => ytmusic.getArtistSongs("UCUCF7BJBzLcu_6qvgSBk7dA"), LIST(SONG_DETAILED)],
+	[() => ytmusic.getArtistSongs("UCTUR0sVEkD8T5MlSHqgaI_Q"), LIST(SONG_DETAILED)],
+	[() => ytmusic.getArtistAlbums("UCUCF7BJBzLcu_6qvgSBk7dA"), LIST(ALBUM_DETAILED)],
+	[() => ytmusic.getArtistAlbums("UCTUR0sVEkD8T5MlSHqgaI_Q"), LIST(ALBUM_DETAILED)]
 ]
 
 const queries = ["Lilac", "Weekend", "Yours Raiden", "Eminem"]

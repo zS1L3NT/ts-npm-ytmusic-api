@@ -26,7 +26,7 @@ declare namespace YTMusic {
 	}
 
 	interface ArtistBasic {
-		artistId?: string
+		artistId: string | null
 		name: string
 	}
 
@@ -37,9 +37,9 @@ declare namespace YTMusic {
 	}
 
 	interface ArtistFull extends ArtistDetailed {
-		description: string
+		description: string | null
 		subscribers: number
-		topTracks: Omit<SongDetailed, "duration">[]
+		topSongs: Omit<SongDetailed, "duration">[]
 		topAlbums: AlbumDetailed[]
 	}
 
