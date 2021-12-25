@@ -4,10 +4,11 @@ import traverse from "../utils/traverse"
 export default class SongParser {
 	public static parseSearchResult(item: any): YTMusic.SongDetailed {
 		const flexColumns = traverse(item, "flexColumns")
+		const videoId = traverse(item, "playlistItemData", "videoId")
 
 		return {
 			type: "SONG",
-			videoId: traverse(item, "playlistItemData", "videoId"),
+			videoId: videoId instanceof Array ? null : videoId,
 			name: traverse(flexColumns[0], "runs", "text"),
 			artists: traverse(flexColumns[1], "runs")
 				.filter((run: any) => "navigationEndpoint" in run)
@@ -23,10 +24,11 @@ export default class SongParser {
 
 	public static parseArtistSong(item: any): YTMusic.SongDetailed {
 		const flexColumns = traverse(item, "flexColumns")
+		const videoId = traverse(item, "playlistItemData", "videoId")
 
 		return {
 			type: "SONG",
-			videoId: traverse(item, "playlistItemData", "videoId"),
+			videoId: videoId instanceof Array ? null : videoId,
 			name: traverse(flexColumns[0], "runs", "text"),
 			artists: [traverse(flexColumns[1], "runs")]
 				.flat()
@@ -49,10 +51,11 @@ export default class SongParser {
 		artistBasic: YTMusic.ArtistBasic
 	): Omit<YTMusic.SongDetailed, "duration"> {
 		const flexColumns = traverse(item, "flexColumns")
+		const videoId = traverse(item, "playlistItemData", "videoId")
 
 		return {
 			type: "SONG",
-			videoId: traverse(item, "playlistItemData", "videoId"),
+			videoId: videoId instanceof Array ? null : videoId,
 			name: traverse(flexColumns[0], "runs", "text"),
 			artists: [artistBasic],
 			album: {
@@ -70,10 +73,11 @@ export default class SongParser {
 		thumbnails: YTMusic.ThumbnailFull[]
 	): YTMusic.SongDetailed {
 		const flexColumns = traverse(item, "flexColumns")
+		const videoId = traverse(item, "playlistItemData", "videoId")
 
 		return {
 			type: "SONG",
-			videoId: traverse(item, "playlistItemData", "videoId"),
+			videoId: videoId instanceof Array ? null : videoId,
 			name: traverse(flexColumns[0], "runs", "text"),
 			artists,
 			album: albumBasic,

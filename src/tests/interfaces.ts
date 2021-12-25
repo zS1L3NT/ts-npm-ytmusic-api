@@ -19,7 +19,7 @@ export const ALBUM_BASIC: ObjectValidator<YTMusic.AlbumBasic> = OBJECT({
 
 export const SONG_DETAILED: ObjectValidator<YTMusic.SongDetailed> = OBJECT({
 	type: STRING("SONG"),
-	videoId: STRING(),
+	videoId: OR(STRING(), NULL()),
 	name: STRING(),
 	artists: LIST(ARTIST_BASIC),
 	album: ALBUM_BASIC,

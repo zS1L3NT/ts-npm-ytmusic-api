@@ -7,7 +7,7 @@ declare namespace YTMusic {
 
 	interface SongDetailed {
 		type: "SONG"
-		videoId: string
+		videoId: string | null
 		name: string
 		artists: ArtistBasic[]
 		album: AlbumBasic
