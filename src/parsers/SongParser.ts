@@ -31,7 +31,8 @@ export default class SongParser {
 			name: traverse(flexColumns[0], "runs", "text"),
 			artists: traverse(flexColumns[1], "runs")
 				.filter((run: any) => "navigationEndpoint" in run)
-				.map((run: any) => ({ name: run.text, artistId: traverse(run, "browseId") })),
+				.map((run: any) => ({ artistId: traverse(run, "browseId"), name: run.text }))
+				.slice(0, -1),
 			album: {
 				albumId: traverse(item, "browseId").at(-1),
 				name: traverse(flexColumns[1], "runs", "text").at(-3)
@@ -53,8 +54,8 @@ export default class SongParser {
 				.flat()
 				.filter((item: any) => "navigationEndpoint" in item)
 				.map((run: any) => ({
-					name: run.text,
-					artistId: traverse(run, "browseId")
+					artistId: traverse(run, "browseId"),
+					name: run.text
 				})),
 			album: {
 				albumId: traverse(flexColumns[2], "browseId"),
