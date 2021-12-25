@@ -15,7 +15,7 @@ export default class ArtistParser {
 		return {
 			type: "ARTIST",
 			...artistBasic,
-			thumbnails: traverse(data, "header", "thumbnails"),
+			thumbnails: [traverse(data, "header", "thumbnails")].flat(),
 			description: description instanceof Array ? null : description,
 			subscribers: Parse.parseNumber(traverse(data, "subscriberCountText", "text")),
 			topSongs: traverse(data, "musicShelfRenderer", "contents").map((item: any) =>
@@ -24,20 +24,18 @@ export default class ArtistParser {
 			topAlbums: [traverse(data, "musicCarouselShelfRenderer")]
 				.flat()
 				.at(0)
-				.contents
-				.map((item: any) => AlbumParser.parseArtistTopAlbums(item, artistBasic))
+				.contents.map((item: any) => AlbumParser.parseArtistTopAlbums(item, artistBasic))
 		}
 	}
 
 	public static parseSearchResult(item: any): YTMusic.ArtistDetailed {
 		const flexColumns = traverse(item, "flexColumns")
-		const thumbnails = traverse(item, "thumbnails")
 
 		return {
 			type: "ARTIST",
 			artistId: traverse(item, "browseId"),
 			name: traverse(flexColumns[0], "runs", "text"),
-			thumbnails: [thumbnails].flat()
+			thumbnails: [traverse(item, "thumbnails")].flat()
 		}
 	}
 }

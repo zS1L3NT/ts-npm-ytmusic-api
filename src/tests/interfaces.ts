@@ -82,8 +82,8 @@ export const ALBUM_FULL: ObjectValidator<YTMusic.AlbumFull> = OBJECT({
 	artists: LIST(ARTIST_BASIC),
 	year: NUMBER(),
 	thumbnails: LIST(THUMBNAIL_FULL),
-	description: STRING(),
-	tracks: LIST(SONG_DETAILED)
+	description: OR(STRING(), NULL()),
+	songs: LIST(SONG_DETAILED)
 })
 
 export const PLAYLIST_DETAILED: ObjectValidator<YTMusic.PlaylistDetailed> = OBJECT({
@@ -91,6 +91,6 @@ export const PLAYLIST_DETAILED: ObjectValidator<YTMusic.PlaylistDetailed> = OBJE
 	playlistId: STRING(),
 	name: STRING(),
 	artist: ARTIST_BASIC,
-	trackCount: NUMBER(),
+	songCount: NUMBER(),
 	thumbnails: LIST(THUMBNAIL_FULL)
 })

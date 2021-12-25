@@ -226,7 +226,7 @@ export default class YTMusic {
 				}[category!] || null
 		})
 
-		return traverse(searchData, "musicResponsiveListItemRenderer").map(
+		return [traverse(searchData, "musicResponsiveListItemRenderer")].flat().map(
 			{
 				SONG: SongParser.parseSearchResult,
 				VIDEO: VideoParser.parseSearchResult,
@@ -306,10 +306,16 @@ export default class YTMusic {
 		)
 	}
 
-	public async getAlbum(albumId: string) {
+	/**
+	 * Get all possible information of an Album
+	 * 
+	 * @param albumId Album ID
+	 * @returns Album Data
+	 */
+	public async getAlbum(albumId: string): Promise<YTMusic.AlbumFull> {
 		const data = await this.constructRequest("browse", { browseId: albumId })
 
-		fs.writeFileSync("data.json", JSON.stringify(data))
+		return AlbumParser.parse(data, albumId)
 	}
 
 	public async getPlaylist(playlistId: string) {

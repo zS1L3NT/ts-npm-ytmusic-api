@@ -57,8 +57,8 @@ declare namespace YTMusic {
 	}
 
 	interface AlbumFull extends AlbumDetailed {
-		description: string
-		tracks: SongDetailed[]
+		description: string | null
+		songs: SongDetailed[]
 	}
 
 	interface PlaylistDetailed {
@@ -66,7 +66,7 @@ declare namespace YTMusic {
 		playlistId: string
 		name: string
 		artist: ArtistBasic
-		trackCount: number
+		songCount: number
 		thumbnails: ThumbnailFull[]
 	}
 

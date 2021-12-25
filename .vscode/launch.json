@@ -17,16 +17,6 @@
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "YTMusic.ts",
-			"program": "${workspaceFolder}/src/YTMusic.ts",
-			"sourceMaps": true,
-			"skipFiles": ["<node_internals>/**"],
-			"runtimeExecutable": "node",
-			"runtimeArgs": ["--require", "ts-node/register/files"]
-		},
-		{
-			"type": "node",
-			"request": "launch",
 			"name": "tests/testing.ts",
 			"program": "${workspaceFolder}/src/tests/testing.ts",
 			"sourceMaps": true,

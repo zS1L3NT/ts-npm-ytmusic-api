@@ -23,7 +23,7 @@ const traverse = (data: any, keys: string[], single: boolean = false) => {
 	for (const key of keys) {
 		value = again(value, key)
 	}
-	
+
 	return value
 }
 
