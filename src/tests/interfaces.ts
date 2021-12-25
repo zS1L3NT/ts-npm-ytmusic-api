@@ -1,5 +1,5 @@
 import ObjectValidator from "validate-any/build/validators/ObjectValidator"
-import { LIST, NULL, NUMBER, OBJECT, OR, STRING } from "validate-any"
+import { BOOLEAN, LIST, NULL, NUMBER, OBJECT, OR, STRING } from "validate-any"
 
 export const THUMBNAIL_FULL: ObjectValidator<YTMusic.ThumbnailFull> = OBJECT({
 	url: STRING(),
@@ -52,6 +52,33 @@ export const ALBUM_DETAILED: ObjectValidator<YTMusic.AlbumDetailed> = OBJECT({
 	artists: LIST(ARTIST_BASIC),
 	year: NUMBER(),
 	thumbnails: LIST(THUMBNAIL_FULL)
+})
+
+export const SONG_FULL: ObjectValidator<YTMusic.SongFull> = OBJECT({
+	type: STRING("SONG"),
+	videoId: OR(STRING(), NULL()),
+	name: STRING(),
+	artists: LIST(ARTIST_BASIC),
+	duration: NUMBER(),
+	thumbnails: LIST(THUMBNAIL_FULL),
+	description: STRING(),
+	formats: LIST(OBJECT()),
+	adaptiveFormats: LIST(OBJECT())
+})
+
+export const VIDEO_FULL: ObjectValidator<YTMusic.VideoFull> = OBJECT({
+	type: STRING("VIDEO"),
+	videoId: OR(STRING(), NULL()),
+	name: STRING(),
+	artists: LIST(ARTIST_BASIC),
+	views: NUMBER(),
+	duration: NUMBER(),
+	thumbnails: LIST(THUMBNAIL_FULL),
+	description: STRING(),
+	unlisted: BOOLEAN(),
+	familySafe: BOOLEAN(),
+	paid: BOOLEAN(),
+	tags: LIST(STRING())
 })
 
 export const ARTIST_FULL: ObjectValidator<YTMusic.ArtistFull> = OBJECT({

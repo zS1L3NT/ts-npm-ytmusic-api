@@ -15,6 +15,12 @@ declare namespace YTMusic {
 		thumbnails: ThumbnailFull[]
 	}
 
+	interface SongFull extends Omit<SongDetailed, "album"> {
+		description: string
+		formats: any[]
+		adaptiveFormats: any[]
+	}
+
 	interface VideoDetailed {
 		type: "VIDEO"
 		videoId: string | null
@@ -23,6 +29,14 @@ declare namespace YTMusic {
 		views: number
 		duration: number
 		thumbnails: ThumbnailFull[]
+	}
+
+	interface VideoFull extends VideoDetailed {
+		description: string
+		unlisted: boolean
+		familySafe: boolean
+		paid: boolean
+		tags: string[]
 	}
 
 	interface ArtistBasic {

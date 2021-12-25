@@ -1,7 +1,6 @@
 import AlbumParser from "./parsers/AlbumParser"
 import ArtistParser from "./parsers/ArtistParser"
 import axios, { AxiosInstance } from "axios"
-import fs from "fs"
 import PlaylistParser from "./parsers/PlaylistParser"
 import SearchParser from "./parsers/SearchParser"
 import SongParser from "./parsers/SongParser"
@@ -237,16 +236,28 @@ export default class YTMusic {
 		)
 	}
 
-	public async getSong(videoId: string) {
+	/**
+	 * Get all possible information of a Song
+	 *
+	 * @param videoId Video ID
+	 * @returns Song Data
+	 */
+	public async getSong(videoId: string): Promise<YTMusic.SongFull> {
 		const data = await this.constructRequest("player", { videoId })
 
-		fs.writeFileSync("data.json", JSON.stringify(data))
+		return SongParser.parse(data)
 	}
 
-	public async getVideo(videoId: string) {
+	/**
+	 * Get all possible information of a Video
+	 *
+	 * @param videoId Video ID
+	 * @returns Video Data
+	 */
+	public async getVideo(videoId: string): Promise<YTMusic.VideoFull> {
 		const data = await this.constructRequest("player", { videoId })
 
-		fs.writeFileSync("data.json", JSON.stringify(data))
+		return VideoParser.parse(data)
 	}
 
 	/**
@@ -320,7 +331,7 @@ export default class YTMusic {
 
 	/**
 	 * Get all possible information of a Playlist except the tracks
-	 * 
+	 *
 	 * @param playlistId Playlist ID
 	 * @returns Playlist Data
 	 */
@@ -333,7 +344,7 @@ export default class YTMusic {
 
 	/**
 	 * Get all videos in a Playlist
-	 * 
+	 *
 	 * @param playlistId Playlist ID
 	 * @returns Playlist's Videos
 	 */

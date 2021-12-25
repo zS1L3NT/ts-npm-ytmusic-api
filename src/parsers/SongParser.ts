@@ -2,6 +2,25 @@ import Parser from "./Parser"
 import traverse from "../utils/traverse"
 
 export default class SongParser {
+	public static parse(data: any): YTMusic.SongFull {
+		return {
+			type: "SONG",
+			videoId: traverse(data, "videoDetails", "videoId"),
+			name: traverse(data, "videoDetails", "title"),
+			artists: [
+				{
+					artistId: traverse(data, "videoDetails", "channelId"),
+					name: traverse(data, "author")
+				}
+			],
+			duration: +traverse(data, "videoDetails", "lengthSeconds"),
+			thumbnails: [traverse(data, "videoDetails", "thumbnails")].flat(),
+			description: traverse(data, "description"),
+			formats: traverse(data, "streamingData", "formats"),
+			adaptiveFormats: traverse(data, "streamingData", "adaptiveFormats")
+		}
+	}
+
 	public static parseSearchResult(item: any): YTMusic.SongDetailed {
 		const flexColumns = traverse(item, "flexColumns")
 		const videoId = traverse(item, "playlistItemData", "videoId")

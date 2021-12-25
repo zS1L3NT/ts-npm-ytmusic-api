@@ -8,7 +8,9 @@ import {
 	PLAYLIST_DETAILED,
 	PLAYLIST_VIDEO,
 	SONG_DETAILED,
-	VIDEO_DETAILED
+	SONG_FULL,
+	VIDEO_DETAILED,
+	VIDEO_FULL
 } from "./interfaces"
 import { LIST, validate } from "validate-any"
 
@@ -26,10 +28,10 @@ ytmusic.initialize().then(() =>
 			ytmusic.search(query)
 		])
 
-		const [artist, artistSongs, artistAlbums, album, playlist, playlistVideos] =
+		const [song, video, artist, artistSongs, artistAlbums, album, playlist, playlistVideos] =
 			await Promise.all([
-				// ytmusic.getSong(songs[0].videoId),
-				// ytmusic.getVideo(videos[0].videoId),
+				ytmusic.getSong(songs[0].videoId!),
+				ytmusic.getVideo(videos[0].videoId!),
 				ytmusic.getArtist(artists[0].artistId),
 				ytmusic.getArtistSongs(artists[0].artistId),
 				ytmusic.getArtistAlbums(artists[0].artistId),
@@ -54,8 +56,8 @@ ytmusic.initialize().then(() =>
 					VIDEO_DETAILED
 				)
 			],
-			// [song, SONG_DETAILED],
-			// [video, VIDEO_DETAILED],
+			[song, SONG_FULL],
+			[video, VIDEO_FULL],
 			[artist, ARTIST_FULL],
 			[artistSongs, LIST(SONG_DETAILED)],
 			[artistAlbums, LIST(ALBUM_DETAILED)],
