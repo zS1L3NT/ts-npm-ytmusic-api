@@ -29,7 +29,7 @@ export const SONG_DETAILED: ObjectValidator<YTMusic.SongDetailed> = OBJECT({
 
 export const VIDEO_DETAILED: ObjectValidator<YTMusic.VideoDetailed> = OBJECT({
 	type: STRING("VIDEO"),
-	videoId: STRING(),
+	videoId: OR(STRING(), NULL()),
 	name: STRING(),
 	artists: LIST(ARTIST_BASIC),
 	views: NUMBER(),
@@ -91,6 +91,15 @@ export const PLAYLIST_DETAILED: ObjectValidator<YTMusic.PlaylistDetailed> = OBJE
 	playlistId: STRING(),
 	name: STRING(),
 	artist: ARTIST_BASIC,
-	songCount: NUMBER(),
+	videoCount: NUMBER(),
+	thumbnails: LIST(THUMBNAIL_FULL)
+})
+
+export const PLAYLIST_VIDEO: ObjectValidator<Omit<YTMusic.VideoDetailed, "views">> = OBJECT({
+	type: STRING("VIDEO"),
+	videoId: OR(STRING(), NULL()),
+	name: STRING(),
+	artists: LIST(ARTIST_BASIC),
+	duration: NUMBER(),
 	thumbnails: LIST(THUMBNAIL_FULL)
 })

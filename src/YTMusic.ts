@@ -308,7 +308,7 @@ export default class YTMusic {
 
 	/**
 	 * Get all possible information of an Album
-	 * 
+	 *
 	 * @param albumId Album ID
 	 * @returns Album Data
 	 */
@@ -318,9 +318,45 @@ export default class YTMusic {
 		return AlbumParser.parse(data, albumId)
 	}
 
-	public async getPlaylist(playlistId: string) {
+	/**
+	 * Get all possible information of a Playlist except the tracks
+	 * 
+	 * @param playlistId Playlist ID
+	 * @returns Playlist Data
+	 */
+	public async getPlaylist(playlistId: string): Promise<YTMusic.PlaylistDetailed> {
+		if (playlistId.startsWith("PL")) playlistId = "VL" + playlistId
 		const data = await this.constructRequest("browse", { browseId: playlistId })
 
-		fs.writeFileSync("data.json", JSON.stringify(data))
+		return PlaylistParser.parse(data, playlistId)
+	}
+
+	/**
+	 * Get all videos in a Playlist
+	 * 
+	 * @param playlistId Playlist ID
+	 * @returns Playlist's Videos
+	 */
+	public async getPlaylistVideos(
+		playlistId: string
+	): Promise<Omit<YTMusic.VideoDetailed, "views">[]> {
+		if (playlistId.startsWith("PL")) playlistId = "VL" + playlistId
+		const playlistData = await this.constructRequest("browse", { browseId: playlistId })
+
+		const songs = traverse(
+			playlistData,
+			"musicPlaylistShelfRenderer",
+			"musicResponsiveListItemRenderer"
+		)
+		let continuation = traverse(playlistData, "musicPlaylistShelfRenderer", "continuation")
+		while (true) {
+			if (continuation instanceof Array) break
+
+			const songsData = await this.constructRequest("browse", {}, { continuation })
+			songs.push(...traverse(songsData, "musicResponsiveListItemRenderer"))
+			continuation = traverse(songsData, "continuation")
+		}
+
+		return songs.map(VideoParser.parsePlaylistVideo)
 	}
 }

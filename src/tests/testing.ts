@@ -6,12 +6,13 @@ import {
 	ARTIST_DETAILED,
 	ARTIST_FULL,
 	PLAYLIST_DETAILED,
+	PLAYLIST_VIDEO,
 	SONG_DETAILED,
 	VIDEO_DETAILED
 } from "./interfaces"
 import { LIST, validate } from "validate-any"
 
-const queries = ["Lilac", "Weekend", "Yours Raiden", "Eminem", "IU"]
+const queries = ["Lilac", "Weekend", "Yours Raiden", "Eminem", "Lisa Hannigan"]
 const ytmusic = new YTMusic()
 
 ytmusic.initialize().then(() =>
@@ -25,15 +26,17 @@ ytmusic.initialize().then(() =>
 			ytmusic.search(query)
 		])
 
-		const [artist, artistSongs, artistAlbums, album] = await Promise.all([
-			// ytmusic.getSong(songs[0].videoId),
-			// ytmusic.getVideo(videos[0].videoId),
-			ytmusic.getArtist(artists[0].artistId),
-			ytmusic.getArtistSongs(artists[0].artistId),
-			ytmusic.getArtistAlbums(artists[0].artistId),
-			ytmusic.getAlbum(albums[0].albumId)
-			// ytmusic.getPlaylist(playlists[0].playlistId)
-		])
+		const [artist, artistSongs, artistAlbums, album, playlist, playlistVideos] =
+			await Promise.all([
+				// ytmusic.getSong(songs[0].videoId),
+				// ytmusic.getVideo(videos[0].videoId),
+				ytmusic.getArtist(artists[0].artistId),
+				ytmusic.getArtistSongs(artists[0].artistId),
+				ytmusic.getArtistAlbums(artists[0].artistId),
+				ytmusic.getAlbum(albums[0].albumId),
+				ytmusic.getPlaylist(playlists[0].playlistId),
+				ytmusic.getPlaylistVideos(playlists[0].playlistId)
+			])
 
 		const tests: [any, Validator<any>][] = [
 			[songs, LIST(SONG_DETAILED)],
@@ -56,8 +59,9 @@ ytmusic.initialize().then(() =>
 			[artist, ARTIST_FULL],
 			[artistSongs, LIST(SONG_DETAILED)],
 			[artistAlbums, LIST(ALBUM_DETAILED)],
-			[album, ALBUM_FULL]
-			// [playlist, PLAYLIST_DETAILED]
+			[album, ALBUM_FULL],
+			[playlist, PLAYLIST_DETAILED],
+			[playlistVideos, LIST(PLAYLIST_VIDEO)]
 		]
 
 		for (const [value, validator] of tests) {

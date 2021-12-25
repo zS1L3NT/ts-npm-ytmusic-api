@@ -17,7 +17,7 @@ declare namespace YTMusic {
 
 	interface VideoDetailed {
 		type: "VIDEO"
-		videoId: string
+		videoId: string | null
 		name: string
 		artists: ArtistBasic[]
 		views: number
@@ -66,7 +66,7 @@ declare namespace YTMusic {
 		playlistId: string
 		name: string
 		artist: ArtistBasic
-		songCount: number
+		videoCount: number
 		thumbnails: ThumbnailFull[]
 	}
 
