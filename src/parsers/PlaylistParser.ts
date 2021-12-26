@@ -1,7 +1,7 @@
 import traverse from "../utils/traverse"
 
 export default class PlaylistParser {
-	public static parse(data: any, playlistId: string): YTMusic.PlaylistDetailed {
+	public static parse(data: any, playlistId: string): YTMusic.PlaylistFull {
 		return {
 			type: "PLAYLIST",
 			playlistId,
@@ -19,7 +19,7 @@ export default class PlaylistParser {
 		}
 	}
 
-	public static parseSearchResult(item: any): YTMusic.PlaylistDetailed {
+	public static parseSearchResult(item: any): YTMusic.PlaylistFull {
 		const flexColumns = traverse(item, "flexColumns")
 		const artistId = traverse(flexColumns[1], "browseId")
 

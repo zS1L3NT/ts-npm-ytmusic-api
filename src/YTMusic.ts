@@ -206,11 +206,10 @@ export default class YTMusic {
 	 * @param category Type of search results to receive
 	 */
 	public async search(query: string, category: "SONG"): Promise<YTMusic.SongDetailed[]>
-	public async search(query: string, category: "PLAYLIST"): Promise<YTMusic.PlaylistDetailed[]>
 	public async search(query: string, category: "VIDEO"): Promise<YTMusic.VideoDetailed[]>
 	public async search(query: string, category: "ARTIST"): Promise<YTMusic.ArtistDetailed[]>
 	public async search(query: string, category: "ALBUM"): Promise<YTMusic.AlbumDetailed[]>
-	public async search(query: string, category: "PLAYLIST"): Promise<YTMusic.PlaylistDetailed[]>
+	public async search(query: string, category: "PLAYLIST"): Promise<YTMusic.PlaylistFull[]>
 	public async search(query: string): Promise<YTMusic.SearchResult[]>
 	public async search(query: string, category?: string) {
 		const searchData = await this.constructRequest("search", {
@@ -335,7 +334,7 @@ export default class YTMusic {
 	 * @param playlistId Playlist ID
 	 * @returns Playlist Data
 	 */
-	public async getPlaylist(playlistId: string): Promise<YTMusic.PlaylistDetailed> {
+	public async getPlaylist(playlistId: string): Promise<YTMusic.PlaylistFull> {
 		if (playlistId.startsWith("PL")) playlistId = "VL" + playlistId
 		const data = await this.constructRequest("browse", { browseId: playlistId })
 

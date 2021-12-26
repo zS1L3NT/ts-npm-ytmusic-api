@@ -75,7 +75,7 @@ declare namespace YTMusic {
 		songs: SongDetailed[]
 	}
 
-	interface PlaylistDetailed {
+	interface PlaylistFull {
 		type: "PLAYLIST"
 		playlistId: string
 		name: string
@@ -86,9 +86,8 @@ declare namespace YTMusic {
 
 	type SearchResult =
 		| SongDetailed
-		| PlaylistDetailed
 		| VideoDetailed
 		| AlbumDetailed
 		| ArtistDetailed
-		| PlaylistDetailed
+		| PlaylistFull
 }
