@@ -7,7 +7,7 @@ declare namespace YTMusic {
 
 	interface SongDetailed {
 		type: "SONG"
-		videoId: string
+		videoId: string | null
 		name: string
 		artists: ArtistBasic[]
 		album: AlbumBasic
@@ -15,24 +15,46 @@ declare namespace YTMusic {
 		thumbnails: ThumbnailFull[]
 	}
 
+	interface SongFull extends Omit<SongDetailed, "album"> {
+		description: string
+		formats: any[]
+		adaptiveFormats: any[]
+	}
+
 	interface VideoDetailed {
 		type: "VIDEO"
-		videoId: string
+		videoId: string | null
 		name: string
-		artist: ArtistBasic
+		artists: ArtistBasic[]
 		views: number
 		duration: number
 		thumbnails: ThumbnailFull[]
 	}
 
+	interface VideoFull extends VideoDetailed {
+		description: string
+		unlisted: boolean
+		familySafe: boolean
+		paid: boolean
+		tags: string[]
+	}
+
 	interface ArtistBasic {
-		artistId: string
+		artistId: string | null
 		name: string
 	}
 
 	interface ArtistDetailed extends ArtistBasic {
 		type: "ARTIST"
+		artistId: string
 		thumbnails: ThumbnailFull[]
+	}
+
+	interface ArtistFull extends ArtistDetailed {
+		description: string | null
+		subscribers: number
+		topSongs: Omit<SongDetailed, "duration">[]
+		topAlbums: AlbumDetailed[]
 	}
 
 	interface AlbumBasic {
@@ -48,20 +70,24 @@ declare namespace YTMusic {
 		thumbnails: ThumbnailFull[]
 	}
 
-	interface PlaylistDetailed {
+	interface AlbumFull extends AlbumDetailed {
+		description: string | null
+		songs: SongDetailed[]
+	}
+
+	interface PlaylistFull {
 		type: "PLAYLIST"
 		playlistId: string
 		name: string
 		artist: ArtistBasic
-		trackCount: number
+		videoCount: number
 		thumbnails: ThumbnailFull[]
 	}
 
 	type SearchResult =
 		| SongDetailed
-		| PlaylistDetailed
 		| VideoDetailed
 		| AlbumDetailed
 		| ArtistDetailed
-		| PlaylistDetailed
+		| PlaylistFull
 }

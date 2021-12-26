@@ -1,6 +1,11 @@
+import AlbumParser from "./parsers/AlbumParser"
+import ArtistParser from "./parsers/ArtistParser"
 import axios, { AxiosInstance } from "axios"
-import Parser from "./utils/Parser"
+import PlaylistParser from "./parsers/PlaylistParser"
+import SearchParser from "./parsers/SearchParser"
+import SongParser from "./parsers/SongParser"
 import traverse from "./utils/traverse"
+import VideoParser from "./parsers/VideoParser"
 import { Cookie, CookieJar } from "tough-cookie"
 
 export default class YTMusic {
@@ -88,19 +93,6 @@ export default class YTMusic {
 	}
 
 	/**
-	 * Asserts that the API has been initialized
-	 *
-	 * @returns Non-null config
-	 */
-	private assertInitialized() {
-		if (!this.config) {
-			throw new Error("API not initialized. Make sure to call the initialize() method first")
-		}
-
-		return this.config
-	}
-
-	/**
 	 * Constructs a basic YouTube Music API request with all essential headers
 	 * and body parameters needed to make the API work
 	 *
@@ -114,17 +106,19 @@ export default class YTMusic {
 		body: Record<string, any> = {},
 		query: Record<string, string> = {}
 	) {
-		const config = this.assertInitialized()
+		if (!this.config) {
+			throw new Error("API not initialized. Make sure to call the initialize() method first")
+		}
 
 		const headers: Record<string, any> = {
 			...this.client.defaults.headers,
 			"x-origin": this.client.defaults.baseURL,
-			"X-Goog-Visitor-Id": config.VISITOR_DATA,
-			"X-YouTube-Client-Name": config.INNERTUBE_CONTEXT_CLIENT_NAME,
-			"X-YouTube-Client-Version": config.INNERTUBE_CLIENT_VERSION,
-			"X-YouTube-Device": config.DEVICE,
-			"X-YouTube-Page-CL": config.PAGE_CL,
-			"X-YouTube-Page-Label": config.PAGE_BUILD_LABEL,
+			"X-Goog-Visitor-Id": this.config.VISITOR_DATA,
+			"X-YouTube-Client-Name": this.config.INNERTUBE_CONTEXT_CLIENT_NAME,
+			"X-YouTube-Client-Version": this.config.INNERTUBE_CLIENT_VERSION,
+			"X-YouTube-Device": this.config.DEVICE,
+			"X-YouTube-Page-CL": this.config.PAGE_CL,
+			"X-YouTube-Page-Label": this.config.PAGE_BUILD_LABEL,
 			"X-YouTube-Utc-Offset": String(-new Date().getTimezoneOffset()),
 			"X-YouTube-Time-Zone": new Intl.DateTimeFormat().resolvedOptions().timeZone
 		}
@@ -132,22 +126,21 @@ export default class YTMusic {
 		const searchParams = new URLSearchParams({
 			...query,
 			alt: "json",
-			key: config.INNERTUBE_API_KEY
+			key: this.config.INNERTUBE_API_KEY
 		})
 
-		// prettier-ignore
 		const res = await this.client.post(
-			`youtubei/${config.INNERTUBE_API_VERSION}/${endpoint}?${searchParams.toString()}`,
+			`youtubei/${this.config.INNERTUBE_API_VERSION}/${endpoint}?${searchParams.toString()}`,
 			{
 				context: {
 					capabilities: {},
 					client: {
-						clientName: config.INNERTUBE_CLIENT_NAME,
-						clientVersion: config.INNERTUBE_CLIENT_VERSION,
+						clientName: this.config.INNERTUBE_CLIENT_NAME,
+						clientVersion: this.config.INNERTUBE_CLIENT_VERSION,
 						experimentIds: [],
 						experimentsToken: "",
-						gl: config.GL,
-						hl: config.HL,
+						gl: this.config.GL,
+						hl: this.config.HL,
 						locationInfo: {
 							locationPermissionAuthorizationStatus:
 								"LOCATION_PERMISSION_AUTHORIZATION_STATUS_UNSUPPORTED"
@@ -198,11 +191,12 @@ export default class YTMusic {
 	 * @returns Search suggestions
 	 */
 	public async getSearchSuggestions(query: string): Promise<string[]> {
-		const res = await this.constructRequest("music/get_search_suggestions", {
-			input: query
-		})
-
-		return traverse(res, "query")
+		return traverse(
+			await this.constructRequest("music/get_search_suggestions", {
+				input: query
+			}),
+			"query"
+		)
 	}
 
 	/**
@@ -212,15 +206,14 @@ export default class YTMusic {
 	 * @param category Type of search results to receive
 	 */
 	public async search(query: string, category: "SONG"): Promise<YTMusic.SongDetailed[]>
-	public async search(query: string, category: "PLAYLIST"): Promise<YTMusic.PlaylistDetailed[]>
 	public async search(query: string, category: "VIDEO"): Promise<YTMusic.VideoDetailed[]>
 	public async search(query: string, category: "ARTIST"): Promise<YTMusic.ArtistDetailed[]>
 	public async search(query: string, category: "ALBUM"): Promise<YTMusic.AlbumDetailed[]>
-	public async search(query: string, category: "PLAYLIST"): Promise<YTMusic.PlaylistDetailed[]>
+	public async search(query: string, category: "PLAYLIST"): Promise<YTMusic.PlaylistFull[]>
 	public async search(query: string): Promise<YTMusic.SearchResult[]>
 	public async search(query: string, category?: string) {
-		const data = await this.constructRequest("search", {
-			query: query,
+		const searchData = await this.constructRequest("search", {
+			query,
 			params:
 				{
 					SONG: "Eg-KAQwIARAAGAAgACgAMABqChAEEAMQCRAFEAo%3D",
@@ -231,20 +224,149 @@ export default class YTMusic {
 				}[category!] || null
 		})
 
-		const parser = new Parser(data)
-		return (
+		return [traverse(searchData, "musicResponsiveListItemRenderer")].flat().map(
 			{
-				SONG: parser.parseSongsSearchResults,
-				VIDEO: parser.parseVideosSearchResults,
-				ARTIST: parser.parseArtistsSearchResults,
-				ALBUM: parser.parseAlbumsSearchResults,
-				PLAYLIST: parser.parsePlaylistsSearchResults
-			}[category!] || parser.parseSearchResult
-		).call(parser)
+				SONG: SongParser.parseSearchResult,
+				VIDEO: VideoParser.parseSearchResult,
+				ARTIST: ArtistParser.parseSearchResult,
+				ALBUM: AlbumParser.parseSearchResult,
+				PLAYLIST: PlaylistParser.parseSearchResult
+			}[category!] || SearchParser.parse
+		)
+	}
+
+	/**
+	 * Get all possible information of a Song
+	 *
+	 * @param videoId Video ID
+	 * @returns Song Data
+	 */
+	public async getSong(videoId: string): Promise<YTMusic.SongFull> {
+		const data = await this.constructRequest("player", { videoId })
+
+		return SongParser.parse(data)
+	}
+
+	/**
+	 * Get all possible information of a Video
+	 *
+	 * @param videoId Video ID
+	 * @returns Video Data
+	 */
+	public async getVideo(videoId: string): Promise<YTMusic.VideoFull> {
+		const data = await this.constructRequest("player", { videoId })
+
+		return VideoParser.parse(data)
+	}
+
+	/**
+	 * Get all possible information of an Artist
+	 *
+	 * @param artistId Artist ID
+	 * @returns Artist Data
+	 */
+	public async getArtist(artistId: string): Promise<YTMusic.ArtistFull> {
+		const data = await this.constructRequest("browse", { browseId: artistId })
+
+		return ArtistParser.parse(data, artistId)
+	}
+
+	/**
+	 * Get all of Artist's Songs
+	 *
+	 * @param artistId Artist ID
+	 * @returns Artist's Songs
+	 */
+	public async getArtistSongs(artistId: string): Promise<YTMusic.SongDetailed[]> {
+		const artistData = await this.constructRequest("browse", { browseId: artistId })
+		const browseToken = traverse(artistData, "musicShelfRenderer", "title", "browseId")
+
+		const songsData = await this.constructRequest("browse", { browseId: browseToken })
+		const continueToken = traverse(songsData, "continuation")
+		const moreSongsData = await this.constructRequest(
+			"browse",
+			{},
+			{ continuation: continueToken }
+		)
+
+		return [
+			...traverse(songsData, "musicResponsiveListItemRenderer"),
+			...traverse(moreSongsData, "musicResponsiveListItemRenderer")
+		].map(SongParser.parseArtistSong)
+	}
+
+	/**
+	 * Get all of Artist's Albums
+	 *
+	 * @param artistId Artist ID
+	 * @returns Artist's Albums
+	 */
+	public async getArtistAlbums(artistId: string): Promise<YTMusic.AlbumDetailed[]> {
+		const artistData = await this.constructRequest("browse", { browseId: artistId })
+		const artistAlbumsData = traverse(artistData, "musicCarouselShelfRenderer")[0]
+		const browseBody = traverse(artistAlbumsData, "moreContentButton", "browseEndpoint")
+
+		const albumsData = await this.constructRequest("browse", browseBody)
+
+		return traverse(albumsData, "musicTwoRowItemRenderer").map((item: any) =>
+			AlbumParser.parseArtistAlbum(item, {
+				artistId,
+				name: traverse(albumsData, "header", "text").at(0)
+			})
+		)
+	}
+
+	/**
+	 * Get all possible information of an Album
+	 *
+	 * @param albumId Album ID
+	 * @returns Album Data
+	 */
+	public async getAlbum(albumId: string): Promise<YTMusic.AlbumFull> {
+		const data = await this.constructRequest("browse", { browseId: albumId })
+
+		return AlbumParser.parse(data, albumId)
+	}
+
+	/**
+	 * Get all possible information of a Playlist except the tracks
+	 *
+	 * @param playlistId Playlist ID
+	 * @returns Playlist Data
+	 */
+	public async getPlaylist(playlistId: string): Promise<YTMusic.PlaylistFull> {
+		if (playlistId.startsWith("PL")) playlistId = "VL" + playlistId
+		const data = await this.constructRequest("browse", { browseId: playlistId })
+
+		return PlaylistParser.parse(data, playlistId)
+	}
+
+	/**
+	 * Get all videos in a Playlist
+	 *
+	 * @param playlistId Playlist ID
+	 * @returns Playlist's Videos
+	 */
+	public async getPlaylistVideos(
+		playlistId: string
+	): Promise<Omit<YTMusic.VideoDetailed, "views">[]> {
+		if (playlistId.startsWith("PL")) playlistId = "VL" + playlistId
+		const playlistData = await this.constructRequest("browse", { browseId: playlistId })
+
+		const songs = traverse(
+			playlistData,
+			"musicPlaylistShelfRenderer",
+			"musicResponsiveListItemRenderer"
+		)
+		let continuation = traverse(playlistData, "musicPlaylistShelfRenderer", "continuation")
+		while (true) {
+			if (continuation instanceof Array) break
+
+			const songsData = await this.constructRequest("browse", {}, { continuation })
+			songs.push(...traverse(songsData, "musicResponsiveListItemRenderer"))
+			continuation = traverse(songsData, "continuation")
+		}
+
+		return songs.map(VideoParser.parsePlaylistVideo)
 	}
 }
-
-const ytmusicapi = new YTMusic()
-ytmusicapi.initialize().then(async () => {
-	console.log("Initialized")
-})
