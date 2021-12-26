@@ -7,8 +7,8 @@
         {
 			"type": "node",
 			"request": "launch",
-			"name": "index.ts",
-			"program": "${workspaceFolder}/src/index.ts",
+			"name": "testing/run.ts",
+			"program": "${workspaceFolder}/src/testing/run.ts",
 			"sourceMaps": true,
 			"skipFiles": ["<node_internals>/**"],
 			"runtimeExecutable": "node",
@@ -17,8 +17,8 @@
 		{
 			"type": "node",
 			"request": "launch",
-			"name": "tests/testing.ts",
-			"program": "${workspaceFolder}/src/tests/testing.ts",
+			"name": "tests/all.ts",
+			"program": "${workspaceFolder}/src/tests/all.ts",
 			"sourceMaps": true,
 			"skipFiles": ["<node_internals>/**"],
 			"runtimeExecutable": "node",

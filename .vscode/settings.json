@@ -11,7 +11,7 @@
         "**/*.cs.meta": true,
         "**/android": true,
         "**/ios": true,
-        "**/node_modules": true,
+        "**/node_modules": false,
         "**/__pycache__": true,
         "**/babel.config.js": true,
         "**/metro.config.js": true,
