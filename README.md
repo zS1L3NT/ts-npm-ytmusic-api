@@ -1,4 +1,4 @@
-# yt-music
+# ytmusic-api
 
 YouTube Music API which comes with TypeScript support
 
@@ -8,10 +8,10 @@ Import YTMusic from the npm package
 
 ```ts
 // TypeScript
-import YTMusic from "yt-music"
+import YTMusic from "ytmusic-api"
 
 // JavaScript
-const YTMusic = require("yt-music")
+const YTMusic = require("ytmusic-api")
 ```
 
 Create an instance of the class `YTMusic`.
