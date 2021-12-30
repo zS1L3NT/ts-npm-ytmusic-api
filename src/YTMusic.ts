@@ -254,9 +254,12 @@ export default class YTMusic {
 	 * @returns Song Data
 	 */
 	public async getSong(videoId: string): Promise<SongFull> {
+		if (!videoId.match(/^[a-zA-Z0-9-_]{11}$/)) throw new Error("Invalid videoId")
 		const data = await this.constructRequest("player", { videoId })
 
-		return SongParser.parse(data)
+		const song = SongParser.parse(data)
+		if (song.videoId !== videoId) throw new Error("Invalid videoId")
+		return song
 	}
 
 	/**
@@ -266,9 +269,12 @@ export default class YTMusic {
 	 * @returns Video Data
 	 */
 	public async getVideo(videoId: string): Promise<VideoFull> {
+		if (!videoId.match(/^[a-zA-Z0-9-_]{11}$/)) throw new Error("Invalid videoId")
 		const data = await this.constructRequest("player", { videoId })
 
-		return VideoParser.parse(data)
+		const video = VideoParser.parse(data)
+		if (video.videoId !== videoId) throw new Error("Invalid videoId")
+		return video
 	}
 
 	/**
