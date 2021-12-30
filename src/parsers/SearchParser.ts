@@ -4,6 +4,7 @@ import PlaylistParser from "./PlaylistParser"
 import SongParser from "./SongParser"
 import traverse from "../utils/traverse"
 import VideoParser from "./VideoParser"
+import YTMusic from ".."
 
 export default class SearchParser {
 	public static parse(item: any): YTMusic.SearchResult {

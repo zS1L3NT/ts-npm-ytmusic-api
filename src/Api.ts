@@ -6,9 +6,10 @@ import SearchParser from "./parsers/SearchParser"
 import SongParser from "./parsers/SongParser"
 import traverse from "./utils/traverse"
 import VideoParser from "./parsers/VideoParser"
+import YTMusic from "."
 import { Cookie, CookieJar } from "tough-cookie"
 
-export default class YTMusic {
+export default class Api {
 	private cookiejar: CookieJar
 	private config?: Record<string, string>
 	private client: AxiosInstance

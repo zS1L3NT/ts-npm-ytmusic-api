@@ -1,7 +1,8 @@
 import AlbumParser from "./AlbumParser"
-import Parse from "./Parser"
+import Parser from "./Parser"
 import SongParser from "./SongParser"
 import traverse from "../utils/traverse"
+import YTMusic from ".."
 
 export default class ArtistParser {
 	public static parse(data: any, artistId: string): YTMusic.ArtistFull {
@@ -17,7 +18,7 @@ export default class ArtistParser {
 			...artistBasic,
 			thumbnails: [traverse(data, "header", "thumbnails")].flat(),
 			description: description instanceof Array ? null : description,
-			subscribers: Parse.parseNumber(traverse(data, "subscriberCountText", "text")),
+			subscribers: Parser.parseNumber(traverse(data, "subscriberCountText", "text")),
 			topSongs: traverse(data, "musicShelfRenderer", "contents").map((item: any) =>
 				SongParser.parseArtistTopSong(item, artistBasic)
 			),

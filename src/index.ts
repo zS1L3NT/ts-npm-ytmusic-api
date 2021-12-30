@@ -1,11 +1,15 @@
+import Api from "./Api"
+
 declare namespace YTMusic {
-	interface ThumbnailFull {
+	export { Api }
+
+	export interface ThumbnailFull {
 		url: string
 		width: number
 		height: number
 	}
 
-	interface SongDetailed {
+	export interface SongDetailed {
 		type: "SONG"
 		videoId: string | null
 		name: string
@@ -15,13 +19,13 @@ declare namespace YTMusic {
 		thumbnails: ThumbnailFull[]
 	}
 
-	interface SongFull extends Omit<SongDetailed, "album"> {
+	export interface SongFull extends Omit<SongDetailed, "album"> {
 		description: string
 		formats: any[]
 		adaptiveFormats: any[]
 	}
 
-	interface VideoDetailed {
+	export interface VideoDetailed {
 		type: "VIDEO"
 		videoId: string | null
 		name: string
@@ -31,7 +35,7 @@ declare namespace YTMusic {
 		thumbnails: ThumbnailFull[]
 	}
 
-	interface VideoFull extends VideoDetailed {
+	export interface VideoFull extends VideoDetailed {
 		description: string
 		unlisted: boolean
 		familySafe: boolean
@@ -39,30 +43,30 @@ declare namespace YTMusic {
 		tags: string[]
 	}
 
-	interface ArtistBasic {
+	export interface ArtistBasic {
 		artistId: string | null
 		name: string
 	}
 
-	interface ArtistDetailed extends ArtistBasic {
+	export interface ArtistDetailed extends ArtistBasic {
 		type: "ARTIST"
 		artistId: string
 		thumbnails: ThumbnailFull[]
 	}
 
-	interface ArtistFull extends ArtistDetailed {
+	export interface ArtistFull extends ArtistDetailed {
 		description: string | null
 		subscribers: number
 		topSongs: Omit<SongDetailed, "duration">[]
 		topAlbums: AlbumDetailed[]
 	}
 
-	interface AlbumBasic {
+	export interface AlbumBasic {
 		albumId: string
 		name: string
 	}
 
-	interface AlbumDetailed extends AlbumBasic {
+	export interface AlbumDetailed extends AlbumBasic {
 		type: "ALBUM"
 		playlistId: string
 		artists: ArtistBasic[]
@@ -70,12 +74,12 @@ declare namespace YTMusic {
 		thumbnails: ThumbnailFull[]
 	}
 
-	interface AlbumFull extends AlbumDetailed {
+	export interface AlbumFull extends AlbumDetailed {
 		description: string | null
 		songs: SongDetailed[]
 	}
 
-	interface PlaylistFull {
+	export interface PlaylistFull {
 		type: "PLAYLIST"
 		playlistId: string
 		name: string
@@ -84,10 +88,12 @@ declare namespace YTMusic {
 		thumbnails: ThumbnailFull[]
 	}
 
-	type SearchResult =
+	export type SearchResult =
 		| SongDetailed
 		| VideoDetailed
 		| AlbumDetailed
 		| ArtistDetailed
 		| PlaylistFull
 }
+
+export default YTMusic

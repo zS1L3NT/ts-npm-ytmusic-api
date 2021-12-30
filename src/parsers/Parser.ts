@@ -1,4 +1,4 @@
-export default class Parse {
+export default class Parser {
 	public static parseDuration(time: string) {
 		const [seconds, minutes, hours] = time
 			.split(":")

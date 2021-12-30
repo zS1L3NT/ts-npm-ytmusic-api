@@ -1,9 +1,9 @@
 {
 	"name": "ytmusic-api",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "YouTube Music API",
-	"main": "build/YTMusic.js",
-	"types": "build/YTMusic.d.ts",
+	"main": "build/index.js",
+	"types": "build/index.d.ts",
 	"author": "zS1L3NT <zechariahtan144@gmail.com> (http://www.zectan.com)",
 	"license": "ISC",
 	"repository": {

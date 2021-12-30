@@ -1,5 +1,6 @@
 import SongParser from "./SongParser"
 import traverse from "../utils/traverse"
+import YTMusic from ".."
 
 export default class AlbumParser {
 	public static parse(data: any, albumId: string): YTMusic.AlbumFull {

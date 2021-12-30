@@ -1,4 +1,5 @@
 import traverse from "../utils/traverse"
+import YTMusic from ".."
 
 export default class PlaylistParser {
 	public static parse(data: any, playlistId: string): YTMusic.PlaylistFull {

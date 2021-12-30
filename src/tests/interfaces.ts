@@ -1,4 +1,5 @@
 import ObjectValidator from "validate-any/build/validators/ObjectValidator"
+import YTMusic from "../index"
 import { BOOLEAN, LIST, NULL, NUMBER, OBJECT, OR, STRING } from "validate-any"
 
 export const THUMBNAIL_FULL: ObjectValidator<YTMusic.ThumbnailFull> = OBJECT({
@@ -113,7 +114,7 @@ export const ALBUM_FULL: ObjectValidator<YTMusic.AlbumFull> = OBJECT({
 	songs: LIST(SONG_DETAILED)
 })
 
-export const PLAYLIST_DETAILED: ObjectValidator<YTMusic.PlaylistDetailed> = OBJECT({
+export const PLAYLIST_DETAILED: ObjectValidator<YTMusic.PlaylistFull> = OBJECT({
 	type: STRING("PLAYLIST"),
 	playlistId: STRING(),
 	name: STRING(),

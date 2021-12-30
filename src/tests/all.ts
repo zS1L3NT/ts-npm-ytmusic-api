@@ -1,5 +1,5 @@
 import Validator from "validate-any/build/classes/Validator"
-import YTMusic from "../YTMusic"
+import YTMusicApi from "../Api"
 import {
 	ALBUM_DETAILED,
 	ALBUM_FULL,
@@ -15,7 +15,7 @@ import {
 import { LIST, validate } from "validate-any"
 
 const queries = ["Lilac", "Weekend", "Yours Raiden", "Eminem", "Lisa Hannigan"]
-const ytmusic = new YTMusic()
+const ytmusic = new YTMusicApi()
 
 ytmusic.initialize().then(() =>
 	queries.forEach(async query => {
