@@ -1,9 +1,9 @@
 {
 	"name": "ytmusic-api",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "YouTube Music API",
 	"main": "build/YTMusic.js",
-	"types": "build/types.d.ts",
+	"types": "build/YTMusic.d.ts",
 	"author": "zS1L3NT <zechariahtan144@gmail.com> (http://www.zectan.com)",
 	"license": "ISC",
 	"repository": {
@@ -17,11 +17,9 @@
 	"devDependencies": {
 		"@types/node": "^16.9.2",
 		"@types/tough-cookie": "^4.0.1",
-		"http-debug": "^0.1.2",
 		"ts-node": "^10.2.1",
 		"typescript": "^4.4.3",
-		"validate-any": "^1.1.1",
-		"youtube-music-api": "^1.0.6"
+		"validate-any": "^1.1.1"
 	},
 	"keywords": [
 		"youtube",

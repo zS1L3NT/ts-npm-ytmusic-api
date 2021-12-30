@@ -15,7 +15,8 @@
 		"strictNullChecks": true,
 		"strictFunctionTypes": true,
 		"outDir": "build",
-		"rootDir": "src"
+		"rootDir": "src",
+		"declaration": true
 	},
 	"exclude": ["**/*.test.*", "**/tests"]
 }
