@@ -4,10 +4,10 @@ import PlaylistParser from "./PlaylistParser"
 import SongParser from "./SongParser"
 import traverse from "../utils/traverse"
 import VideoParser from "./VideoParser"
-import YTMusic from ".."
+import { SearchResult } from ".."
 
 export default class SearchParser {
-	public static parse(item: any): YTMusic.SearchResult {
+	public static parse(item: any): SearchResult {
 		const flexColumns = traverse(item, "flexColumns")
 		const type = traverse(flexColumns[1], "runs", "text").at(0) as
 			| "Song"

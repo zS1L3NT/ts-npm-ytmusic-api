@@ -1,9 +1,9 @@
 import SongParser from "./SongParser"
 import traverse from "../utils/traverse"
-import YTMusic from ".."
+import { AlbumDetailed, AlbumFull, ArtistBasic } from ".."
 
 export default class AlbumParser {
-	public static parse(data: any, albumId: string): YTMusic.AlbumFull {
+	public static parse(data: any, albumId: string): AlbumFull {
 		const albumBasic = {
 			albumId,
 			name: traverse(data, "header", "title", "text").at(0)
@@ -30,7 +30,7 @@ export default class AlbumParser {
 		}
 	}
 
-	public static parseSearchResult(item: any): YTMusic.AlbumDetailed {
+	public static parseSearchResult(item: any): AlbumDetailed {
 		const flexColumns = traverse(item, "flexColumns")
 
 		return {
@@ -46,10 +46,7 @@ export default class AlbumParser {
 		}
 	}
 
-	public static parseArtistAlbum(
-		item: any,
-		artistBasic: YTMusic.ArtistBasic
-	): YTMusic.AlbumDetailed {
+	public static parseArtistAlbum(item: any, artistBasic: ArtistBasic): AlbumDetailed {
 		return {
 			type: "ALBUM",
 			albumId: [traverse(item, "browseId")].flat().at(-1),
@@ -61,10 +58,7 @@ export default class AlbumParser {
 		}
 	}
 
-	public static parseArtistTopAlbums(
-		item: any,
-		artistBasic: YTMusic.ArtistBasic
-	): YTMusic.AlbumDetailed {
+	public static parseArtistTopAlbums(item: any, artistBasic: ArtistBasic): AlbumDetailed {
 		return {
 			type: "ALBUM",
 			albumId: traverse(item, "browseId").at(-1),

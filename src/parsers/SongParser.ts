@@ -1,9 +1,9 @@
 import Parser from "./Parser"
 import traverse from "../utils/traverse"
-import YTMusic from ".."
+import { AlbumBasic, ArtistBasic, SongDetailed, SongFull, ThumbnailFull } from ".."
 
 export default class SongParser {
-	public static parse(data: any): YTMusic.SongFull {
+	public static parse(data: any): SongFull {
 		return {
 			type: "SONG",
 			videoId: traverse(data, "videoDetails", "videoId"),
@@ -22,7 +22,7 @@ export default class SongParser {
 		}
 	}
 
-	public static parseSearchResult(item: any): YTMusic.SongDetailed {
+	public static parseSearchResult(item: any): SongDetailed {
 		const flexColumns = traverse(item, "flexColumns")
 		const videoId = traverse(item, "playlistItemData", "videoId")
 
@@ -43,7 +43,7 @@ export default class SongParser {
 		}
 	}
 
-	public static parseArtistSong(item: any): YTMusic.SongDetailed {
+	public static parseArtistSong(item: any): SongDetailed {
 		const flexColumns = traverse(item, "flexColumns")
 		const videoId = traverse(item, "playlistItemData", "videoId")
 
@@ -69,8 +69,8 @@ export default class SongParser {
 
 	public static parseArtistTopSong(
 		item: any,
-		artistBasic: YTMusic.ArtistBasic
-	): Omit<YTMusic.SongDetailed, "duration"> {
+		artistBasic: ArtistBasic
+	): Omit<SongDetailed, "duration"> {
 		const flexColumns = traverse(item, "flexColumns")
 		const videoId = traverse(item, "playlistItemData", "videoId")
 
@@ -89,10 +89,10 @@ export default class SongParser {
 
 	public static parseAlbumSong(
 		item: any,
-		artists: YTMusic.ArtistBasic[],
-		albumBasic: YTMusic.AlbumBasic,
-		thumbnails: YTMusic.ThumbnailFull[]
-	): YTMusic.SongDetailed {
+		artists: ArtistBasic[],
+		albumBasic: AlbumBasic,
+		thumbnails: ThumbnailFull[]
+	): SongDetailed {
 		const flexColumns = traverse(item, "flexColumns")
 		const videoId = traverse(item, "playlistItemData", "videoId")
 

@@ -1,24 +1,37 @@
 import ObjectValidator from "validate-any/build/validators/ObjectValidator"
-import YTMusic from "../index"
+import {
+	AlbumBasic,
+	AlbumDetailed,
+	AlbumFull,
+	ArtistBasic,
+	ArtistDetailed,
+	ArtistFull,
+	PlaylistFull,
+	SongDetailed,
+	SongFull,
+	ThumbnailFull,
+	VideoDetailed,
+	VideoFull
+} from "../index"
 import { BOOLEAN, LIST, NULL, NUMBER, OBJECT, OR, STRING } from "validate-any"
 
-export const THUMBNAIL_FULL: ObjectValidator<YTMusic.ThumbnailFull> = OBJECT({
+export const THUMBNAIL_FULL: ObjectValidator<ThumbnailFull> = OBJECT({
 	url: STRING(),
 	width: NUMBER(),
 	height: NUMBER()
 })
 
-export const ARTIST_BASIC: ObjectValidator<YTMusic.ArtistBasic> = OBJECT({
+export const ARTIST_BASIC: ObjectValidator<ArtistBasic> = OBJECT({
 	artistId: OR(STRING(), NULL()),
 	name: STRING()
 })
 
-export const ALBUM_BASIC: ObjectValidator<YTMusic.AlbumBasic> = OBJECT({
+export const ALBUM_BASIC: ObjectValidator<AlbumBasic> = OBJECT({
 	albumId: STRING(),
 	name: STRING()
 })
 
-export const SONG_DETAILED: ObjectValidator<YTMusic.SongDetailed> = OBJECT({
+export const SONG_DETAILED: ObjectValidator<SongDetailed> = OBJECT({
 	type: STRING("SONG"),
 	videoId: OR(STRING(), NULL()),
 	name: STRING(),
@@ -28,7 +41,7 @@ export const SONG_DETAILED: ObjectValidator<YTMusic.SongDetailed> = OBJECT({
 	thumbnails: LIST(THUMBNAIL_FULL)
 })
 
-export const VIDEO_DETAILED: ObjectValidator<YTMusic.VideoDetailed> = OBJECT({
+export const VIDEO_DETAILED: ObjectValidator<VideoDetailed> = OBJECT({
 	type: STRING("VIDEO"),
 	videoId: OR(STRING(), NULL()),
 	name: STRING(),
@@ -38,14 +51,14 @@ export const VIDEO_DETAILED: ObjectValidator<YTMusic.VideoDetailed> = OBJECT({
 	thumbnails: LIST(THUMBNAIL_FULL)
 })
 
-export const ARTIST_DETAILED: ObjectValidator<YTMusic.ArtistDetailed> = OBJECT({
+export const ARTIST_DETAILED: ObjectValidator<ArtistDetailed> = OBJECT({
 	artistId: STRING(),
 	name: STRING(),
 	type: STRING("ARTIST"),
 	thumbnails: LIST(THUMBNAIL_FULL)
 })
 
-export const ALBUM_DETAILED: ObjectValidator<YTMusic.AlbumDetailed> = OBJECT({
+export const ALBUM_DETAILED: ObjectValidator<AlbumDetailed> = OBJECT({
 	type: STRING("ALBUM"),
 	albumId: STRING(),
 	playlistId: STRING(),
@@ -55,7 +68,7 @@ export const ALBUM_DETAILED: ObjectValidator<YTMusic.AlbumDetailed> = OBJECT({
 	thumbnails: LIST(THUMBNAIL_FULL)
 })
 
-export const SONG_FULL: ObjectValidator<YTMusic.SongFull> = OBJECT({
+export const SONG_FULL: ObjectValidator<SongFull> = OBJECT({
 	type: STRING("SONG"),
 	videoId: OR(STRING(), NULL()),
 	name: STRING(),
@@ -67,7 +80,7 @@ export const SONG_FULL: ObjectValidator<YTMusic.SongFull> = OBJECT({
 	adaptiveFormats: LIST(OBJECT())
 })
 
-export const VIDEO_FULL: ObjectValidator<YTMusic.VideoFull> = OBJECT({
+export const VIDEO_FULL: ObjectValidator<VideoFull> = OBJECT({
 	type: STRING("VIDEO"),
 	videoId: OR(STRING(), NULL()),
 	name: STRING(),
@@ -82,7 +95,7 @@ export const VIDEO_FULL: ObjectValidator<YTMusic.VideoFull> = OBJECT({
 	tags: LIST(STRING())
 })
 
-export const ARTIST_FULL: ObjectValidator<YTMusic.ArtistFull> = OBJECT({
+export const ARTIST_FULL: ObjectValidator<ArtistFull> = OBJECT({
 	artistId: STRING(),
 	name: STRING(),
 	type: STRING("ARTIST"),
@@ -102,7 +115,7 @@ export const ARTIST_FULL: ObjectValidator<YTMusic.ArtistFull> = OBJECT({
 	topAlbums: LIST(ALBUM_DETAILED)
 })
 
-export const ALBUM_FULL: ObjectValidator<YTMusic.AlbumFull> = OBJECT({
+export const ALBUM_FULL: ObjectValidator<AlbumFull> = OBJECT({
 	type: STRING("ALBUM"),
 	albumId: STRING(),
 	playlistId: STRING(),
@@ -114,7 +127,7 @@ export const ALBUM_FULL: ObjectValidator<YTMusic.AlbumFull> = OBJECT({
 	songs: LIST(SONG_DETAILED)
 })
 
-export const PLAYLIST_DETAILED: ObjectValidator<YTMusic.PlaylistFull> = OBJECT({
+export const PLAYLIST_DETAILED: ObjectValidator<PlaylistFull> = OBJECT({
 	type: STRING("PLAYLIST"),
 	playlistId: STRING(),
 	name: STRING(),
@@ -123,7 +136,7 @@ export const PLAYLIST_DETAILED: ObjectValidator<YTMusic.PlaylistFull> = OBJECT({
 	thumbnails: LIST(THUMBNAIL_FULL)
 })
 
-export const PLAYLIST_VIDEO: ObjectValidator<Omit<YTMusic.VideoDetailed, "views">> = OBJECT({
+export const PLAYLIST_VIDEO: ObjectValidator<Omit<VideoDetailed, "views">> = OBJECT({
 	type: STRING("VIDEO"),
 	videoId: OR(STRING(), NULL()),
 	name: STRING(),

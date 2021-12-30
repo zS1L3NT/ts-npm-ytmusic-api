@@ -2,10 +2,10 @@ import AlbumParser from "./AlbumParser"
 import Parser from "./Parser"
 import SongParser from "./SongParser"
 import traverse from "../utils/traverse"
-import YTMusic from ".."
+import { ArtistDetailed, ArtistFull } from ".."
 
 export default class ArtistParser {
-	public static parse(data: any, artistId: string): YTMusic.ArtistFull {
+	public static parse(data: any, artistId: string): ArtistFull {
 		const artistBasic = {
 			artistId,
 			name: traverse(data, "header", "title", "text").at(0)
@@ -29,7 +29,7 @@ export default class ArtistParser {
 		}
 	}
 
-	public static parseSearchResult(item: any): YTMusic.ArtistDetailed {
+	public static parseSearchResult(item: any): ArtistDetailed {
 		const flexColumns = traverse(item, "flexColumns")
 
 		return {

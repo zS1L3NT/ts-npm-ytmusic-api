@@ -6,10 +6,21 @@ import SearchParser from "./parsers/SearchParser"
 import SongParser from "./parsers/SongParser"
 import traverse from "./utils/traverse"
 import VideoParser from "./parsers/VideoParser"
-import YTMusic from "."
+import {
+	AlbumDetailed,
+	AlbumFull,
+	ArtistDetailed,
+	ArtistFull,
+	PlaylistFull,
+	SearchResult,
+	SongDetailed,
+	SongFull,
+	VideoDetailed,
+	VideoFull
+} from "."
 import { Cookie, CookieJar } from "tough-cookie"
 
-export default class Api {
+export default class YTMusic {
 	private cookiejar: CookieJar
 	private config?: Record<string, string>
 	private client: AxiosInstance
@@ -206,12 +217,12 @@ export default class Api {
 	 * @param query Query string
 	 * @param category Type of search results to receive
 	 */
-	public async search(query: string, category: "SONG"): Promise<YTMusic.SongDetailed[]>
-	public async search(query: string, category: "VIDEO"): Promise<YTMusic.VideoDetailed[]>
-	public async search(query: string, category: "ARTIST"): Promise<YTMusic.ArtistDetailed[]>
-	public async search(query: string, category: "ALBUM"): Promise<YTMusic.AlbumDetailed[]>
-	public async search(query: string, category: "PLAYLIST"): Promise<YTMusic.PlaylistFull[]>
-	public async search(query: string): Promise<YTMusic.SearchResult[]>
+	public async search(query: string, category: "SONG"): Promise<SongDetailed[]>
+	public async search(query: string, category: "VIDEO"): Promise<VideoDetailed[]>
+	public async search(query: string, category: "ARTIST"): Promise<ArtistDetailed[]>
+	public async search(query: string, category: "ALBUM"): Promise<AlbumDetailed[]>
+	public async search(query: string, category: "PLAYLIST"): Promise<PlaylistFull[]>
+	public async search(query: string): Promise<SearchResult[]>
 	public async search(query: string, category?: string) {
 		const searchData = await this.constructRequest("search", {
 			query,
@@ -242,7 +253,7 @@ export default class Api {
 	 * @param videoId Video ID
 	 * @returns Song Data
 	 */
-	public async getSong(videoId: string): Promise<YTMusic.SongFull> {
+	public async getSong(videoId: string): Promise<SongFull> {
 		const data = await this.constructRequest("player", { videoId })
 
 		return SongParser.parse(data)
@@ -254,7 +265,7 @@ export default class Api {
 	 * @param videoId Video ID
 	 * @returns Video Data
 	 */
-	public async getVideo(videoId: string): Promise<YTMusic.VideoFull> {
+	public async getVideo(videoId: string): Promise<VideoFull> {
 		const data = await this.constructRequest("player", { videoId })
 
 		return VideoParser.parse(data)
@@ -266,7 +277,7 @@ export default class Api {
 	 * @param artistId Artist ID
 	 * @returns Artist Data
 	 */
-	public async getArtist(artistId: string): Promise<YTMusic.ArtistFull> {
+	public async getArtist(artistId: string): Promise<ArtistFull> {
 		const data = await this.constructRequest("browse", { browseId: artistId })
 
 		return ArtistParser.parse(data, artistId)
@@ -278,7 +289,7 @@ export default class Api {
 	 * @param artistId Artist ID
 	 * @returns Artist's Songs
 	 */
-	public async getArtistSongs(artistId: string): Promise<YTMusic.SongDetailed[]> {
+	public async getArtistSongs(artistId: string): Promise<SongDetailed[]> {
 		const artistData = await this.constructRequest("browse", { browseId: artistId })
 		const browseToken = traverse(artistData, "musicShelfRenderer", "title", "browseId")
 
@@ -302,7 +313,7 @@ export default class Api {
 	 * @param artistId Artist ID
 	 * @returns Artist's Albums
 	 */
-	public async getArtistAlbums(artistId: string): Promise<YTMusic.AlbumDetailed[]> {
+	public async getArtistAlbums(artistId: string): Promise<AlbumDetailed[]> {
 		const artistData = await this.constructRequest("browse", { browseId: artistId })
 		const artistAlbumsData = traverse(artistData, "musicCarouselShelfRenderer")[0]
 		const browseBody = traverse(artistAlbumsData, "moreContentButton", "browseEndpoint")
@@ -323,7 +334,7 @@ export default class Api {
 	 * @param albumId Album ID
 	 * @returns Album Data
 	 */
-	public async getAlbum(albumId: string): Promise<YTMusic.AlbumFull> {
+	public async getAlbum(albumId: string): Promise<AlbumFull> {
 		const data = await this.constructRequest("browse", { browseId: albumId })
 
 		return AlbumParser.parse(data, albumId)
@@ -335,7 +346,7 @@ export default class Api {
 	 * @param playlistId Playlist ID
 	 * @returns Playlist Data
 	 */
-	public async getPlaylist(playlistId: string): Promise<YTMusic.PlaylistFull> {
+	public async getPlaylist(playlistId: string): Promise<PlaylistFull> {
 		if (playlistId.startsWith("PL")) playlistId = "VL" + playlistId
 		const data = await this.constructRequest("browse", { browseId: playlistId })
 
@@ -348,9 +359,7 @@ export default class Api {
 	 * @param playlistId Playlist ID
 	 * @returns Playlist's Videos
 	 */
-	public async getPlaylistVideos(
-		playlistId: string
-	): Promise<Omit<YTMusic.VideoDetailed, "views">[]> {
+	public async getPlaylistVideos(playlistId: string): Promise<Omit<VideoDetailed, "views">[]> {
 		if (playlistId.startsWith("PL")) playlistId = "VL" + playlistId
 		const playlistData = await this.constructRequest("browse", { browseId: playlistId })
 

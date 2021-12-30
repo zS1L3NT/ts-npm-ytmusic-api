@@ -1,9 +1,9 @@
 import Parser from "./Parser"
 import traverse from "../utils/traverse"
-import YTMusic from ".."
+import { VideoDetailed, VideoFull } from ".."
 
 export default class VideoParser {
-	public static parse(data: any): YTMusic.VideoFull {
+	public static parse(data: any): VideoFull {
 		return {
 			type: "VIDEO",
 			videoId: traverse(data, "videoDetails", "videoId"),
@@ -25,7 +25,7 @@ export default class VideoParser {
 		}
 	}
 
-	public static parseSearchResult(item: any): YTMusic.VideoDetailed {
+	public static parseSearchResult(item: any): VideoDetailed {
 		const flexColumns = traverse(item, "flexColumns")
 		const videoId = traverse(item, "playNavigationEndpoint", "videoId")
 
@@ -43,7 +43,7 @@ export default class VideoParser {
 		}
 	}
 
-	public static parsePlaylistVideo(item: any): Omit<YTMusic.VideoDetailed, "views"> {
+	public static parsePlaylistVideo(item: any): Omit<VideoDetailed, "views"> {
 		const flexColumns = traverse(item, "flexColumns")
 		const videoId = traverse(item, "playNavigationEndpoint", "videoId")
 
