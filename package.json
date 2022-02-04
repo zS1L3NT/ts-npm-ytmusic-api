@@ -11,15 +11,13 @@
 		"url": "https://github.com/zS1L3NT/ts-npm-ytmusic-api"
 	},
 	"dependencies": {
-		"axios": "^0.24.0",
+		"axios": "^0.25.0",
 		"tough-cookie": "^4.0.0"
 	},
 	"devDependencies": {
-		"@types/node": "^16.9.2",
 		"@types/tough-cookie": "^4.0.1",
-		"ts-node": "^10.2.1",
-		"typescript": "^4.4.3",
-		"validate-any": "^1.1.1"
+		"typescript": "^4.5.5",
+		"validate-any": "^1.2.0"
 	},
 	"keywords": [
 		"youtube",
