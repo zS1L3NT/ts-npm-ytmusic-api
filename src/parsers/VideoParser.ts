@@ -1,5 +1,5 @@
 import Parser from "./Parser"
-import traverse from "../utils/traverse"
+import traverse from "../traverse"
 import { VideoDetailed, VideoFull } from ".."
 
 export default class VideoParser {

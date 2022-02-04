@@ -1,4 +1,4 @@
-import traverse from "../utils/traverse"
+import traverse from "../traverse"
 import { PlaylistFull } from ".."
 
 export default class PlaylistParser {

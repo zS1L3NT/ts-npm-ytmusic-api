@@ -2,7 +2,7 @@ import AlbumParser from "./AlbumParser"
 import ArtistParser from "./ArtistParser"
 import PlaylistParser from "./PlaylistParser"
 import SongParser from "./SongParser"
-import traverse from "../utils/traverse"
+import traverse from "../traverse"
 import VideoParser from "./VideoParser"
 import { SearchResult } from ".."
 

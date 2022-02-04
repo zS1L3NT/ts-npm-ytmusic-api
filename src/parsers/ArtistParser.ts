@@ -1,7 +1,7 @@
 import AlbumParser from "./AlbumParser"
 import Parser from "./Parser"
 import SongParser from "./SongParser"
-import traverse from "../utils/traverse"
+import traverse from "../traverse"
 import { ArtistDetailed, ArtistFull } from ".."
 
 export default class ArtistParser {
