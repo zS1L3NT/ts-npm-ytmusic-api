@@ -70,7 +70,7 @@ export default class YTMusic {
 				}
 
 				for (const cookieString of cookieStrings) {
-					const cookie = Cookie.parse(cookieString)
+					const cookie = Cookie.parse(`${cookieString}`)
 					if (!cookie) return
 
 					this.cookiejar.setCookieSync(cookie, res.config.baseURL)

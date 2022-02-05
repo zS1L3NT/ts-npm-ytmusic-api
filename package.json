@@ -10,12 +10,21 @@
 		"type": "git",
 		"url": "https://github.com/zS1L3NT/ts-npm-ytmusic-api"
 	},
+	"scripts": {
+		"test": "jest"
+	},
 	"dependencies": {
 		"axios": "^0.25.0",
+		"jest": "^27.4.7",
 		"tough-cookie": "^4.0.0"
 	},
 	"devDependencies": {
+		"@babel/core": "^7.17.0",
+		"@babel/preset-env": "^7.16.11",
+		"@babel/preset-typescript": "^7.16.7",
+		"@types/jest": "^27.4.0",
 		"@types/tough-cookie": "^4.0.1",
+		"babel-jest": "^27.4.6",
 		"typescript": "^4.5.5",
 		"validate-any": "^1.2.0"
 	},
