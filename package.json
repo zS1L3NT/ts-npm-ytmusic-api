@@ -15,7 +15,6 @@
 	},
 	"dependencies": {
 		"axios": "^0.25.0",
-		"jest": "^27.4.7",
 		"tough-cookie": "^4.0.0"
 	},
 	"devDependencies": {
@@ -25,6 +24,7 @@
 		"@types/jest": "^27.4.0",
 		"@types/tough-cookie": "^4.0.1",
 		"babel-jest": "^27.4.6",
+		"jest": "^27.4.7",
 		"typescript": "^4.5.5",
 		"validate-any": "^1.2.0"
 	},
