@@ -1,6 +1,6 @@
-/node_modules
-/.idea
-/build
-config.json
-*.test.ts
-.rest
+**/node_modules
+**/.idea
+**/dist
+**/config.json
+**/*.test.ts
+**/.vscode

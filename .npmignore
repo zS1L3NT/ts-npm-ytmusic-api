@@ -3,5 +3,5 @@
 .gitignore
 .prettierrc
 .editorconfig
-nodemon.json
 tsconfig.json
+babel.config.js

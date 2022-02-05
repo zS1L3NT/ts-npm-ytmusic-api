@@ -138,7 +138,7 @@ export default class YTMusic {
 		const searchParams = new URLSearchParams({
 			...query,
 			alt: "json",
-			key: this.config.INNERTUBE_API_KEY
+			key: this.config.INNERTUBE_API_KEY!
 		})
 
 		const res = await this.client.post(
