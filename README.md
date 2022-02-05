@@ -445,7 +445,7 @@ $ npm run test
 -   Jest
     -   [![@babel/core](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/@babel/core?style=flat-square)](https://npmjs.com/package/@babel/core)
     -   [![@babel/preset-env](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/@babel/preset-env?style=flat-square)](https://npmjs.com/package/@babel/preset-env)
-    -   [![@babel/preet-typescript](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/@babel/preet-typescript?style=flat-square)](https://npmjs.com/package/@babel/preet-typescript)
+    -   [![@babel/preset-typescript](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/@babel/preset-typescript?style=flat-square)](https://npmjs.com/package/@babel/preset-typescript)
     -   [![babel-jest](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/babel-jest?style=flat-square)](https://npmjs.com/package/babel-jest)
     -   [![jest](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/jest?style=flat-square)](https://npmjs.com/package/jest)
 -   Miscellaneous
