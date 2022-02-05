@@ -435,9 +435,9 @@ $ npm run test
 ## Built with
 
 -   TypeScript
-    -   [![typescript](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/typescript?style=flat-square)](https://npmjs.com/package/typescript)
     -   [![@types/jest](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/@types/jest?style=flat-square)](https://npmjs.com/package/@types/jest)
     -   [![@types/tough-cookie](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/@types/tough-cookie?style=flat-square)](https://npmjs.com/package/@types/tough-cookie)
+    -   [![typescript](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/typescript?style=flat-square)](https://npmjs.com/package/typescript)
 -   Axios
     -   [![axios](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/axios?style=flat-square)](https://npmjs.com/package/axios)
 -   Tough Cookie
