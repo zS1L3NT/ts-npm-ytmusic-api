@@ -173,8 +173,20 @@ const ytmusic = new YTMusic()
 
 beforeAll(() => ytmusic.initialize())
 
+beforeEach(() => jest.setTimeout(10_000))
+
 queries.forEach(query => {
 	describe("Query: " + query, () => {
+		test("Search suggestions", done => {
+			ytmusic
+				.getSearchSuggestions(query)
+				.then(suggestions => {
+					_expect(suggestions, LIST(STRING()))
+					done()
+				})
+				.catch(done)
+		})
+
 		test("Search Songs", done => {
 			ytmusic
 				.search(query, "SONG")
