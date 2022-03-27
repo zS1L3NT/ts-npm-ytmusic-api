@@ -1,5 +1,7 @@
+import checkType from "../utils/checkType"
 import Parser from "./Parser"
-import traverse from "../traverse"
+import traverse from "../utils/traverse"
+import { PLAYLIST_VIDEO } from "../interfaces"
 import { VideoDetailed, VideoFull } from ".."
 
 export default class VideoParser {
@@ -47,16 +49,19 @@ export default class VideoParser {
 		const flexColumns = traverse(item, "flexColumns")
 		const videoId = traverse(item, "playNavigationEndpoint", "videoId")
 
-		return {
-			type: "VIDEO",
-			videoId: videoId instanceof Array ? null : videoId,
-			name: traverse(flexColumns[0], "runs", "text"),
-			artists: [traverse(flexColumns[1], "runs")]
-				.flat()
-				.filter((run: any) => "navigationEndpoint" in run)
-				.map((run: any) => ({ artistId: traverse(run, "browseId"), name: run.text })),
-			duration: Parser.parseDuration(traverse(item, "fixedColumns", "runs", "text")),
-			thumbnails: [traverse(item, "thumbnails")].flat()
-		}
+		return checkType<Omit<VideoDetailed, "views">>(
+			{
+				type: "VIDEO",
+				videoId: videoId instanceof Array ? null : videoId,
+				name: traverse(flexColumns[0], "runs", "text"),
+				artists: [traverse(flexColumns[1], "runs")]
+					.flat()
+					.filter((run: any) => "navigationEndpoint" in run)
+					.map((run: any) => ({ artistId: traverse(run, "browseId"), name: run.text })),
+				duration: Parser.parseDuration(traverse(item, "fixedColumns", "runs", "text")),
+				thumbnails: [traverse(item, "thumbnails")].flat()
+			},
+			PLAYLIST_VIDEO
+		)
 	}
 }

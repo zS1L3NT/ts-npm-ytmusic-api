@@ -4,7 +4,7 @@ import axios, { AxiosInstance } from "axios"
 import PlaylistParser from "./parsers/PlaylistParser"
 import SearchParser from "./parsers/SearchParser"
 import SongParser from "./parsers/SongParser"
-import traverse from "./traverse"
+import traverse from "./utils/traverse"
 import VideoParser from "./parsers/VideoParser"
 import {
 	AlbumDetailed,
