@@ -22,7 +22,7 @@ export const THUMBNAIL_FULL: ObjectValidator<ThumbnailFull> = OBJECT({
 })
 
 export const ARTIST_BASIC: ObjectValidator<ArtistBasic> = OBJECT({
-	artistId: OR(STRING(), NULL()),
+	artistId: STRING(),
 	name: STRING()
 })
 
@@ -33,7 +33,7 @@ export const ALBUM_BASIC: ObjectValidator<AlbumBasic> = OBJECT({
 
 export const SONG_DETAILED: ObjectValidator<SongDetailed> = OBJECT({
 	type: STRING("SONG"),
-	videoId: OR(STRING(), NULL()),
+	videoId: STRING(),
 	name: STRING(),
 	artists: LIST(ARTIST_BASIC),
 	album: ALBUM_BASIC,
@@ -43,7 +43,7 @@ export const SONG_DETAILED: ObjectValidator<SongDetailed> = OBJECT({
 
 export const VIDEO_DETAILED: ObjectValidator<VideoDetailed> = OBJECT({
 	type: STRING("VIDEO"),
-	videoId: OR(STRING(), NULL()),
+	videoId: STRING(),
 	name: STRING(),
 	artists: LIST(ARTIST_BASIC),
 	views: NUMBER(),
@@ -70,7 +70,7 @@ export const ALBUM_DETAILED: ObjectValidator<AlbumDetailed> = OBJECT({
 
 export const SONG_FULL: ObjectValidator<SongFull> = OBJECT({
 	type: STRING("SONG"),
-	videoId: OR(STRING(), NULL()),
+	videoId: STRING(),
 	name: STRING(),
 	artists: LIST(ARTIST_BASIC),
 	duration: NUMBER(),
@@ -82,7 +82,7 @@ export const SONG_FULL: ObjectValidator<SongFull> = OBJECT({
 
 export const VIDEO_FULL: ObjectValidator<VideoFull> = OBJECT({
 	type: STRING("VIDEO"),
-	videoId: OR(STRING(), NULL()),
+	videoId: STRING(),
 	name: STRING(),
 	artists: LIST(ARTIST_BASIC),
 	views: NUMBER(),
@@ -100,7 +100,7 @@ export const ARTIST_FULL: ObjectValidator<ArtistFull> = OBJECT({
 	name: STRING(),
 	type: STRING("ARTIST"),
 	thumbnails: LIST(THUMBNAIL_FULL),
-	description: OR(STRING(), NULL()),
+	description: STRING(),
 	subscribers: NUMBER(),
 	topSongs: LIST(
 		OBJECT({
@@ -123,7 +123,7 @@ export const ALBUM_FULL: ObjectValidator<AlbumFull> = OBJECT({
 	artists: LIST(ARTIST_BASIC),
 	year: NUMBER(),
 	thumbnails: LIST(THUMBNAIL_FULL),
-	description: OR(STRING(), NULL()),
+	description: STRING(),
 	songs: LIST(SONG_DETAILED)
 })
 
@@ -138,7 +138,7 @@ export const PLAYLIST_FULL: ObjectValidator<PlaylistFull> = OBJECT({
 
 export const PLAYLIST_VIDEO: ObjectValidator<Omit<VideoDetailed, "views">> = OBJECT({
 	type: STRING("VIDEO"),
-	videoId: OR(STRING(), NULL()),
+	videoId: STRING(),
 	name: STRING(),
 	artists: LIST(ARTIST_BASIC),
 	duration: NUMBER(),

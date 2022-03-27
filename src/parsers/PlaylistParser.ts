@@ -1,5 +1,6 @@
 import checkType from "../utils/checkType"
-import traverse from "../utils/traverse"
+import traverseList from "../utils/traverseList"
+import traverseString from "../utils/traverseString"
 import { PLAYLIST_FULL } from "../interfaces"
 import { PlaylistFull } from ".."
 
@@ -9,41 +10,41 @@ export default class PlaylistParser {
 			{
 				type: "PLAYLIST",
 				playlistId,
-				name: traverse(data, "header", "title", "text").at(0),
+				name: traverseString(data, "header", "title", "text")(),
 				artist: {
-					artistId: traverse(data, "header", "subtitle", "browseId"),
-					name: traverse(data, "header", "subtitle", "text").at(2)
+					artistId: traverseString(data, "header", "subtitle", "browseId")(),
+					name: traverseString(data, "header", "subtitle", "text")(2)
 				},
-				videoCount: +traverse(data, "header", "secondSubtitle", "text")
+				videoCount: +traverseList(data, "header", "secondSubtitle", "text")
 					.at(0)
 					.split(" ")
 					.at(0)
 					.replaceAll(",", ""),
-				thumbnails: traverse(data, "header", "thumbnails")
+				thumbnails: traverseList(data, "header", "thumbnails")
 			},
 			PLAYLIST_FULL
 		)
 	}
 
 	public static parseSearchResult(item: any): PlaylistFull {
-		const flexColumns = traverse(item, "flexColumns")
-		const artistId = traverse(flexColumns[1], "browseId")
+		const flexColumns = traverseList(item, "flexColumns")
+		const artistId = traverseString(flexColumns[1], "browseId")()
 
 		return checkType<PlaylistFull>(
 			{
 				type: "PLAYLIST",
-				playlistId: traverse(item, "overlay", "playlistId"),
-				name: traverse(flexColumns[0], "runs", "text"),
+				playlistId: traverseString(item, "overlay", "playlistId")(),
+				name: traverseString(flexColumns[0], "runs", "text")(),
 				artist: {
-					artistId: artistId instanceof Array ? null : artistId,
-					name: traverse(flexColumns[1], "runs", "text").at(-2)
+					artistId,
+					name: traverseString(flexColumns[1], "runs", "text")(-2)
 				},
-				videoCount: +traverse(flexColumns[1], "runs", "text")
+				videoCount: +traverseList(flexColumns[1], "runs", "text")
 					.at(-1)
 					.split(" ")
 					.at(0)
 					.replaceAll(",", ""),
-				thumbnails: [traverse(item, "thumbnails")].flat()
+				thumbnails: traverseList(item, "thumbnails")
 			},
 			PLAYLIST_FULL
 		)

@@ -8,7 +8,7 @@ export interface ThumbnailFull {
 
 export interface SongDetailed {
 	type: "SONG"
-	videoId: string | null
+	videoId: string
 	name: string
 	artists: ArtistBasic[]
 	album: AlbumBasic
@@ -24,7 +24,7 @@ export interface SongFull extends Omit<SongDetailed, "album"> {
 
 export interface VideoDetailed {
 	type: "VIDEO"
-	videoId: string | null
+	videoId: string
 	name: string
 	artists: ArtistBasic[]
 	views: number
@@ -41,7 +41,7 @@ export interface VideoFull extends VideoDetailed {
 }
 
 export interface ArtistBasic {
-	artistId: string | null
+	artistId: string
 	name: string
 }
 
@@ -52,7 +52,7 @@ export interface ArtistDetailed extends ArtistBasic {
 }
 
 export interface ArtistFull extends ArtistDetailed {
-	description: string | null
+	description: string
 	subscribers: number
 	topSongs: Omit<SongDetailed, "duration">[]
 	topAlbums: AlbumDetailed[]
@@ -72,7 +72,7 @@ export interface AlbumDetailed extends AlbumBasic {
 }
 
 export interface AlbumFull extends AlbumDetailed {
-	description: string | null
+	description: string
 	songs: SongDetailed[]
 }
 
