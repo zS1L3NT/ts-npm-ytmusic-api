@@ -13,7 +13,7 @@ import {
 	VideoDetailed,
 	VideoFull
 } from "."
-import { BOOLEAN, LIST, NULL, NUMBER, OBJECT, OR, STRING } from "validate-any"
+import { BOOLEAN, LIST, NUMBER, OBJECT, STRING } from "validate-any"
 
 export const THUMBNAIL_FULL: ObjectValidator<ThumbnailFull> = OBJECT({
 	url: STRING(),
