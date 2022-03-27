@@ -1,90 +1,116 @@
+import checkType from "../utils/checkType"
 import Parser from "./Parser"
-import traverse from "../traverse"
+import traverseList from "../utils/traverseList"
+import traverseString from "../utils/traverseString"
+import { ALBUM_BASIC, ARTIST_BASIC, SONG_DETAILED, SONG_FULL, THUMBNAIL_FULL } from "../interfaces"
 import { AlbumBasic, ArtistBasic, SongDetailed, SongFull, ThumbnailFull } from ".."
+import { LIST, OBJECT, STRING } from "validate-any"
 
 export default class SongParser {
 	public static parse(data: any): SongFull {
-		return {
-			type: "SONG",
-			videoId: traverse(data, "videoDetails", "videoId"),
-			name: traverse(data, "videoDetails", "title"),
-			artists: [
-				{
-					artistId: traverse(data, "videoDetails", "channelId"),
-					name: traverse(data, "author")
-				}
-			],
-			duration: +traverse(data, "videoDetails", "lengthSeconds"),
-			thumbnails: [traverse(data, "videoDetails", "thumbnails")].flat(),
-			description: traverse(data, "description"),
-			formats: traverse(data, "streamingData", "formats"),
-			adaptiveFormats: traverse(data, "streamingData", "adaptiveFormats")
-		}
+		return checkType<SongFull>(
+			{
+				type: "SONG",
+				videoId: traverseString(data, "videoDetails", "videoId")(),
+				name: traverseString(data, "videoDetails", "title")(),
+				artists: [
+					{
+						artistId: traverseString(data, "videoDetails", "channelId")(),
+						name: traverseString(data, "author")()
+					}
+				],
+				duration: +traverseString(data, "videoDetails", "lengthSeconds"),
+				thumbnails: traverseList(data, "videoDetails", "thumbnails"),
+				description: traverseString(data, "description")(),
+				formats: traverseList(data, "streamingData", "formats"),
+				adaptiveFormats: traverseList(data, "streamingData", "adaptiveFormats")
+			},
+			SONG_FULL
+		)
 	}
 
 	public static parseSearchResult(item: any): SongDetailed {
-		const flexColumns = traverse(item, "flexColumns")
-		const videoId = traverse(item, "playlistItemData", "videoId")
+		const flexColumns = traverseList(item, "flexColumns")
 
-		return {
-			type: "SONG",
-			videoId: videoId instanceof Array ? null : videoId,
-			name: traverse(flexColumns[0], "runs", "text"),
-			artists: traverse(flexColumns[1], "runs")
-				.filter((run: any) => "navigationEndpoint" in run)
-				.map((run: any) => ({ artistId: traverse(run, "browseId"), name: run.text }))
-				.slice(0, -1),
-			album: {
-				albumId: traverse(item, "browseId").at(-1),
-				name: traverse(flexColumns[1], "runs", "text").at(-3)
+		return checkType<SongDetailed>(
+			{
+				type: "SONG",
+				videoId: traverseString(item, "playlistItemData", "videoId")(),
+				name: traverseString(flexColumns[0], "runs", "text")(),
+				artists: traverseList(flexColumns[1], "runs")
+					.filter(run => "navigationEndpoint" in run)
+					.map(run => ({
+						artistId: traverseString(run, "browseId")(),
+						name: traverseString(run, "text")()
+					}))
+					.slice(0, -1),
+				album: {
+					albumId: traverseString(item, "browseId")(-1),
+					name: traverseString(flexColumns[1], "runs", "text")(-3)
+				},
+				duration: Parser.parseDuration(traverseString(flexColumns[1], "runs", "text")(-1)),
+				thumbnails: traverseList(item, "thumbnails")
 			},
-			duration: Parser.parseDuration(traverse(flexColumns[1], "runs", "text").at(-1)),
-			thumbnails: [traverse(item, "thumbnails")].flat()
-		}
+			SONG_DETAILED
+		)
 	}
 
 	public static parseArtistSong(item: any): SongDetailed {
-		const flexColumns = traverse(item, "flexColumns")
-		const videoId = traverse(item, "playlistItemData", "videoId")
+		const flexColumns = traverseList(item, "flexColumns")
+		const videoId = traverseString(item, "playlistItemData", "videoId")()
 
-		return {
-			type: "SONG",
-			videoId: videoId instanceof Array ? null : videoId,
-			name: traverse(flexColumns[0], "runs", "text"),
-			artists: [traverse(flexColumns[1], "runs")]
-				.flat()
-				.filter((item: any) => "navigationEndpoint" in item)
-				.map((run: any) => ({
-					artistId: traverse(run, "browseId"),
-					name: run.text
-				})),
-			album: {
-				albumId: traverse(flexColumns[2], "browseId"),
-				name: traverse(flexColumns[2], "runs", "text")
+		return checkType<SongDetailed>(
+			{
+				type: "SONG",
+				videoId,
+				name: traverseString(flexColumns[0], "runs", "text")(),
+				artists: traverseList(flexColumns[1], "runs")
+					.filter(run => "navigationEndpoint" in run)
+					.map(run => ({
+						artistId: traverseString(run, "browseId")(),
+						name: traverseString(run, "text")()
+					})),
+				album: {
+					albumId: traverseString(flexColumns[2], "browseId")(),
+					name: traverseString(flexColumns[2], "runs", "text")()
+				},
+				duration: Parser.parseDuration(
+					traverseString(item, "fixedColumns", "runs", "text")()
+				),
+				thumbnails: traverseList(item, "thumbnails")
 			},
-			duration: Parser.parseDuration(traverse(item, "fixedColumns", "runs", "text")),
-			thumbnails: [traverse(item, "thumbnails")].flat()
-		}
+			SONG_DETAILED
+		)
 	}
 
 	public static parseArtistTopSong(
 		item: any,
 		artistBasic: ArtistBasic
 	): Omit<SongDetailed, "duration"> {
-		const flexColumns = traverse(item, "flexColumns")
-		const videoId = traverse(item, "playlistItemData", "videoId")
+		const flexColumns = traverseList(item, "flexColumns")
+		const videoId = traverseString(item, "playlistItemData", "videoId")()
 
-		return {
-			type: "SONG",
-			videoId: videoId instanceof Array ? null : videoId,
-			name: traverse(flexColumns[0], "runs", "text"),
-			artists: [artistBasic],
-			album: {
-				albumId: traverse(flexColumns[2], "runs", "text"),
-				name: traverse(flexColumns[2], "browseId")
+		return checkType<Omit<SongDetailed, "duration">>(
+			{
+				type: "SONG",
+				videoId,
+				name: traverseString(flexColumns[0], "runs", "text")(),
+				artists: [artistBasic],
+				album: {
+					albumId: traverseString(flexColumns[2], "runs", "text")(),
+					name: traverseString(flexColumns[2], "browseId")()
+				},
+				thumbnails: traverseList(item, "thumbnails")
 			},
-			thumbnails: [traverse(item, "thumbnails")].flat()
-		}
+			OBJECT({
+				type: STRING("SONG"),
+				videoId: STRING(),
+				name: STRING(),
+				artists: LIST(ARTIST_BASIC),
+				album: ALBUM_BASIC,
+				thumbnails: LIST(THUMBNAIL_FULL)
+			})
+		)
 	}
 
 	public static parseAlbumSong(
@@ -93,17 +119,22 @@ export default class SongParser {
 		albumBasic: AlbumBasic,
 		thumbnails: ThumbnailFull[]
 	): SongDetailed {
-		const flexColumns = traverse(item, "flexColumns")
-		const videoId = traverse(item, "playlistItemData", "videoId")
+		const flexColumns = traverseList(item, "flexColumns")
+		const videoId = traverseString(item, "playlistItemData", "videoId")()
 
-		return {
-			type: "SONG",
-			videoId: videoId instanceof Array ? null : videoId,
-			name: traverse(flexColumns[0], "runs", "text"),
-			artists,
-			album: albumBasic,
-			duration: Parser.parseDuration(traverse(item, "fixedColumns", "runs", "text")),
-			thumbnails
-		}
+		return checkType<SongDetailed>(
+			{
+				type: "SONG",
+				videoId,
+				name: traverseString(flexColumns[0], "runs", "text")(),
+				artists,
+				album: albumBasic,
+				duration: Parser.parseDuration(
+					traverseString(item, "fixedColumns", "runs", "text")()
+				),
+				thumbnails
+			},
+			SONG_DETAILED
+		)
 	}
 }

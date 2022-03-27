@@ -2,14 +2,14 @@ import AlbumParser from "./AlbumParser"
 import ArtistParser from "./ArtistParser"
 import PlaylistParser from "./PlaylistParser"
 import SongParser from "./SongParser"
-import traverse from "../traverse"
+import traverseList from "../utils/traverseList"
 import VideoParser from "./VideoParser"
 import { SearchResult } from ".."
 
 export default class SearchParser {
 	public static parse(item: any): SearchResult {
-		const flexColumns = traverse(item, "flexColumns")
-		const type = [traverse(flexColumns[1], "runs", "text")].flat().at(0) as
+		const flexColumns = traverseList(item, "flexColumns")
+		const type = traverseList(flexColumns[1], "runs", "text").at(0) as
 			| "Song"
 			| "Video"
 			| "Artist"

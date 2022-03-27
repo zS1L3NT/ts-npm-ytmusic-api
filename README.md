@@ -22,14 +22,6 @@ Because of this, I decided to build my own version of a youtube music api with T
 
 ## Installation
 
-With `yarn`
-
-```
-$ yarn add ytmusic-api
-```
-
-With `npm`
-
 ```
 $ npm i ytmusic-api
 ```
@@ -294,7 +286,7 @@ ytmusic.getPlaylistVideos("OLAK5uy_nRb467jR73IXKybwzw22_rTYIJ808x4Yc").then(play
 | Name       | Data Type                           | Description         |
 | :--------- | :---------------------------------- | :------------------ |
 | type       | `"SONG"`                            | Type of data        |
-| videoId    | `string \| null`                    | YouTube Video ID    |
+| videoId    | `string`                    | YouTube Video ID    |
 | name       | `string`                            | Name                |
 | artists    | [ArtistBasic](#ArtistBasic)`[]`     | Artists             |
 | album      | [AlbumBasic](#AlbumBasic)           | Album               |
@@ -306,7 +298,7 @@ ytmusic.getPlaylistVideos("OLAK5uy_nRb467jR73IXKybwzw22_rTYIJ808x4Yc").then(play
 | Name            | Data Type                           | Description            |
 | :-------------- | :---------------------------------- | :--------------------- |
 | type            | `"SONG"`                            | Type of data           |
-| videoId         | `string \| null`                    | YouTube Video ID       |
+| videoId         | `string`                    | YouTube Video ID       |
 | name            | `string`                            | Name                   |
 | artists         | [ArtistBasic](#ArtistBasic)`[]`     | Artists                |
 | duration        | `number`                            | Duration in seconds    |
@@ -320,7 +312,7 @@ ytmusic.getPlaylistVideos("OLAK5uy_nRb467jR73IXKybwzw22_rTYIJ808x4Yc").then(play
 | Name       | Data Type                           | Description                     |
 | :--------- | :---------------------------------- | :------------------------------ |
 | type       | `"VIDEO"`                           | Type of data                    |
-| videoId    | `string \| null`                    | YouTube Video ID                |
+| videoId    | `string`                    | YouTube Video ID                |
 | name       | `string`                            | Name                            |
 | artists    | [ArtistBasic](#ArtistBasic)`[]`     | Channels that created the video |
 | views      | `number`                            | View count                      |
@@ -332,7 +324,7 @@ ytmusic.getPlaylistVideos("OLAK5uy_nRb467jR73IXKybwzw22_rTYIJ808x4Yc").then(play
 | Name        | Data Type                           | Description                            |
 | :---------- | :---------------------------------- | :------------------------------------- |
 | type        | `"VIDEO"`                           | Type of data                           |
-| videoId     | `string \| null`                    | YouTube Video ID                       |
+| videoId     | `string`                    | YouTube Video ID                       |
 | name        | `string`                            | Name                                   |
 | artists     | [ArtistBasic](#ArtistBasic)`[]`     | Channels that created the video        |
 | views       | `number`                            | View count                             |
@@ -348,7 +340,7 @@ ytmusic.getPlaylistVideos("OLAK5uy_nRb467jR73IXKybwzw22_rTYIJ808x4Yc").then(play
 
 | Name     | Data Type        | Description |
 | :------- | :--------------- | :---------- |
-| artistId | `string \| null` | Artist ID   |
+| artistId | `string` | Artist ID   |
 | name     | `string`         | Name        |
 
 #### `ArtistDetailed`
@@ -368,7 +360,7 @@ ytmusic.getPlaylistVideos("OLAK5uy_nRb467jR73IXKybwzw22_rTYIJ808x4Yc").then(play
 | artistId    | `string`                                              | Artist ID                            |
 | name        | `string`                                              | Name                                 |
 | thumbnails  | [ThumbnailFull](#ThumbnailFull)`[]`                   | Thumbnails                           |
-| description | `string \| null`                                      | Description                          |
+| description | `string`                                      | Description                          |
 | subscribers | `number`                                              | Number of subscribers the Artist has |
 | topSongs    | `Omit<`[SongDetailed](#SongDetailed)`, "duration">[]` | Top Songs from Artist                |
 | topAlbums   | [AlbumDetailed](#AlbumDetailed)`[]`                   | Top Albums from Artist               |
@@ -403,7 +395,7 @@ ytmusic.getPlaylistVideos("OLAK5uy_nRb467jR73IXKybwzw22_rTYIJ808x4Yc").then(play
 | artists     | [ArtistBasic](#ArtistBasic)`[]`     | Creators of the Album |
 | year        | `number`                            | Publication Year      |
 | thumbnails  | [ThumbnailFull](#ThumbnailFull)`[]` | Thumbnails            |
-| description | `string \| null`                    | Description           |
+| description | `string`                    | Description           |
 | songs       | [SongDetailed](#SongDetailed)`[]`   | Songs in the Album    |
 
 #### `PlaylistFull`
@@ -426,7 +418,7 @@ A lot of the credit should go to [youtube-music-api](https://npmjs.com/package/y
 
 ## Testing
 
-YTMusic API's data return types are tested with Jest. To run the tests, run the command
+YTMusic API's data return types are tested with Mocha. To run the tests, run the command
 
 ```
 $ npm run test
@@ -435,18 +427,17 @@ $ npm run test
 ## Built with
 
 -   TypeScript
-    -   [![@types/jest](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/@types/jest?style=flat-square)](https://npmjs.com/package/@types/jest)
+    -   [![@types/mocha](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/@types/mocha?style=flat-square)](https://npmjs.com/package/@types/mocha)
+    -   [![@types/node](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/@types/node?style=flat-square)](https://npmjs.com/package/@types/node)
     -   [![@types/tough-cookie](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/@types/tough-cookie?style=flat-square)](https://npmjs.com/package/@types/tough-cookie)
     -   [![typescript](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/typescript?style=flat-square)](https://npmjs.com/package/typescript)
 -   Axios
     -   [![axios](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/axios?style=flat-square)](https://npmjs.com/package/axios)
 -   Tough Cookie
     -   [![tough-cookie](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/tough-cookie?style=flat-square)](https://npmjs.com/package/tough-cookie)
--   Jest
-    -   [![@babel/core](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/@babel/core?style=flat-square)](https://npmjs.com/package/@babel/core)
-    -   [![@babel/preset-env](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/@babel/preset-env?style=flat-square)](https://npmjs.com/package/@babel/preset-env)
-    -   [![@babel/preset-typescript](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/@babel/preset-typescript?style=flat-square)](https://npmjs.com/package/@babel/preset-typescript)
-    -   [![babel-jest](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/babel-jest?style=flat-square)](https://npmjs.com/package/babel-jest)
-    -   [![jest](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/jest?style=flat-square)](https://npmjs.com/package/jest)
+-   Mocha
+    -   [![mocha](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/mocha?style=flat-square)](https://npmjs.com/package/mocha)
+    -   [![mocha.parallel](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/mocha.parallel?style=flat-square)](https://npmjs.com/package/mocha.parallel)
+    -   [![ts-mocha](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/ts-mocha?style=flat-square)](https://npmjs.com/package/ts-mocha)
 -   Miscellaneous
     -   [![validate-any](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/validate-any?style=flat-square)](https://npmjs.com/package/validate-any)

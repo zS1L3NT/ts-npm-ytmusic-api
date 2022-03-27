@@ -4,7 +4,9 @@ import axios, { AxiosInstance } from "axios"
 import PlaylistParser from "./parsers/PlaylistParser"
 import SearchParser from "./parsers/SearchParser"
 import SongParser from "./parsers/SongParser"
-import traverse from "./traverse"
+import traverse from "./utils/traverse"
+import traverseList from "./utils/traverseList"
+import traverseString from "./utils/traverseString"
 import VideoParser from "./parsers/VideoParser"
 import {
 	AlbumDetailed,
@@ -203,7 +205,7 @@ export default class YTMusic {
 	 * @returns Search suggestions
 	 */
 	public async getSearchSuggestions(query: string): Promise<string[]> {
-		return traverse(
+		return traverseList(
 			await this.constructRequest("music/get_search_suggestions", {
 				input: query
 			}),
@@ -236,7 +238,7 @@ export default class YTMusic {
 				}[category!] || null
 		})
 
-		return [traverse(searchData, "musicResponsiveListItemRenderer")].flat().map(
+		return traverseList(searchData, "musicResponsiveListItemRenderer").map(
 			{
 				SONG: SongParser.parseSearchResult,
 				VIDEO: VideoParser.parseSearchResult,
@@ -308,8 +310,8 @@ export default class YTMusic {
 		)
 
 		return [
-			...traverse(songsData, "musicResponsiveListItemRenderer"),
-			...traverse(moreSongsData, "musicResponsiveListItemRenderer")
+			...traverseList(songsData, "musicResponsiveListItemRenderer"),
+			...traverseList(moreSongsData, "musicResponsiveListItemRenderer")
 		].map(SongParser.parseArtistSong)
 	}
 
@@ -321,15 +323,15 @@ export default class YTMusic {
 	 */
 	public async getArtistAlbums(artistId: string): Promise<AlbumDetailed[]> {
 		const artistData = await this.constructRequest("browse", { browseId: artistId })
-		const artistAlbumsData = traverse(artistData, "musicCarouselShelfRenderer")[0]
+		const artistAlbumsData = traverseList(artistData, "musicCarouselShelfRenderer")[0]
 		const browseBody = traverse(artistAlbumsData, "moreContentButton", "browseEndpoint")
 
 		const albumsData = await this.constructRequest("browse", browseBody)
 
-		return traverse(albumsData, "musicTwoRowItemRenderer").map((item: any) =>
+		return traverseList(albumsData, "musicTwoRowItemRenderer").map(item =>
 			AlbumParser.parseArtistAlbum(item, {
 				artistId,
-				name: traverse(albumsData, "header", "text").at(0)
+				name: traverseString(albumsData, "header", "text")()
 			})
 		)
 	}
@@ -369,7 +371,7 @@ export default class YTMusic {
 		if (playlistId.startsWith("PL")) playlistId = "VL" + playlistId
 		const playlistData = await this.constructRequest("browse", { browseId: playlistId })
 
-		const songs = traverse(
+		const songs = traverseList(
 			playlistData,
 			"musicPlaylistShelfRenderer",
 			"musicResponsiveListItemRenderer"
@@ -379,7 +381,7 @@ export default class YTMusic {
 			if (continuation instanceof Array) break
 
 			const songsData = await this.constructRequest("browse", {}, { continuation })
-			songs.push(...traverse(songsData, "musicResponsiveListItemRenderer"))
+			songs.push(...traverseList(songsData, "musicResponsiveListItemRenderer"))
 			continuation = traverse(songsData, "continuation")
 		}
 
