@@ -6,11 +6,18 @@ export default <T>(data: T, validator: Validator<T>): T => {
 	if (result.success) {
 		return result.data
 	} else {
-		console.error("Invalid data schema, please report as an issue", {
-			expected: validator.formatSchema(),
-			actual: data,
-			errors: result.errors
-		})
+		console.error(
+			"Invalid data schema, please report to https://github.com/zS1L3NT/ts-npm-ytmusic-api/issues/new/choose",
+			JSON.stringify(
+				{
+					expected: validator.getSchema(),
+					actual: data,
+					errors: result.errors
+				},
+				null,
+				2
+			)
+		)
 		return data
 	}
 }

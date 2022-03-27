@@ -11,7 +11,7 @@ specifiers:
   jest: ^27.4.7
   tough-cookie: ^4.0.0
   typescript: ^4.5.5
-  validate-any: ^1.2.0
+  validate-any: 1.3.1
 
 dependencies:
   axios: 0.25.0
@@ -26,7 +26,7 @@ devDependencies:
   babel-jest: 27.5.1_@babel+core@7.17.8
   jest: 27.5.1
   typescript: 4.6.3
-  validate-any: 1.2.4
+  validate-any: 1.3.1
 
 packages:
 
@@ -3642,8 +3642,8 @@ packages:
       source-map: 0.7.3
     dev: true
 
-  /validate-any/1.2.4:
-    resolution: {integrity: sha512-EsmLHSZfvgXQVPD9FacVy6I+XyTGkTzfM437+ogVH0fuMb4Oavcr7xnLMCS1twVsNrZsKtL1dqnVHwD2Ay9Zag==}
+  /validate-any/1.3.1:
+    resolution: {integrity: sha512-33HGXUZuJlrn4a3+21IRCBhY51Grbf1MzdUCzG1nnUtCcBphLBQ+Vi79p3E64eOjHz5C6QvXBYFE7JRVHGWQ4A==}
     dependencies:
       js-beautify: 1.14.0
     dev: true
