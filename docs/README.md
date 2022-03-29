@@ -2,7 +2,7 @@
 home: true
 actions:
     - text: Get Started
-      link: /docs/getting-started.html
+      link: /guides/getting-started.html
       type: primary
     - text: NPM Registry
       link: https://npmjs.org/package/ytmusic-api
