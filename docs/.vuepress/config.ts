@@ -1,27 +1,28 @@
-import { defineConfig } from "vuepress/config"
+import { defineUserConfig } from "vuepress"
+import type { DefaultThemeOptions } from "vuepress"
 
-export default defineConfig({
+export default defineUserConfig<DefaultThemeOptions>({
 	title: "YTMusic API",
 	description: "Unofficial YouTube Music API for TypeScript",
 	themeConfig: {
 		repo: "zS1L3NT/ts-npm-ytmusic-api",
-		searchPlaceholder: "Search",
-		smoothScroll: true,
-		//@ts-ignore
-		displayAllHeaders: true,
-		activeHeaderLinks: true,
-		nav: [
+		editLink: false,
+		navbar: [
 			{ text: "Home", link: "/" },
 			{ text: "Docs", link: "/docs/getting-started.html" }
 		],
 		sidebar: [
 			{
-				title: "Documentation",
-				collapsable: false,
-				sidebarDepth: 2,
+				text: "Documentation",
 				children: [
-					["/docs/getting-started", "Getting Started"],
-					["/docs/references", "References"]
+					{
+						text: "Getting Started",
+						link: "/docs/getting-started.html"
+					},
+					{
+						text: "References",
+						link: "/docs/references.html"
+					}
 				]
 			}
 		]

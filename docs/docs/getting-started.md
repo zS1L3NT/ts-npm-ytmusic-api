@@ -6,25 +6,29 @@ YTMusic API is an npm package that scrapes data from YouTube Music and formats i
 
 ## Installation
 
-<code-group>
-<code-block title="npm">
-```bash
+<CodeGroup>
+<CodeGroupItem title="npm" active="true">
+
+```bash:no-line-numbers
 npm i ytmusic-api
 ```
-</code-block>
 
-<code-block title="yarn">
-```bash
+</CodeGroupItem>
+<CodeGroupItem title="yarn">
+
+```bash:no-line-numbers
 yarn add ytmusic-api
 ```
-</code-block>
 
-<code-block title="pnpm">
-```bash
+</CodeGroupItem>
+<CodeGroupItem title="pnpm">
+
+```bash:no-line-numbers
 pnpm i ytmusic-api
 ```
-</code-block>
-</code-group>
+
+</CodeGroupItem>
+</CodeGroup>
 
 ## Usage
 

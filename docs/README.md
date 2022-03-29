@@ -1,7 +1,9 @@
 ---
 home: true
-actionText: Get Started
-actionLink: /docs/getting-started.html
+actions:
+    - text: Get Started
+      link: /docs/getting-started.html
+      type: primary
 features:
     - title: YouTube Music Scraper
       details: YTMusic API scrapes https://music.youtube.com for results and formats it for you
