@@ -30,9 +30,7 @@ pnpm i ytmusic-api
 </CodeGroupItem>
 </CodeGroup>
 
-## Usage
-
-Import YTMusic from the npm package
+## Importing
 
 ```ts
 // ES6 Import
@@ -40,14 +38,4 @@ import YTMusic from "ytmusic-api"
 
 // Node Require
 const YTMusic = require("ytmusic-api")
-```
-
-Create an instance of the class `YTMusic`.
-Then, call the `initialize()` to initialize the API before using the API anywhere
-
-```ts
-const ytmusic = new YTMusic()
-ytmusic.initialize().then(() => {
-	// Use API here
-})
 ```

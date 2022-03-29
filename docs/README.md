@@ -4,6 +4,9 @@ actions:
     - text: Get Started
       link: /docs/getting-started.html
       type: primary
+    - text: NPM Registry
+      link: https://npmjs.org/package/ytmusic-api
+      type: secondary
 features:
     - title: YouTube Music Scraper
       details: YTMusic API scrapes https://music.youtube.com for results and formats it for you
