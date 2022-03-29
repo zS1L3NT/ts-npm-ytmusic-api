@@ -1,20 +1,9 @@
 import { defineUserConfig } from "vuepress"
-import { path } from "@vuepress/utils"
 import type { DefaultThemeOptions } from "vuepress"
 
 export default defineUserConfig<DefaultThemeOptions>({
 	title: "YTMusic API",
 	description: "Unofficial YouTube Music API for TypeScript",
-	plugins: [
-		[
-			"@vuepress/register-components",
-			{
-				components: {
-					CodeLink: path.resolve(__dirname, "./components/CodeLink.vue")
-				}
-			}
-		]
-	],
 	themeConfig: {
 		repo: "zS1L3NT/ts-npm-ytmusic-api",
 		editLink: false,
