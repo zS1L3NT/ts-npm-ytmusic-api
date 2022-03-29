@@ -214,38 +214,96 @@ export default class YTMusic {
 	}
 
 	/**
-	 * Searches YouTube Music API for content
+	 * Searches YouTube Music API for results
 	 *
 	 * @param query Query string
-	 * @param category Type of search results to receive
 	 */
-	public async search(query: string, category: "SONG"): Promise<SongDetailed[]>
-	public async search(query: string, category: "VIDEO"): Promise<VideoDetailed[]>
-	public async search(query: string, category: "ARTIST"): Promise<ArtistDetailed[]>
-	public async search(query: string, category: "ALBUM"): Promise<AlbumDetailed[]>
-	public async search(query: string, category: "PLAYLIST"): Promise<PlaylistFull[]>
-	public async search(query: string): Promise<SearchResult[]>
-	public async search(query: string, category?: string) {
+	public async search(query: string): Promise<SearchResult[]> {
 		const searchData = await this.constructRequest("search", {
 			query,
-			params:
-				{
-					SONG: "Eg-KAQwIARAAGAAgACgAMABqChAEEAMQCRAFEAo%3D",
-					VIDEO: "Eg-KAQwIABABGAAgACgAMABqChAEEAMQCRAFEAo%3D",
-					ALBUM: "Eg-KAQwIABAAGAEgACgAMABqChAEEAMQCRAFEAo%3D",
-					ARTIST: "Eg-KAQwIABAAGAAgASgAMABqChAEEAMQCRAFEAo%3D",
-					PLAYLIST: "Eg-KAQwIABAAGAAgACgBMABqChAEEAMQCRAFEAo%3D"
-				}[category!] || null
+			params: null
+		})
+
+		return traverseList(searchData, "musicResponsiveListItemRenderer").map(SearchParser.parse)
+	}
+
+	/**
+	 * Searches YouTube Music API for songs
+	 *
+	 * @param query Query string
+	 */
+	public async searchSong(query: string): Promise<SongDetailed[]> {
+		const searchData = await this.constructRequest("search", {
+			query,
+			params: "Eg-KAQwIARAAGAAgACgAMABqChAEEAMQCRAFEAo%3D"
 		})
 
 		return traverseList(searchData, "musicResponsiveListItemRenderer").map(
-			{
-				SONG: SongParser.parseSearchResult,
-				VIDEO: VideoParser.parseSearchResult,
-				ARTIST: ArtistParser.parseSearchResult,
-				ALBUM: AlbumParser.parseSearchResult,
-				PLAYLIST: PlaylistParser.parseSearchResult
-			}[category!] || SearchParser.parse
+			SongParser.parseSearchResult
+		)
+	}
+
+	/**
+	 * Searches YouTube Music API for videos
+	 *
+	 * @param query Query string
+	 */
+	public async searchVideo(query: string): Promise<VideoDetailed[]> {
+		const searchData = await this.constructRequest("search", {
+			query,
+			params: "Eg-KAQwIABABGAAgACgAMABqChAEEAMQCRAFEAo%3D"
+		})
+
+		return traverseList(searchData, "musicResponsiveListItemRenderer").map(
+			VideoParser.parseSearchResult
+		)
+	}
+
+	/**
+	 * Searches YouTube Music API for artists
+	 *
+	 * @param query Query string
+	 */
+	public async searchArtist(query: string): Promise<ArtistDetailed[]> {
+		const searchData = await this.constructRequest("search", {
+			query,
+			params: "Eg-KAQwIABAAGAAgASgAMABqChAEEAMQCRAFEAo%3D"
+		})
+
+		return traverseList(searchData, "musicResponsiveListItemRenderer").map(
+			ArtistParser.parseSearchResult
+		)
+	}
+
+	/**
+	 * Searches YouTube Music API for albums
+	 *
+	 * @param query Query string
+	 */
+	public async searchAlbum(query: string): Promise<AlbumDetailed[]> {
+		const searchData = await this.constructRequest("search", {
+			query,
+			params: "Eg-KAQwIABAAGAEgACgAMABqChAEEAMQCRAFEAo%3D"
+		})
+
+		return traverseList(searchData, "musicResponsiveListItemRenderer").map(
+			AlbumParser.parseSearchResult
+		)
+	}
+
+	/**
+	 * Searches YouTube Music API for playlists
+	 *
+	 * @param query Query string
+	 */
+	public async searchPlaylist(query: string): Promise<PlaylistFull[]> {
+		const searchData = await this.constructRequest("search", {
+			query,
+			params: "Eg-KAQwIABAAGAAgACgBMABqChAEEAMQCRAFEAo%3D"
+		})
+
+		return traverseList(searchData, "musicResponsiveListItemRenderer").map(
+			PlaylistParser.parseSearchResult
 		)
 	}
 
