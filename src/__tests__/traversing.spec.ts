@@ -37,27 +37,27 @@ queries.forEach(query => {
 		})
 
 		it("Search Songs", async () => {
-			const songs = await ytmusic.search(query, "SONG")
+			const songs = await ytmusic.searchSong(query)
 			expect(songs, LIST(SONG_DETAILED))
 		})
 
 		it("Search Videos", async () => {
-			const videos = await ytmusic.search(query, "VIDEO")
+			const videos = await ytmusic.searchVideo(query)
 			expect(videos, LIST(VIDEO_DETAILED))
 		})
 
 		it("Search Artists", async () => {
-			const artists = await ytmusic.search(query, "ARTIST")
+			const artists = await ytmusic.searchArtist(query)
 			expect(artists, LIST(ARTIST_DETAILED))
 		})
 
 		it("Search Albums", async () => {
-			const albums = await ytmusic.search(query, "ALBUM")
+			const albums = await ytmusic.searchAlbum(query)
 			expect(albums, LIST(ALBUM_DETAILED))
 		})
 
 		it("Search Playlists", async () => {
-			const playlists = await ytmusic.search(query, "PLAYLIST")
+			const playlists = await ytmusic.searchPlaylist(query)
 			expect(playlists, LIST(PLAYLIST_FULL))
 		})
 
@@ -70,49 +70,49 @@ queries.forEach(query => {
 		})
 
 		it("Get details of the first song result", async () => {
-			const songs = await ytmusic.search(query, "SONG")
+			const songs = await ytmusic.searchSong(query)
 			const song = await ytmusic.getSong(songs[0]!.videoId)
 			expect(song, SONG_FULL)
 		})
 
 		it("Get details of the first video result", async () => {
-			const videos = await ytmusic.search(query, "VIDEO")
+			const videos = await ytmusic.searchVideo(query)
 			const video = await ytmusic.getVideo(videos[0]!.videoId)
 			expect(video, VIDEO_FULL)
 		})
 
 		it("Get details of the first artist result", async () => {
-			const artists = await ytmusic.search(query, "ARTIST")
+			const artists = await ytmusic.searchArtist(query)
 			const artist = await ytmusic.getArtist(artists[0]!.artistId)
 			expect(artist, ARTIST_FULL)
 		})
 
 		it("Get the songs of the first artist result", async () => {
-			const artists = await ytmusic.search(query, "ARTIST")
+			const artists = await ytmusic.searchArtist(query)
 			const songs = await ytmusic.getArtistSongs(artists[0]!.artistId)
 			expect(songs, LIST(SONG_DETAILED))
 		})
 
 		it("Get the albums of the first artist result", async () => {
-			const artists = await ytmusic.search(query, "ARTIST")
+			const artists = await ytmusic.searchArtist(query)
 			const albums = await ytmusic.getArtistAlbums(artists[0]!.artistId)
 			expect(albums, LIST(ALBUM_DETAILED))
 		})
 
 		it("Get details of the first album result", async () => {
-			const albums = await ytmusic.search(query, "ALBUM")
+			const albums = await ytmusic.searchAlbum(query)
 			const album = await ytmusic.getAlbum(albums[0]!.albumId)
 			expect(album, ALBUM_FULL)
 		})
 
 		it("Get details of the first playlist result", async () => {
-			const playlists = await ytmusic.search(query, "PLAYLIST")
+			const playlists = await ytmusic.searchPlaylist(query)
 			const playlist = await ytmusic.getPlaylist(playlists[0]!.playlistId)
 			expect(playlist, PLAYLIST_FULL)
 		})
 
 		it("Get the videos of the first playlist result", async () => {
-			const playlists = await ytmusic.search(query, "PLAYLIST")
+			const playlists = await ytmusic.searchPlaylist(query)
 			const videos = await ytmusic.getPlaylistVideos(playlists[0]!.playlistId)
 			expect(videos, LIST(PLAYLIST_VIDEO))
 		})
