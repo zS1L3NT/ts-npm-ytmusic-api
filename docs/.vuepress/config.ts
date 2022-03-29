@@ -29,6 +29,7 @@ export default defineUserConfig<DefaultThemeOptions>({
 					}
 				]
 			}
-		]
+		],
+		sidebarDepth: 5
 	}
 })
