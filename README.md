@@ -5,6 +5,7 @@
 YouTube Music API (Unofficial) is a YouTube Music data scraper. It comes with TypeScript support API for return types. The NPM Package can be found [here](https://npmjs.com/package/ytmusic-api)
 
 ## Motivation
+
 I used to use [youtube-music-api](https://npmjs.com/package/youtube-music-api) as my youtube music api data scraper. I liked looking into the source code of how it works but it never made sense to me. I also didn't like that there were no TypeScript annotations for the return types of methods.
 Because of this, I decided to build my own version of a youtube music api with TypeScript annotations, testing and written in a way I can understand.
 
@@ -19,34 +20,6 @@ Because of this, I decided to build my own version of a youtube music api with T
     -   Artists
     -   Albums
     -   Playlists
-
-## Installation
-
-```
-$ npm i ytmusic-api
-```
-
-## Usage
-
-Import YTMusic from the npm package
-
-```ts
-// TypeScript
-import YTMusic from "ytmusic-api"
-
-// JavaScript
-const YTMusic = require("ytmusic-api")
-```
-
-Create an instance of the class `YTMusic`.
-Then, call the `initialize()` to initialize the API before using the API anywhere
-
-```ts
-const ytmusic = new YTMusic()
-ytmusic.initialize().then(() => {
-	// Use API here
-})
-```
 
 ### Methods to fetch data
 
@@ -286,7 +259,7 @@ ytmusic.getPlaylistVideos("OLAK5uy_nRb467jR73IXKybwzw22_rTYIJ808x4Yc").then(play
 | Name       | Data Type                           | Description         |
 | :--------- | :---------------------------------- | :------------------ |
 | type       | `"SONG"`                            | Type of data        |
-| videoId    | `string`                    | YouTube Video ID    |
+| videoId    | `string`                            | YouTube Video ID    |
 | name       | `string`                            | Name                |
 | artists    | [ArtistBasic](#ArtistBasic)`[]`     | Artists             |
 | album      | [AlbumBasic](#AlbumBasic)           | Album               |
@@ -298,7 +271,7 @@ ytmusic.getPlaylistVideos("OLAK5uy_nRb467jR73IXKybwzw22_rTYIJ808x4Yc").then(play
 | Name            | Data Type                           | Description            |
 | :-------------- | :---------------------------------- | :--------------------- |
 | type            | `"SONG"`                            | Type of data           |
-| videoId         | `string`                    | YouTube Video ID       |
+| videoId         | `string`                            | YouTube Video ID       |
 | name            | `string`                            | Name                   |
 | artists         | [ArtistBasic](#ArtistBasic)`[]`     | Artists                |
 | duration        | `number`                            | Duration in seconds    |
@@ -312,7 +285,7 @@ ytmusic.getPlaylistVideos("OLAK5uy_nRb467jR73IXKybwzw22_rTYIJ808x4Yc").then(play
 | Name       | Data Type                           | Description                     |
 | :--------- | :---------------------------------- | :------------------------------ |
 | type       | `"VIDEO"`                           | Type of data                    |
-| videoId    | `string`                    | YouTube Video ID                |
+| videoId    | `string`                            | YouTube Video ID                |
 | name       | `string`                            | Name                            |
 | artists    | [ArtistBasic](#ArtistBasic)`[]`     | Channels that created the video |
 | views      | `number`                            | View count                      |
@@ -324,7 +297,7 @@ ytmusic.getPlaylistVideos("OLAK5uy_nRb467jR73IXKybwzw22_rTYIJ808x4Yc").then(play
 | Name        | Data Type                           | Description                            |
 | :---------- | :---------------------------------- | :------------------------------------- |
 | type        | `"VIDEO"`                           | Type of data                           |
-| videoId     | `string`                    | YouTube Video ID                       |
+| videoId     | `string`                            | YouTube Video ID                       |
 | name        | `string`                            | Name                                   |
 | artists     | [ArtistBasic](#ArtistBasic)`[]`     | Channels that created the video        |
 | views       | `number`                            | View count                             |
@@ -338,10 +311,10 @@ ytmusic.getPlaylistVideos("OLAK5uy_nRb467jR73IXKybwzw22_rTYIJ808x4Yc").then(play
 
 #### `ArtistBasic`
 
-| Name     | Data Type        | Description |
-| :------- | :--------------- | :---------- |
-| artistId | `string` | Artist ID   |
-| name     | `string`         | Name        |
+| Name     | Data Type | Description |
+| :------- | :-------- | :---------- |
+| artistId | `string`  | Artist ID   |
+| name     | `string`  | Name        |
 
 #### `ArtistDetailed`
 
@@ -360,7 +333,7 @@ ytmusic.getPlaylistVideos("OLAK5uy_nRb467jR73IXKybwzw22_rTYIJ808x4Yc").then(play
 | artistId    | `string`                                              | Artist ID                            |
 | name        | `string`                                              | Name                                 |
 | thumbnails  | [ThumbnailFull](#ThumbnailFull)`[]`                   | Thumbnails                           |
-| description | `string`                                      | Description                          |
+| description | `string`                                              | Description                          |
 | subscribers | `number`                                              | Number of subscribers the Artist has |
 | topSongs    | `Omit<`[SongDetailed](#SongDetailed)`, "duration">[]` | Top Songs from Artist                |
 | topAlbums   | [AlbumDetailed](#AlbumDetailed)`[]`                   | Top Albums from Artist               |
@@ -395,7 +368,7 @@ ytmusic.getPlaylistVideos("OLAK5uy_nRb467jR73IXKybwzw22_rTYIJ808x4Yc").then(play
 | artists     | [ArtistBasic](#ArtistBasic)`[]`     | Creators of the Album |
 | year        | `number`                            | Publication Year      |
 | thumbnails  | [ThumbnailFull](#ThumbnailFull)`[]` | Thumbnails            |
-| description | `string`                    | Description           |
+| description | `string`                            | Description           |
 | songs       | [SongDetailed](#SongDetailed)`[]`   | Songs in the Album    |
 
 #### `PlaylistFull`
@@ -414,6 +387,7 @@ ytmusic.getPlaylistVideos("OLAK5uy_nRb467jR73IXKybwzw22_rTYIJ808x4Yc").then(play
 [SongDetailed](#SongDetailed) or [VideoDetailed](#VideoDetailed) or [ArtistDetailed](#ArtistDetailed) or [AlbumDetailed](#AlbumDetailed) or [PlaylistFull](#PlaylistFull)
 
 ## Credits
+
 A lot of the credit should go to [youtube-music-api](https://npmjs.com/package/youtube-music-api). I build this package as a refactored and tested version of youtube-music-api with TypeScript annotations
 
 ## Testing
