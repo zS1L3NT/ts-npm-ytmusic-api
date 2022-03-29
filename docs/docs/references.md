@@ -4,6 +4,24 @@
 
 ### `getSearchSuggestions`
 
+::: tip Properties
+
+| Name    | Data Type | Description                           |
+| :------ | :-------- | :------------------------------------ |
+| `query` | `string`  | Search query you want suggestions for |
+
+:::
+
+::: tip Returns
+
+`Promise<string[]>`
+
+:::
+
+```ts
+public async getSearchSuggestions(query: string): Promise<string[]>
+```
+
 ### `search`
 
 ### `getSong`

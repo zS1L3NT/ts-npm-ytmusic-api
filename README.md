@@ -21,24 +21,6 @@ Because of this, I decided to build my own version of a youtube music api with T
     -   Albums
     -   Playlists
 
-### Methods to fetch data
-
-#### `getSearchSuggestions`
-
-This function takes in the following parameters
-
-| Name  | Data Type | Description                           |
-| :---- | :-------- | :------------------------------------ |
-| query | `string`  | Search query you want suggestions for |
-
-The function returns a `Promise<string[]>` which are the suggestion results
-
-```ts
-ytmusic.getSearchSuggestions("Lilac").then(res => {
-	console.log(res)
-})
-```
-
 #### `search`
 
 This function takes in the following parameters

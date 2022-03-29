@@ -20,6 +20,10 @@ export default defineUserConfig<DefaultThemeOptions>({
 						link: "/docs/getting-started.html"
 					},
 					{
+						text: "Usage",
+						link: "/docs/usage.html"
+					},
+					{
 						text: "References",
 						link: "/docs/references.html"
 					}
