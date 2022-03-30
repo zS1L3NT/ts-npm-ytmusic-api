@@ -10,7 +10,7 @@ export default defineUserConfig<DefaultThemeOptions>({
 		navbar: [
 			{ text: "Home", link: "/" },
 			{ text: "Guides", link: "/guides/getting-started.html" },
-			{ text: "References", link: "/references/ytmusic/getSearchSuggestions.html" }
+			{ text: "References", link: "/references/ytmusic.html" }
 		],
 		sidebar: [
 			{
@@ -95,6 +95,7 @@ export default defineUserConfig<DefaultThemeOptions>({
 				children: [
 					{
 						text: "YTMusic Class",
+						link: "/references/ytmusic.html",
 						children: [
 							{
 								text: "getSearchSuggestions",
@@ -160,6 +161,7 @@ export default defineUserConfig<DefaultThemeOptions>({
 					},
 					{
 						text: "Interfaces",
+						link: "/references/interfaces.html",
 						children: [
 							{
 								text: "ThumbnailFull",
@@ -213,6 +215,7 @@ export default defineUserConfig<DefaultThemeOptions>({
 					},
 					{
 						text: "Types",
+						link: "/references/types.html",
 						children: [
 							{
 								text: "SearchResult",
