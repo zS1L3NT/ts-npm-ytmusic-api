@@ -4,6 +4,8 @@
 
 YouTube Music API (Unofficial) is a YouTube Music data scraper. It comes with TypeScript support API for return types. The NPM Package can be found [here](https://npmjs.com/package/ytmusic-api)
 
+**Full Documentation is available [here](http://ytmusic-api.zectan.com).**
+
 ## Motivation
 
 I used to use [youtube-music-api](https://npmjs.com/package/youtube-music-api) as my youtube music api data scraper. I liked looking into the source code of how it works but it never made sense to me. I also didn't like that there were no TypeScript annotations for the return types of methods.
@@ -48,5 +50,8 @@ $ npm run test
     -   [![mocha](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/mocha?style=flat-square)](https://npmjs.com/package/mocha)
     -   [![mocha.parallel](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/mocha.parallel?style=flat-square)](https://npmjs.com/package/mocha.parallel)
     -   [![ts-mocha](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/ts-mocha?style=flat-square)](https://npmjs.com/package/ts-mocha)
+-   VuePress
+    -   [![@vuepress/plugin-search](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/@vuepress/plugin-search?style=flat-square)](https://npmjs.com/package/@vuepress/plugin-search)
+    -   [![vuepress](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/vuepress?style=flat-square)](https://npmjs.com/package/vuepress)
 -   Miscellaneous
     -   [![validate-any](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/validate-any?style=flat-square)](https://npmjs.com/package/validate-any)
