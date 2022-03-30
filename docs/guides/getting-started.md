@@ -37,5 +37,5 @@ pnpm i ytmusic-api
 import YTMusic from "ytmusic-api"
 
 // Node Require
-const YTMusic = require("ytmusic-api")
+const YTMusic = require("ytmusic-api").default
 ```
