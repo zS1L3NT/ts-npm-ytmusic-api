@@ -21,54 +21,6 @@ Because of this, I decided to build my own version of a youtube music api with T
     -   Albums
     -   Playlists
 
-#### `getSong`
-
-This function takes in the following parameters
-
-| Name    | Data Type | Description |
-| :------ | :-------- | :---------- |
-| videoId | `string`  | Video ID    |
-
-The function returns a `Promise<`[SongFull](#SongFull)`>` which is the information about the song
-
-```ts
-ytmusic.getSong("v7bnOxV4jAc").then(song => {
-	console.log(song)
-})
-```
-
-#### `getVideo`
-
-This function takes in the following parameters
-
-| Name    | Data Type | Description |
-| :------ | :-------- | :---------- |
-| videoId | `string`  | Video ID    |
-
-The function returns a `Promise<`[VideoFull](#VideoFull)`>` which is the information about the video
-
-```ts
-ytmusic.getVideo("v7bnOxV4jAc").then(video => {
-	console.log(video)
-})
-```
-
-#### `getArtist`
-
-This function takes in the following parameters
-
-| Name     | Data Type | Description |
-| :------- | :-------- | :---------- |
-| artistId | `string`  | Artist ID   |
-
-The function returns a `Promise<`[ArtistFull](#ArtistFull)`>` which is the information about the artist
-
-```ts
-ytmusic.getArtist("UCTUR0sVEkD8T5MlSHqgaI_Q").then(artist => {
-	console.log(artist)
-})
-```
-
 #### `getArtistSongs`
 
 This function takes in the following parameters
@@ -98,38 +50,6 @@ The function returns a `Promise<`[AlbumDetailed](#AlbumDetailed)`[]>` which is t
 ```ts
 ytmusic.getArtistAlbums("UCTUR0sVEkD8T5MlSHqgaI_Q").then(artistAlbums => {
 	console.log(artistAlbums)
-})
-```
-
-#### `getAlbum`
-
-This function takes in the following parameters
-
-| Name    | Data Type | Description |
-| :------ | :-------- | :---------- |
-| albumId | `string`  | Album ID    |
-
-The function returns a `Promise<`[AlbumFull](#AlbumFull)`>` which is the information about the album
-
-```ts
-ytmusic.getAlbum("MPREb_iG5q5DIdhdA").then(album => {
-	console.log(album)
-})
-```
-
-#### `getPlaylist`
-
-This function takes in the following parameters
-
-| Name       | Data Type | Description |
-| :--------- | :-------- | :---------- |
-| playlistId | `string`  | Playlist ID |
-
-The function returns a `Promise<`[PlaylistFull](#PlaylistFull)`>` which is the information about the playlist (without the videos)
-
-```ts
-ytmusic.getPlaylist("OLAK5uy_nRb467jR73IXKybwzw22_rTYIJ808x4Yc").then(playlist => {
-	console.log(playlist)
 })
 ```
 
