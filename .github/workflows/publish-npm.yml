@@ -1,0 +1,36 @@
+name: Publish NPM
+on:
+    release:
+        types:
+            - published
+    push:
+        paths:
+            - .github/workflows/publish-npm.yml
+jobs:
+    publish-npm:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Performing Repository Checkout
+              uses: actions/checkout@v2
+
+            - name: Performing Pnpm Install on Workspace
+              uses: pnpm/action-setup@v2.1.0
+              with:
+                  version: 6.0.2
+                  run_install: true
+
+            - name: Transpiling TypeScript
+              run: pnpx tsc
+
+            - name: Writing to .npmrc file
+              run: |
+                  echo '//registry.npmjs.org/:_authToken=${NPM_TOKEN}' >> .npmrc
+                  echo 'registry=https://registry.npmjs.org/' >> .npmrc
+                  echo 'always-auth=true' >> .npmrc
+
+            - name: Publishing to NPM
+              run: |
+                  pnpm publish
+              env:
+                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

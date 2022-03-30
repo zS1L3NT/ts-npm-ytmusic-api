@@ -1,0 +1,30 @@
+name: Deploy Docs
+on:
+    push:
+        branches:
+            - main
+        paths:
+            - docs/**/*.*
+            - .github/workflows/deploy-docs.yml
+jobs:
+    deploy-docs:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Performing Repository Checkout
+              uses: actions/checkout@v2
+
+            - name: Performing Pnpm Install on Workspace
+              uses: pnpm/action-setup@v2.1.0
+              with:
+                  version: 6.0.2
+                  run_install: true
+
+            - name: Building VuePress Docs
+              run: pnpm run docs:build
+
+            - name: Deploying with gh-pages
+              run: |
+                  git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+                  pnpx -y gh-pages -d docs/.vuepress/dist -u "github-actions-bot <support+actions@github.com>"
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
