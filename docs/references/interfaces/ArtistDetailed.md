@@ -24,4 +24,4 @@ interface ArtistDetailed {
 
 [SearchResult](../types/SearchResult.html)
 
-[YTMusic#searchArtist](../../guides/usage/searchArtist.html)
+[YTMusic#searchArtists](../../guides/usage/searchArtists.html)

@@ -28,6 +28,6 @@ interface PlaylistFull {
 
 [SearchResult](../types/SearchResult.html)
 
-[YTMusic#searchPlaylist](../../guides/usage/searchPlaylist.html)
+[YTMusic#searchPlaylists](../../guides/usage/searchPlaylists.html)
 
 [YTMusic#getPlaylist](../../guides/usage/getPlaylist.html)

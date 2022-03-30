@@ -30,6 +30,6 @@ interface VideoDetailed {
 
 [SearchResult](../types/SearchResult.html)
 
-[YTMusic#searchVideo](../../guides/usage/searchVideo.html)
+[YTMusic#searchVideos](../../guides/usage/searchVideos.html)
 
 [YTMusic#getPlaylistVideos](../../guides/usage/getPlaylistVideos.html)

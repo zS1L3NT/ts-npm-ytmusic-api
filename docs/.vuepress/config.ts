@@ -35,23 +35,23 @@ export default defineUserConfig<DefaultThemeOptions>({
 							},
 							{
 								text: "Searching for songs",
-								link: "/guides/usage/searchSong.html"
+								link: "/guides/usage/searchSongs.html"
 							},
 							{
 								text: "Searching for videos",
-								link: "/guides/usage/searchVideo.html"
+								link: "/guides/usage/searchVideos.html"
 							},
 							{
 								text: "Searching for artists",
-								link: "/guides/usage/searchArtist.html"
+								link: "/guides/usage/searchArtists.html"
 							},
 							{
 								text: "Searching for albums",
-								link: "/guides/usage/searchAlbum.html"
+								link: "/guides/usage/searchAlbums.html"
 							},
 							{
 								text: "Searching for playlists",
-								link: "/guides/usage/searchPlaylist.html"
+								link: "/guides/usage/searchPlaylists.html"
 							},
 							{
 								text: "Getting a song",
@@ -105,24 +105,24 @@ export default defineUserConfig<DefaultThemeOptions>({
 								link: "/references/ytmusic-methods/search.html"
 							},
 							{
-								text: "searchSong",
-								link: "/references/ytmusic-methods/searchSong.html"
+								text: "searchSongs",
+								link: "/references/ytmusic-methods/searchSongs.html"
 							},
 							{
-								text: "searchVideo",
-								link: "/references/ytmusic-methods/searchVideo.html"
+								text: "searchVideos",
+								link: "/references/ytmusic-methods/searchVideos.html"
 							},
 							{
-								text: "searchArtist",
-								link: "/references/ytmusic-methods/searchArtist.html"
+								text: "searchArtists",
+								link: "/references/ytmusic-methods/searchArtists.html"
 							},
 							{
-								text: "searchAlbum",
-								link: "/references/ytmusic-methods/searchAlbum.html"
+								text: "searchAlbums",
+								link: "/references/ytmusic-methods/searchAlbums.html"
 							},
 							{
-								text: "searchPlaylist",
-								link: "/references/ytmusic-methods/searchPlaylist.html"
+								text: "searchPlaylists",
+								link: "/references/ytmusic-methods/searchPlaylists.html"
 							},
 							{
 								text: "getSong",
