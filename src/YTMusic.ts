@@ -232,7 +232,7 @@ export default class YTMusic {
 	 *
 	 * @param query Query string
 	 */
-	public async searchSong(query: string): Promise<SongDetailed[]> {
+	public async searchSongs(query: string): Promise<SongDetailed[]> {
 		const searchData = await this.constructRequest("search", {
 			query,
 			params: "Eg-KAQwIARAAGAAgACgAMABqChAEEAMQCRAFEAo%3D"
@@ -248,7 +248,7 @@ export default class YTMusic {
 	 *
 	 * @param query Query string
 	 */
-	public async searchVideo(query: string): Promise<VideoDetailed[]> {
+	public async searchVideos(query: string): Promise<VideoDetailed[]> {
 		const searchData = await this.constructRequest("search", {
 			query,
 			params: "Eg-KAQwIABABGAAgACgAMABqChAEEAMQCRAFEAo%3D"
@@ -264,7 +264,7 @@ export default class YTMusic {
 	 *
 	 * @param query Query string
 	 */
-	public async searchArtist(query: string): Promise<ArtistDetailed[]> {
+	public async searchArtists(query: string): Promise<ArtistDetailed[]> {
 		const searchData = await this.constructRequest("search", {
 			query,
 			params: "Eg-KAQwIABAAGAAgASgAMABqChAEEAMQCRAFEAo%3D"
@@ -280,7 +280,7 @@ export default class YTMusic {
 	 *
 	 * @param query Query string
 	 */
-	public async searchAlbum(query: string): Promise<AlbumDetailed[]> {
+	public async searchAlbums(query: string): Promise<AlbumDetailed[]> {
 		const searchData = await this.constructRequest("search", {
 			query,
 			params: "Eg-KAQwIABAAGAEgACgAMABqChAEEAMQCRAFEAo%3D"
@@ -296,7 +296,7 @@ export default class YTMusic {
 	 *
 	 * @param query Query string
 	 */
-	public async searchPlaylist(query: string): Promise<PlaylistFull[]> {
+	public async searchPlaylists(query: string): Promise<PlaylistFull[]> {
 		const searchData = await this.constructRequest("search", {
 			query,
 			params: "Eg-KAQwIABAAGAAgACgBMABqChAEEAMQCRAFEAo%3D"

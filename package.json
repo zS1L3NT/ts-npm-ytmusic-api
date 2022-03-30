@@ -11,7 +11,9 @@
 		"url": "https://github.com/zS1L3NT/ts-npm-ytmusic-api"
 	},
 	"scripts": {
-		"test": "ts-mocha --timeout 30000 src/__tests__/**/*.spec.ts"
+		"test": "ts-mocha --timeout 30000 src/__tests__/**/*.spec.ts",
+		"docs:dev": "vuepress dev docs",
+		"docs:build": "vuepress build docs"
 	},
 	"dependencies": {
 		"axios": "^0.25.0",
@@ -22,10 +24,13 @@
 		"@types/mocha": "^9.1.0",
 		"@types/node": "^17.0.23",
 		"@types/tough-cookie": "^4.0.1",
+		"@vuepress/plugin-search": "^2.0.0-beta.36",
 		"mocha": "^9.2.2",
 		"mocha.parallel": "^0.15.6",
 		"ts-mocha": "^9.0.2",
-		"typescript": "^4.5.5"
+		"typescript": "^4.5.5",
+		"validate-any": "1.3.1",
+		"vuepress": "^2.0.0-beta.36"
 	},
 	"keywords": [
 		"youtube",
