@@ -4,13 +4,34 @@ import type { DefaultThemeOptions } from "vuepress"
 export default defineUserConfig<DefaultThemeOptions>({
 	title: "YTMusic API",
 	description: "Unofficial YouTube Music API for TypeScript",
+	plugins: [
+		[
+			"@vuepress/plugin-search",
+			{
+				locales: {
+					"/": {
+						placeholder: "Search"
+					}
+				}
+			}
+		]
+	],
 	themeConfig: {
 		repo: "zS1L3NT/ts-npm-ytmusic-api",
 		editLink: false,
 		navbar: [
-			{ text: "Home", link: "/" },
-			{ text: "Guides", link: "/guides/getting-started.html" },
-			{ text: "References", link: "/references/ytmusic.html" }
+			{
+				text: "Home",
+				link: "/"
+			},
+			{
+				text: "Guides",
+				link: "/guides/getting-started.html"
+			},
+			{
+				text: "References",
+				link: "/references/ytmusic.html"
+			}
 		],
 		sidebar: [
 			{
