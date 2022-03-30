@@ -104,6 +104,8 @@ export default class YTMusic {
 				...config
 			}
 		}
+
+		return this
 	}
 
 	/**

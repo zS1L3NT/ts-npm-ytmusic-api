@@ -10,3 +10,10 @@ ytmusic.initialize().then(() => {
 	// Use API here
 })
 ```
+
+In an async context, you can initialize the API in one line
+
+```ts
+const ytmusic = await new YTMusic().initalize()
+// Use API here
+```
