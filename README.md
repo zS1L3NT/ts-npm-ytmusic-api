@@ -21,22 +21,6 @@ Because of this, I decided to build my own version of a youtube music api with T
     -   Albums
     -   Playlists
 
-#### `search`
-
-This function takes in the following parameters
-
-| Name     | Data Type                                                             | Description                                                                         |
-| :------- | :-------------------------------------------------------------------- | :---------------------------------------------------------------------------------- |
-| query    | `string`                                                              | Search query                                                                        |
-| category | `"SONG" \| "VIDEO" \| "ARTIST" \| "ALBUM" \| "PLAYLIST" \| undefined` | Type of results to search for. If not specified, returns all types of search result |
-
-The function **when nothing is passed as the category** returns a `Promise<`[SearchResult](#SearchResult)`[]>` which are the search results of all categories
-
-```ts
-ytmusic.search("Lilac").then(results => {
-	console.log(results)
-})
-```
 
 ##### `search (category = "SONG")`
 
