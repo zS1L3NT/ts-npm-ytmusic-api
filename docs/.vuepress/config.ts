@@ -94,6 +94,71 @@ export default defineUserConfig<DefaultThemeOptions>({
 				collapsible: true,
 				children: [
 					{
+						text: "YTMusic Methods",
+						children: [
+							{
+								text: "getSearchSuggestions",
+								link: "/references/ytmusic-methods/getSearchSuggestions.html"
+							},
+							{
+								text: "search",
+								link: "/references/ytmusic-methods/search.html"
+							},
+							{
+								text: "searchSong",
+								link: "/references/ytmusic-methods/searchSong.html"
+							},
+							{
+								text: "searchVideo",
+								link: "/references/ytmusic-methods/searchVideo.html"
+							},
+							{
+								text: "searchArtist",
+								link: "/references/ytmusic-methods/searchArtist.html"
+							},
+							{
+								text: "searchAlbum",
+								link: "/references/ytmusic-methods/searchAlbum.html"
+							},
+							{
+								text: "searchPlaylist",
+								link: "/references/ytmusic-methods/searchPlaylist.html"
+							},
+							{
+								text: "getSong",
+								link: "/references/ytmusic-methods/getSong.html"
+							},
+							{
+								text: "getVideo",
+								link: "/references/ytmusic-methods/getVideo.html"
+							},
+							{
+								text: "getArtist",
+								link: "/references/ytmusic-methods/getArtist.html"
+							},
+							{
+								text: "getArtistSongs",
+								link: "/references/ytmusic-methods/getArtistSongs.html"
+							},
+							{
+								text: "getArtistAlbums",
+								link: "/references/ytmusic-methods/getArtistAlbums.html"
+							},
+							{
+								text: "getAlbum",
+								link: "/references/ytmusic-methods/getAlbum.html"
+							},
+							{
+								text: "getPlaylist",
+								link: "/references/ytmusic-methods/getPlaylist.html"
+							},
+							{
+								text: "getPlaylistVideos",
+								link: "/references/ytmusic-methods/getPlaylistVideos.html"
+							}
+						]
+					},
+					{
 						text: "Interfaces",
 						children: [
 							{
