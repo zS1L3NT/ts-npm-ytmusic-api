@@ -4,6 +4,8 @@ on:
         types:
             - published
     push:
+        branches:
+            - main
         paths:
             - .github/workflows/publish-npm.yml
 jobs:
