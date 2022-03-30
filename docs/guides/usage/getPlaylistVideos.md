@@ -8,4 +8,4 @@ ytmusic.getPlaylistVideos("OLAK5uy_nRb467jR73IXKybwzw22_rTYIJ808x4Yc").then(play
 })
 ```
 
-See the [reference](../../references/ytmusic-methods/getPlaylistVideos.html) for more information.
+See the [reference](../../references/ytmusic/getPlaylistVideos.html) for more information.

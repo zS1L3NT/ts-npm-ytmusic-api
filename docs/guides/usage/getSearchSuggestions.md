@@ -17,4 +17,4 @@ ytmusic.getSearchSuggestions("Lilac").then(res => {
 // > ]
 ```
 
-See the [reference](../../references/ytmusic-methods/getSearchSuggestions.html) for information.
+See the [reference](../../references/ytmusic/getSearchSuggestions.html) for information.

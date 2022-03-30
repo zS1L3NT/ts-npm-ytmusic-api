@@ -8,4 +8,4 @@ ytmusic.getAlbum("MPREb_iG5q5DIdhdA").then(album => {
 })
 ```
 
-See the [reference](../../references/ytmusic-methods/getAlbum.html) for more information.
+See the [reference](../../references/ytmusic/getAlbum.html) for more information.

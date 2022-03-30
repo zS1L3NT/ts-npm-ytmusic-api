@@ -8,4 +8,4 @@ ytmusic.searchVideos("Lilac").then(videos => {
 })
 ```
 
-See the [reference](../../references/ytmusic-methods/searchVideos.html) for information.
+See the [reference](../../references/ytmusic/searchVideos.html) for information.

@@ -32,4 +32,4 @@ interface SongFull {
 
 ## Usages
 
-[YTMusic#getSong](../ytmusic-methods/getSong.html)
+[YTMusic#getSong](../ytmusic/getSong.html)

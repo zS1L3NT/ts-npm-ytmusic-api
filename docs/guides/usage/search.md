@@ -8,4 +8,4 @@ ytmusic.search("Lilac").then(results => {
 })
 ```
 
-See the [reference](../../references/ytmusic-methods/search.html) for information.
+See the [reference](../../references/ytmusic/search.html) for information.

@@ -38,4 +38,4 @@ interface VideoFull {
 
 ## Usages
 
-[YTMusic#getVideo](../ytmusic-methods/getVideo.html)
+[YTMusic#getVideo](../ytmusic/getVideo.html)

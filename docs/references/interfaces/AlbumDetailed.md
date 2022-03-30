@@ -32,6 +32,6 @@ interface AlbumDetailed {
 
 [SearchResult](../types/SearchResult.html)
 
-[YTMusic#searchAlbums](../ytmusic-methods/searchAlbums.html)
+[YTMusic#searchAlbums](../ytmusic/searchAlbums.html)
 
-[YTMusic#getArtistAlbums](../ytmusic-methods/getArtistAlbums.html)
+[YTMusic#getArtistAlbums](../ytmusic/getArtistAlbums.html)

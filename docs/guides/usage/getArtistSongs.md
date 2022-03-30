@@ -8,4 +8,4 @@ ytmusic.getArtistSongs("UCTUR0sVEkD8T5MlSHqgaI_Q").then(artistSongs => {
 })
 ```
 
-See the [reference](../../references/ytmusic-methods/getArtistSongs.html) for more information.
+See the [reference](../../references/ytmusic/getArtistSongs.html) for more information.

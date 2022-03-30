@@ -8,4 +8,4 @@ ytmusic.getArtistAlbums("UCTUR0sVEkD8T5MlSHqgaI_Q").then(artistAlbums => {
 })
 ```
 
-See the [reference](../../references/ytmusic-methods/getArtistAlbums.html) for more information.
+See the [reference](../../references/ytmusic/getArtistAlbums.html) for more information.

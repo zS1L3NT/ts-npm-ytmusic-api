@@ -8,4 +8,4 @@ ytmusic.getVideo("v7bnOxV4jAc").then(video => {
 })
 ```
 
-See the [reference](../../references/ytmusic-methods/getVideo.html) for more information.
+See the [reference](../../references/ytmusic/getVideo.html) for more information.

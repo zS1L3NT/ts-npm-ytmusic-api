@@ -8,4 +8,4 @@ ytmusic.getSong("v7bnOxV4jAc").then(song => {
 })
 ```
 
-See the [reference](../../references/ytmusic-methods/getSong.html) for more information.
+See the [reference](../../references/ytmusic/getSong.html) for more information.

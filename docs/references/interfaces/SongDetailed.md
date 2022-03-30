@@ -34,6 +34,6 @@ interface SongDetailed {
 
 [SearchResult](../types/SearchResult.html)
 
-[YTMusic#searchSongs](../ytmusic-methods/searchSongs.html)
+[YTMusic#searchSongs](../ytmusic/searchSongs.html)
 
-[YTMusic#getArtistSongs](../ytmusic-methods/getArtistSongs.html)
+[YTMusic#getArtistSongs](../ytmusic/getArtistSongs.html)

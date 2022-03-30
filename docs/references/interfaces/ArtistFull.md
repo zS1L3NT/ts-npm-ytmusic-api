@@ -30,4 +30,4 @@ interface ArtistFull {
 
 ## Usages
 
-[YTMusic#getArtist](../ytmusic-methods/getArtist.html)
+[YTMusic#getArtist](../ytmusic/getArtist.html)

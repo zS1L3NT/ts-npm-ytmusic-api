@@ -10,7 +10,7 @@ export default defineUserConfig<DefaultThemeOptions>({
 		navbar: [
 			{ text: "Home", link: "/" },
 			{ text: "Guides", link: "/guides/getting-started.html" },
-			{ text: "References", link: "/references/ytmusic-methods/getSearchSuggestions.html" }
+			{ text: "References", link: "/references/ytmusic/getSearchSuggestions.html" }
 		],
 		sidebar: [
 			{
@@ -94,67 +94,67 @@ export default defineUserConfig<DefaultThemeOptions>({
 				collapsible: true,
 				children: [
 					{
-						text: "YTMusic Methods",
+						text: "YTMusic Class",
 						children: [
 							{
 								text: "getSearchSuggestions",
-								link: "/references/ytmusic-methods/getSearchSuggestions.html"
+								link: "/references/ytmusic/getSearchSuggestions.html"
 							},
 							{
 								text: "search",
-								link: "/references/ytmusic-methods/search.html"
+								link: "/references/ytmusic/search.html"
 							},
 							{
 								text: "searchSongs",
-								link: "/references/ytmusic-methods/searchSongs.html"
+								link: "/references/ytmusic/searchSongs.html"
 							},
 							{
 								text: "searchVideos",
-								link: "/references/ytmusic-methods/searchVideos.html"
+								link: "/references/ytmusic/searchVideos.html"
 							},
 							{
 								text: "searchArtists",
-								link: "/references/ytmusic-methods/searchArtists.html"
+								link: "/references/ytmusic/searchArtists.html"
 							},
 							{
 								text: "searchAlbums",
-								link: "/references/ytmusic-methods/searchAlbums.html"
+								link: "/references/ytmusic/searchAlbums.html"
 							},
 							{
 								text: "searchPlaylists",
-								link: "/references/ytmusic-methods/searchPlaylists.html"
+								link: "/references/ytmusic/searchPlaylists.html"
 							},
 							{
 								text: "getSong",
-								link: "/references/ytmusic-methods/getSong.html"
+								link: "/references/ytmusic/getSong.html"
 							},
 							{
 								text: "getVideo",
-								link: "/references/ytmusic-methods/getVideo.html"
+								link: "/references/ytmusic/getVideo.html"
 							},
 							{
 								text: "getArtist",
-								link: "/references/ytmusic-methods/getArtist.html"
+								link: "/references/ytmusic/getArtist.html"
 							},
 							{
 								text: "getArtistSongs",
-								link: "/references/ytmusic-methods/getArtistSongs.html"
+								link: "/references/ytmusic/getArtistSongs.html"
 							},
 							{
 								text: "getArtistAlbums",
-								link: "/references/ytmusic-methods/getArtistAlbums.html"
+								link: "/references/ytmusic/getArtistAlbums.html"
 							},
 							{
 								text: "getAlbum",
-								link: "/references/ytmusic-methods/getAlbum.html"
+								link: "/references/ytmusic/getAlbum.html"
 							},
 							{
 								text: "getPlaylist",
-								link: "/references/ytmusic-methods/getPlaylist.html"
+								link: "/references/ytmusic/getPlaylist.html"
 							},
 							{
 								text: "getPlaylistVideos",
-								link: "/references/ytmusic-methods/getPlaylistVideos.html"
+								link: "/references/ytmusic/getPlaylistVideos.html"
 							}
 						]
 					},
