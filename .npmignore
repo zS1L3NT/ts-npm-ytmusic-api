@@ -3,4 +3,5 @@
 .gitignore
 .prettierrc
 .editorconfig
+.npmrc
 tsconfig.json
