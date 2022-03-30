@@ -31,3 +31,7 @@ interface AlbumDetailed {
 [ArtistFull#topAlbums](./ArtistFull.html)
 
 [SearchResult](../types/SearchResult.html)
+
+[YTMusic#searchAlbums](../ytmusic-methods/searchAlbums.html)
+
+[YTMusic#getArtistAlbums](../ytmusic-methods/getArtistAlbums.html)

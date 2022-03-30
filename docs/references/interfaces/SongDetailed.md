@@ -33,3 +33,7 @@ interface SongDetailed {
 [AlbumFull#songs](./AlbumFull.html)
 
 [SearchResult](../types/SearchResult.html)
+
+[YTMusic#searchSongs](../ytmusic-methods/searchSongs.html)
+
+[YTMusic#getArtistSongs](../ytmusic-methods/getArtistSongs.html)

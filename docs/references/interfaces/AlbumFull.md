@@ -32,4 +32,4 @@ interface AlbumFull {
 
 ## Usages
 
-[YTMusic#getAlbum](../../guides/usage/getAlbum.md)
+[YTMusic#getAlbum](../ytmusic-methods/getAlbum.md)

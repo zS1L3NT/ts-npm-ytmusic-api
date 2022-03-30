@@ -23,4 +23,4 @@ type SearchResult =
 
 ## Usages
 
-[YTMusic#search](../../guides/usage/search.html)
+[YTMusic#search](../ytmusic-methods/search.html)
