@@ -1,0 +1,1 @@
+const t={key:"v-734abce5",path:"/guides/usage/getArtistAlbums.html",title:"Getting an artist's albums",lang:"en-US",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1648654091e3,contributors:[{name:"Zechariah",email:"zechariahtan144@gmail.com",commits:1}]},filePathRelative:"guides/usage/getArtistAlbums.md"};export{t as data};
