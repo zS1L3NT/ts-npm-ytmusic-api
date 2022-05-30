@@ -422,7 +422,7 @@ export default class YTMusic {
 	 * @param playlistId Playlist ID
 	 * @returns Playlist's Videos
 	 */
-	public async getPlaylistVideos(playlistId: string): Promise<Omit<VideoDetailed, "views">[]> {
+	public async getPlaylistVideos(playlistId: string): Promise<VideoDetailed[]> {
 		if (playlistId.startsWith("PL")) playlistId = "VL" + playlistId
 		const playlistData = await this.constructRequest("browse", { browseId: playlistId })
 

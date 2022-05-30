@@ -5,8 +5,8 @@ import Validator from "validate-any/dist/classes/Validator"
 
 import YTMusic from "../"
 import {
-	ALBUM_DETAILED, ALBUM_FULL, ARTIST_DETAILED, ARTIST_FULL, PLAYLIST_FULL, PLAYLIST_VIDEO,
-	SONG_DETAILED, SONG_FULL, VIDEO_DETAILED, VIDEO_FULL
+	ALBUM_DETAILED, ALBUM_FULL, ARTIST_DETAILED, ARTIST_FULL, PLAYLIST_FULL, SONG_DETAILED,
+	SONG_FULL, VIDEO_DETAILED, VIDEO_FULL
 } from "../interfaces"
 
 const issues: iValidationError[][] = []
@@ -107,7 +107,7 @@ queries.forEach(query => {
 		it("Get the videos of the first playlist result", async () => {
 			const playlists = await ytmusic.searchPlaylists(query)
 			const videos = await ytmusic.getPlaylistVideos(playlists[0]!.playlistId)
-			expect(videos, LIST(PLAYLIST_VIDEO))
+			expect(videos, LIST(VIDEO_DETAILED))
 		})
 	})
 })

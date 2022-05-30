@@ -122,12 +122,3 @@ export const PLAYLIST_FULL: ObjectValidator<PlaylistFull> = OBJECT({
 	videoCount: NUMBER(),
 	thumbnails: LIST(THUMBNAIL_FULL)
 })
-
-export const PLAYLIST_VIDEO: ObjectValidator<Omit<VideoDetailed, "views">> = OBJECT({
-	type: STRING("VIDEO"),
-	videoId: STRING(),
-	name: STRING(),
-	artists: LIST(ARTIST_BASIC),
-	duration: NUMBER(),
-	thumbnails: LIST(THUMBNAIL_FULL)
-})

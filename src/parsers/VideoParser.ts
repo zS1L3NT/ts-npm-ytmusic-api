@@ -1,5 +1,5 @@
 import { VideoDetailed, VideoFull } from "../"
-import { PLAYLIST_VIDEO } from "../interfaces"
+import { VIDEO_DETAILED } from "../interfaces"
 import checkType from "../utils/checkType"
 import traverse from "../utils/traverse"
 import traverseList from "../utils/traverseList"
@@ -47,13 +47,13 @@ export default class VideoParser {
 		}
 	}
 
-	public static parsePlaylistVideo(item: any): Omit<VideoDetailed, "views"> {
+	public static parsePlaylistVideo(item: any): VideoDetailed {
 		const flexColumns = traverseList(item, "flexColumns")
 		const videoId =
 			traverseString(item, "playNavigationEndpoint", "videoId")() ||
 			traverseList(item, "thumbnails")[0].url.match(/https:\/\/i\.ytimg\.com\/vi\/(.+)\//)[1]
 
-		return checkType<Omit<VideoDetailed, "views">>(
+		return checkType<VideoDetailed>(
 			{
 				type: "VIDEO",
 				videoId,
@@ -69,7 +69,7 @@ export default class VideoParser {
 				),
 				thumbnails: traverseList(item, "thumbnails")
 			},
-			PLAYLIST_VIDEO
+			VIDEO_DETAILED
 		)
 	}
 }
