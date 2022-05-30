@@ -22,6 +22,9 @@ jobs:
             - name: Building VuePress Docs
               run: pnpm run docs:build
 
+            - name: Creating CNAME file
+              run: echo "ytmusic-api.zectan.com" > docs/.vuepress/dist/CNAME
+
             - name: Deploying with gh-pages
               run: |
                   git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
