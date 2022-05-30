@@ -9,7 +9,6 @@
 | `playlistId`  | `string`                                  | Playlist ID for Album |
 | `name`        | `string`                                  | Name                  |
 | `artists`     | [ArtistBasic](./ArtistBasic.html)`[]`     | Creators of the Album |
-| `year`        | `number`                                  | Publication Year      |
 | `thumbnails`  | [ThumbnailFull](./ThumbnailFull.html)`[]` | Thumbnails            |
 | `description` | `string`                                  | Description           |
 | `songs`       | [SongDetailed](./SongDetailed.html)`[]`   | Songs in the Album    |
@@ -23,7 +22,6 @@ interface AlbumFull {
 	playlistId: string
 	name: string
 	artists: ArtistBasic[]
-	year: number
 	thumbnails: ThumbnailFull[]
 	description: string
 	songs: SongDetailed[]

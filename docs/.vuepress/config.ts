@@ -1,22 +1,20 @@
-import { defineUserConfig } from "vuepress"
-import type { DefaultThemeOptions } from "vuepress"
+import { defaultTheme, defineUserConfig } from "vuepress"
 
-export default defineUserConfig<DefaultThemeOptions>({
+const { searchPlugin } = require("@vuepress/plugin-search")
+
+export default defineUserConfig({
 	title: "YTMusic API",
 	description: "Unofficial YouTube Music API for TypeScript",
 	plugins: [
-		[
-			"@vuepress/plugin-search",
-			{
-				locales: {
-					"/": {
-						placeholder: "Search"
-					}
+		searchPlugin({
+			locales: {
+				"/": {
+					placeholder: "Search"
 				}
 			}
-		]
+		})
 	],
-	themeConfig: {
+	theme: defaultTheme({
 		repo: "zS1L3NT/ts-npm-ytmusic-api",
 		editLink: false,
 		navbar: [
@@ -247,5 +245,5 @@ export default defineUserConfig<DefaultThemeOptions>({
 				]
 			}
 		]
-	}
+	})
 })

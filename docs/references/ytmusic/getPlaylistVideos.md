@@ -10,10 +10,10 @@ See the [guide](../../guides/usage/getPlaylistVideos.html) for information on ho
 
 ## Returns
 
-`Promise<Omit<`[VideoDetailed](../interfaces/VideoDetailed.html)`, "views">[]>`
+`Promise<`[VideoDetailed](../interfaces/VideoDetailed.html)`[]>`
 
 ## TypeScript Source Code
 
 ```ts
-public async getPlaylistVideos(playlistId: string): Promise<Omit<VideoDetailed, "views">[]>
+public async getPlaylistVideos(playlistId: string): Promise<VideoDetailed[]>
 ```

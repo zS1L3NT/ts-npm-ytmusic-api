@@ -8,7 +8,6 @@
 | videoId     | `string`                                  | YouTube Video ID                       |
 | name        | `string`                                  | Name                                   |
 | artists     | [ArtistBasic](./ArtistBasic.html)`[]`     | Channels that created the video        |
-| views       | `number`                                  | View count                             |
 | duration    | `number`                                  | Duration in seconds                    |
 | thumbnails  | [ThumbnailFull](./ThumbnailFull.html)`[]` | Thumbnails                             |
 | description | `string`                                  | Description                            |
@@ -25,7 +24,6 @@ interface VideoFull {
 	videoId: string
 	name: string
 	artists: ArtistBasic[]
-	views: number
 	duration: number
 	thumbnails: ThumbnailFull[]
 	description: string

@@ -24,7 +24,7 @@
 		"@types/mocha": "^9.1.1",
 		"@types/node": "^17.0.36",
 		"@types/tough-cookie": "^4.0.2",
-		"@vuepress/plugin-search": "^1.9.7",
+		"@vuepress/plugin-search": "^2.0.0-beta.46",
 		"mocha": "^10.0.0",
 		"mocha.parallel": "^0.15.6",
 		"ts-mocha": "^10.0.0",
