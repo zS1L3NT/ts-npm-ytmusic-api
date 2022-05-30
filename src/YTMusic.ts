@@ -1,27 +1,19 @@
+import axios, { AxiosInstance } from "axios"
+import { Cookie, CookieJar } from "tough-cookie"
+
+import {
+	AlbumDetailed, AlbumFull, ArtistDetailed, ArtistFull, PlaylistFull, SearchResult, SongDetailed,
+	SongFull, VideoDetailed, VideoFull
+} from "./"
 import AlbumParser from "./parsers/AlbumParser"
 import ArtistParser from "./parsers/ArtistParser"
-import axios, { AxiosInstance } from "axios"
 import PlaylistParser from "./parsers/PlaylistParser"
 import SearchParser from "./parsers/SearchParser"
 import SongParser from "./parsers/SongParser"
+import VideoParser from "./parsers/VideoParser"
 import traverse from "./utils/traverse"
 import traverseList from "./utils/traverseList"
 import traverseString from "./utils/traverseString"
-import VideoParser from "./parsers/VideoParser"
-import {
-	AlbumDetailed,
-	AlbumFull,
-	ArtistDetailed,
-	ArtistFull,
-	PlaylistFull,
-	SearchResult,
-	SongDetailed,
-	SongFull,
-	VideoDetailed,
-	VideoFull
-} from "."
-import { Cookie, CookieJar } from "tough-cookie"
-import { writeFileSync } from "fs"
 
 export default class YTMusic {
 	private cookiejar: CookieJar
@@ -361,6 +353,8 @@ export default class YTMusic {
 	public async getArtistSongs(artistId: string): Promise<SongDetailed[]> {
 		const artistData = await this.constructRequest("browse", { browseId: artistId })
 		const browseToken = traverse(artistData, "musicShelfRenderer", "title", "browseId")
+
+		if (browseToken instanceof Array) return []
 
 		const songsData = await this.constructRequest("browse", { browseId: browseToken })
 		const continueToken = traverse(songsData, "continuation")
