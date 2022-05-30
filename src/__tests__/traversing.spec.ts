@@ -1,20 +1,13 @@
 import assert from "assert"
 import describeParallel from "mocha.parallel"
-import Validator from "validate-any/dist/classes/Validator"
-import YTMusic from ".."
-import {
-	ALBUM_DETAILED,
-	ALBUM_FULL,
-	ARTIST_DETAILED,
-	ARTIST_FULL,
-	PLAYLIST_FULL,
-	PLAYLIST_VIDEO,
-	SONG_DETAILED,
-	SONG_FULL,
-	VIDEO_DETAILED,
-	VIDEO_FULL
-} from "../interfaces"
 import { iValidationError, LIST, STRING, validate } from "validate-any"
+import Validator from "validate-any/dist/classes/Validator"
+
+import YTMusic from "../"
+import {
+	ALBUM_DETAILED, ALBUM_FULL, ARTIST_DETAILED, ARTIST_FULL, PLAYLIST_FULL, PLAYLIST_VIDEO,
+	SONG_DETAILED, SONG_FULL, VIDEO_DETAILED, VIDEO_FULL
+} from "../interfaces"
 
 const issues: iValidationError[][] = []
 const queries = ["Lilac", "Weekend", "Eill", "Eminem", "Lisa Hannigan"]

@@ -1,10 +1,11 @@
+import { LIST, OBJECT, STRING } from "validate-any"
+
+import { AlbumBasic, ArtistBasic, SongDetailed, SongFull, ThumbnailFull } from "../"
+import { ALBUM_BASIC, ARTIST_BASIC, SONG_DETAILED, SONG_FULL, THUMBNAIL_FULL } from "../interfaces"
 import checkType from "../utils/checkType"
-import Parser from "./Parser"
 import traverseList from "../utils/traverseList"
 import traverseString from "../utils/traverseString"
-import { ALBUM_BASIC, ARTIST_BASIC, SONG_DETAILED, SONG_FULL, THUMBNAIL_FULL } from "../interfaces"
-import { AlbumBasic, ArtistBasic, SongDetailed, SongFull, ThumbnailFull } from ".."
-import { LIST, OBJECT, STRING } from "validate-any"
+import Parser from "./Parser"
 
 export default class SongParser {
 	public static parse(data: any): SongFull {
@@ -19,7 +20,7 @@ export default class SongParser {
 						name: traverseString(data, "author")()
 					}
 				],
-				duration: +traverseString(data, "videoDetails", "lengthSeconds"),
+				duration: +traverseString(data, "videoDetails", "lengthSeconds")(),
 				thumbnails: traverseList(data, "videoDetails", "thumbnails"),
 				description: traverseString(data, "description")(),
 				formats: traverseList(data, "streamingData", "formats"),
@@ -45,7 +46,7 @@ export default class SongParser {
 					}))
 					.slice(0, -1),
 				album: {
-					albumId: traverseString(item, "browseId")(-1),
+					albumId: traverseString(flexColumns[1], "runs", "browseId")(-1),
 					name: traverseString(flexColumns[1], "runs", "text")(-3)
 				},
 				duration: Parser.parseDuration(traverseString(flexColumns[1], "runs", "text")(-1)),
@@ -97,8 +98,8 @@ export default class SongParser {
 				name: traverseString(flexColumns[0], "runs", "text")(),
 				artists: [artistBasic],
 				album: {
-					albumId: traverseString(flexColumns[2], "runs", "text")(),
-					name: traverseString(flexColumns[2], "browseId")()
+					albumId: traverseString(flexColumns[2], "browseId")(),
+					name: traverseString(flexColumns[2], "runs", "text")()
 				},
 				thumbnails: traverseList(item, "thumbnails")
 			},

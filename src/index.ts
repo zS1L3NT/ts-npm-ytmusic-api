@@ -27,7 +27,6 @@ export interface VideoDetailed {
 	videoId: string
 	name: string
 	artists: ArtistBasic[]
-	views: number
 	duration: number
 	thumbnails: ThumbnailFull[]
 }
@@ -67,7 +66,6 @@ export interface AlbumDetailed extends AlbumBasic {
 	type: "ALBUM"
 	playlistId: string
 	artists: ArtistBasic[]
-	year: number
 	thumbnails: ThumbnailFull[]
 }
 

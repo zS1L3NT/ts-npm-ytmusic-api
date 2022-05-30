@@ -1,11 +1,11 @@
-import AlbumParser from "./AlbumParser"
+import { ArtistBasic, ArtistDetailed, ArtistFull } from "../"
+import { ARTIST_DETAILED, ARTIST_FULL } from "../interfaces"
 import checkType from "../utils/checkType"
-import Parser from "./Parser"
-import SongParser from "./SongParser"
 import traverseList from "../utils/traverseList"
 import traverseString from "../utils/traverseString"
-import { ARTIST_DETAILED, ARTIST_FULL } from "../interfaces"
-import { ArtistBasic, ArtistDetailed, ArtistFull } from ".."
+import AlbumParser from "./AlbumParser"
+import Parser from "./Parser"
+import SongParser from "./SongParser"
 
 export default class ArtistParser {
 	public static parse(data: any, artistId: string): ArtistFull {

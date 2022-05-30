@@ -1,10 +1,10 @@
+import { VideoDetailed, VideoFull } from "../"
+import { PLAYLIST_VIDEO } from "../interfaces"
 import checkType from "../utils/checkType"
-import Parser from "./Parser"
 import traverse from "../utils/traverse"
 import traverseList from "../utils/traverseList"
 import traverseString from "../utils/traverseString"
-import { PLAYLIST_VIDEO } from "../interfaces"
-import { VideoDetailed, VideoFull } from ".."
+import Parser from "./Parser"
 
 export default class VideoParser {
 	public static parse(data: any): VideoFull {
@@ -18,7 +18,6 @@ export default class VideoParser {
 					name: traverseString(data, "author")()
 				}
 			],
-			views: +traverseString(data, "videoDetails", "viewCount")(),
 			duration: +traverseString(data, "videoDetails", "lengthSeconds")(),
 			thumbnails: traverseList(data, "videoDetails", "thumbnails"),
 			description: traverseString(data, "description")(),
@@ -43,9 +42,6 @@ export default class VideoParser {
 					artistId: traverseString(run, "browseId")(),
 					name: traverseString(run, "text")()
 				})),
-			views: Parser.parseNumber(
-				traverseString(flexColumns[1], "runs", "text")(-3).slice(0, -6)
-			),
 			duration: Parser.parseDuration(traverseString(flexColumns[1], "text")(-1)),
 			thumbnails: traverseList(item, "thumbnails")
 		}
@@ -53,7 +49,9 @@ export default class VideoParser {
 
 	public static parsePlaylistVideo(item: any): Omit<VideoDetailed, "views"> {
 		const flexColumns = traverseList(item, "flexColumns")
-		const videoId = traverseString(item, "playNavigationEndpoint", "videoId")()
+		const videoId =
+			traverseString(item, "playNavigationEndpoint", "videoId")() ||
+			traverseList(item, "thumbnails")[0].url.match(/https:\/\/i\.ytimg\.com\/vi\/(.+)\//)[1]
 
 		return checkType<Omit<VideoDetailed, "views">>(
 			{

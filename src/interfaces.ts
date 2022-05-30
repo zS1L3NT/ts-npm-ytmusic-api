@@ -1,19 +1,10 @@
-import ObjectValidator from "validate-any/dist/validators/ObjectValidator"
-import {
-	AlbumBasic,
-	AlbumDetailed,
-	AlbumFull,
-	ArtistBasic,
-	ArtistDetailed,
-	ArtistFull,
-	PlaylistFull,
-	SongDetailed,
-	SongFull,
-	ThumbnailFull,
-	VideoDetailed,
-	VideoFull
-} from "."
 import { BOOLEAN, LIST, NUMBER, OBJECT, STRING } from "validate-any"
+import ObjectValidator from "validate-any/dist/validators/ObjectValidator"
+
+import {
+	AlbumBasic, AlbumDetailed, AlbumFull, ArtistBasic, ArtistDetailed, ArtistFull, PlaylistFull,
+	SongDetailed, SongFull, ThumbnailFull, VideoDetailed, VideoFull
+} from "./"
 
 export const THUMBNAIL_FULL: ObjectValidator<ThumbnailFull> = OBJECT({
 	url: STRING(),
@@ -46,7 +37,6 @@ export const VIDEO_DETAILED: ObjectValidator<VideoDetailed> = OBJECT({
 	videoId: STRING(),
 	name: STRING(),
 	artists: LIST(ARTIST_BASIC),
-	views: NUMBER(),
 	duration: NUMBER(),
 	thumbnails: LIST(THUMBNAIL_FULL)
 })
@@ -64,7 +54,6 @@ export const ALBUM_DETAILED: ObjectValidator<AlbumDetailed> = OBJECT({
 	playlistId: STRING(),
 	name: STRING(),
 	artists: LIST(ARTIST_BASIC),
-	year: NUMBER(),
 	thumbnails: LIST(THUMBNAIL_FULL)
 })
 
@@ -85,7 +74,6 @@ export const VIDEO_FULL: ObjectValidator<VideoFull> = OBJECT({
 	videoId: STRING(),
 	name: STRING(),
 	artists: LIST(ARTIST_BASIC),
-	views: NUMBER(),
 	duration: NUMBER(),
 	thumbnails: LIST(THUMBNAIL_FULL),
 	description: STRING(),
@@ -121,7 +109,6 @@ export const ALBUM_FULL: ObjectValidator<AlbumFull> = OBJECT({
 	playlistId: STRING(),
 	name: STRING(),
 	artists: LIST(ARTIST_BASIC),
-	year: NUMBER(),
 	thumbnails: LIST(THUMBNAIL_FULL),
 	description: STRING(),
 	songs: LIST(SONG_DETAILED)

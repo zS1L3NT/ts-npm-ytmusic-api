@@ -1,10 +1,10 @@
+import { SearchResult } from "../"
+import traverseList from "../utils/traverseList"
 import AlbumParser from "./AlbumParser"
 import ArtistParser from "./ArtistParser"
 import PlaylistParser from "./PlaylistParser"
 import SongParser from "./SongParser"
-import traverseList from "../utils/traverseList"
 import VideoParser from "./VideoParser"
-import { SearchResult } from ".."
 
 export default class SearchParser {
 	public static parse(item: any): SearchResult {

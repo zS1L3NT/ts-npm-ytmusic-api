@@ -1,8 +1,8 @@
+import { PlaylistFull } from "../"
+import { PLAYLIST_FULL } from "../interfaces"
 import checkType from "../utils/checkType"
 import traverseList from "../utils/traverseList"
 import traverseString from "../utils/traverseString"
-import { PLAYLIST_FULL } from "../interfaces"
-import { PlaylistFull } from ".."
 
 export default class PlaylistParser {
 	public static parse(data: any, playlistId: string): PlaylistFull {

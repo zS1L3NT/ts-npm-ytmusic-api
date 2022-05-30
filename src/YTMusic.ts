@@ -21,6 +21,7 @@ import {
 	VideoFull
 } from "."
 import { Cookie, CookieJar } from "tough-cookie"
+import { writeFileSync } from "fs"
 
 export default class YTMusic {
 	private cookiejar: CookieJar
@@ -436,7 +437,7 @@ export default class YTMusic {
 			"musicPlaylistShelfRenderer",
 			"musicResponsiveListItemRenderer"
 		)
-		let continuation = traverse(playlistData, "musicPlaylistShelfRenderer", "continuation")
+		let continuation = traverse(playlistData, "continuation")
 		while (true) {
 			if (continuation instanceof Array) break
 

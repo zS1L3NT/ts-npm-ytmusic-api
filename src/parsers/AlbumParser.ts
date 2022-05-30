@@ -1,9 +1,9 @@
+import { AlbumBasic, AlbumDetailed, AlbumFull, ArtistBasic } from "../"
+import { ALBUM_DETAILED, ALBUM_FULL } from "../interfaces"
 import checkType from "../utils/checkType"
-import SongParser from "./SongParser"
 import traverseList from "../utils/traverseList"
 import traverseString from "../utils/traverseString"
-import { ALBUM_DETAILED, ALBUM_FULL } from "../interfaces"
-import { AlbumBasic, AlbumDetailed, AlbumFull, ArtistBasic } from ".."
+import SongParser from "./SongParser"
 
 export default class AlbumParser {
 	public static parse(data: any, albumId: string): AlbumFull {
@@ -25,7 +25,6 @@ export default class AlbumParser {
 				...albumBasic,
 				playlistId: traverseString(data, "buttonRenderer", "playlistId")(),
 				artists,
-				year: +traverseString(data, "header", "subtitle", "text")(-1),
 				thumbnails,
 				description: traverseString(data, "description", "text")(),
 				songs: traverseList(data, "musicResponsiveListItemRenderer").map(item =>
@@ -51,7 +50,6 @@ export default class AlbumParser {
 						name: traverseString(run, "text")()
 					})),
 				name: traverseString(flexColumns[0], "runs", "text")(),
-				year: +traverseString(flexColumns[1], "runs", "text")(-1),
 				thumbnails: traverseList(item, "thumbnails")
 			},
 			ALBUM_DETAILED
@@ -66,7 +64,6 @@ export default class AlbumParser {
 				playlistId: traverseString(item, "thumbnailOverlay", "playlistId")(),
 				name: traverseString(item, "title", "text")(),
 				artists: [artistBasic],
-				year: +traverseString(item, "subtitle", "text")(-1),
 				thumbnails: traverseList(item, "thumbnails")
 			},
 			ALBUM_DETAILED
@@ -81,7 +78,6 @@ export default class AlbumParser {
 				playlistId: traverseString(item, "musicPlayButtonRenderer", "playlistId")(),
 				name: traverseString(item, "title", "text")(),
 				artists: [artistBasic],
-				year: +traverseString(item, "subtitle", "text")(-1),
 				thumbnails: traverseList(item, "thumbnails")
 			},
 			ALBUM_DETAILED
