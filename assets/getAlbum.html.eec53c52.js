@@ -1,1 +1,0 @@
-const e={key:"v-c0324f1a",path:"/guides/usage/getAlbum.html",title:"Getting an album",lang:"en-US",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1648654091e3,contributors:[{name:"Zechariah",email:"zechariahtan144@gmail.com",commits:1}]},filePathRelative:"guides/usage/getAlbum.md"};export{e as data};

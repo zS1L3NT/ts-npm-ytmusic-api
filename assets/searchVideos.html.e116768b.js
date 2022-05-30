@@ -1,1 +1,0 @@
-const e={key:"v-7f38e4ec",path:"/guides/usage/searchVideos.html",title:"Searching for songs",lang:"en-US",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1648654091e3,contributors:[{name:"Zechariah",email:"zechariahtan144@gmail.com",commits:1}]},filePathRelative:"guides/usage/searchVideos.md"};export{e as data};

@@ -1,1 +1,0 @@
-const e={key:"v-71e829e7",path:"/guides/usage/getVideo.html",title:"Getting a video",lang:"en-US",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1648654091e3,contributors:[{name:"Zechariah",email:"zechariahtan144@gmail.com",commits:1}]},filePathRelative:"guides/usage/getVideo.md"};export{e as data};

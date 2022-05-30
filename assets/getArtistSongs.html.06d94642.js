@@ -1,1 +1,0 @@
-const t={key:"v-e9ce93aa",path:"/guides/usage/getArtistSongs.html",title:"Getting an artist's songs",lang:"en-US",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1648654091e3,contributors:[{name:"Zechariah",email:"zechariahtan144@gmail.com",commits:1}]},filePathRelative:"guides/usage/getArtistSongs.md"};export{t as data};
