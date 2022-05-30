@@ -1,1 +1,0 @@
-const e={key:"v-30b83ee4",path:"/references/types.html",title:"Types",lang:"en-US",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1653933017e3,contributors:[{name:"Zechariah",email:"zechariahtan144@gmail.com",commits:1}]},filePathRelative:"references/types.md"};export{e as data};

@@ -1,0 +1,1 @@
+const e={key:"v-111007e0",path:"/guides/usage/searchAlbums.html",title:"Searching for albums",lang:"en-US",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:165393322e4,contributors:[{name:"Zechariah",email:"zechariahtan144@gmail.com",commits:1}]},filePathRelative:"guides/usage/searchAlbums.md"};export{e as data};
