@@ -4,7 +4,6 @@ import checkType from "../utils/checkType"
 import traverseList from "../utils/traverseList"
 import traverseString from "../utils/traverseString"
 import AlbumParser from "./AlbumParser"
-import Parser from "./Parser"
 import SongParser from "./SongParser"
 
 export default class ArtistParser {
@@ -22,9 +21,6 @@ export default class ArtistParser {
 				...artistBasic,
 				thumbnails: traverseList(data, "header", "thumbnails"),
 				description,
-				subscribers: Parser.parseNumber(
-					traverseString(data, "subscriberCountText", "text")()
-				),
 				topSongs: traverseList(data, "musicShelfRenderer", "contents").map(item =>
 					SongParser.parseArtistTopSong(item, artistBasic)
 				),

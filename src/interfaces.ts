@@ -89,7 +89,6 @@ export const ARTIST_FULL: ObjectValidator<ArtistFull> = OBJECT({
 	type: STRING("ARTIST"),
 	thumbnails: LIST(THUMBNAIL_FULL),
 	description: STRING(),
-	subscribers: NUMBER(),
 	topSongs: LIST(
 		OBJECT({
 			type: STRING("SONG"),

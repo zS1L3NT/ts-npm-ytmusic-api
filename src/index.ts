@@ -52,7 +52,6 @@ export interface ArtistDetailed extends ArtistBasic {
 
 export interface ArtistFull extends ArtistDetailed {
 	description: string
-	subscribers: number
 	topSongs: Omit<SongDetailed, "duration">[]
 	topAlbums: AlbumDetailed[]
 }

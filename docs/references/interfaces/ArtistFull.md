@@ -9,7 +9,6 @@
 | name        | `string`                                                    | Name                                 |
 | thumbnails  | [ThumbnailFull](./ThumbnailFull.html)`[]`                   | Thumbnails                           |
 | description | `string`                                                    | Description                          |
-| subscribers | `number`                                                    | Number of subscribers the Artist has |
 | topSongs    | `Omit<`[SongDetailed](./SongDetailed.html)`, "duration">[]` | Top Songs from Artist                |
 | topAlbums   | [AlbumDetailed](./AlbumDetailed.html)`[]`                   | Top Albums from Artist               |
 
@@ -22,7 +21,6 @@ interface ArtistFull {
 	name: string
 	thumbnails: ThumbnailFull[]
 	description: string
-	subscribers: number
 	topSongs: Omit<SongDetailed, "duration">[]
 	topAlbums: AlbumDetailed[]
 }
