@@ -1,1 +1,0 @@
-const e={key:"v-4212397c",path:"/guides/usage/searchArtists.html",title:"Searching for artists",lang:"en-US",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:165393322e4,contributors:[{name:"Zechariah",email:"zechariahtan144@gmail.com",commits:1}]},filePathRelative:"guides/usage/searchArtists.md"};export{e as data};

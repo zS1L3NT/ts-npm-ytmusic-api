@@ -1,0 +1,1 @@
+const e={key:"v-58fc65a4",path:"/guides/usage/search.html",title:"Searching for results",lang:"en-US",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1655843056e3,contributors:[{name:"Zechariah",email:"zechariahtan144@gmail.com",commits:1}]},filePathRelative:"guides/usage/search.md"};export{e as data};

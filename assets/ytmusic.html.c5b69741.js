@@ -1,1 +1,0 @@
-const e={key:"v-5844343d",path:"/references/ytmusic.html",title:"YTMusic Class",lang:"en-US",frontmatter:{},excerpt:"",headers:[{level:2,title:"Methods",slug:"methods",children:[]}],git:{updatedTime:165393322e4,contributors:[{name:"Zechariah",email:"zechariahtan144@gmail.com",commits:1}]},filePathRelative:"references/ytmusic.md"};export{e as data};
