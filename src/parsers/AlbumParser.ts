@@ -25,6 +25,9 @@ export default class AlbumParser {
 				...albumBasic,
 				playlistId: traverseString(data, "buttonRenderer", "playlistId")(),
 				artists,
+				year: AlbumParser.processYear(
+					traverseString(data, "header", "subtitle", "text")(-1)
+				),
 				thumbnails,
 				description: traverseString(data, "description", "text")(),
 				songs: traverseList(data, "musicResponsiveListItemRenderer").map(item =>
@@ -49,6 +52,7 @@ export default class AlbumParser {
 						artistId: traverseString(run, "browseId")(),
 						name: traverseString(run, "text")()
 					})),
+				year: AlbumParser.processYear(traverseString(flexColumns[1], "runs", "text")(-1)),
 				name: traverseString(flexColumns[0], "runs", "text")(),
 				thumbnails: traverseList(item, "thumbnails")
 			},
@@ -64,6 +68,7 @@ export default class AlbumParser {
 				playlistId: traverseString(item, "thumbnailOverlay", "playlistId")(),
 				name: traverseString(item, "title", "text")(),
 				artists: [artistBasic],
+				year: AlbumParser.processYear(traverseString(item, "subtitle", "text")(-1)),
 				thumbnails: traverseList(item, "thumbnails")
 			},
 			ALBUM_DETAILED
@@ -78,9 +83,14 @@ export default class AlbumParser {
 				playlistId: traverseString(item, "musicPlayButtonRenderer", "playlistId")(),
 				name: traverseString(item, "title", "text")(),
 				artists: [artistBasic],
+				year: AlbumParser.processYear(traverseString(item, "subtitle", "text")(-1)),
 				thumbnails: traverseList(item, "thumbnails")
 			},
 			ALBUM_DETAILED
 		)
+	}
+
+	private static processYear(year: string) {
+		return year.match(/^\d{4}$/) ? +year : null
 	}
 }

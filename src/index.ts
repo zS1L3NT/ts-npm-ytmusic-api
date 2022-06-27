@@ -65,6 +65,7 @@ export interface AlbumDetailed extends AlbumBasic {
 	type: "ALBUM"
 	playlistId: string
 	artists: ArtistBasic[]
+	year: number | null
 	thumbnails: ThumbnailFull[]
 }
 

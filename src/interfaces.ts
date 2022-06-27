@@ -1,4 +1,4 @@
-import { BOOLEAN, LIST, NUMBER, OBJECT, STRING } from "validate-any"
+import { BOOLEAN, LIST, NULL, NUMBER, OBJECT, OR, STRING } from "validate-any"
 import ObjectValidator from "validate-any/dist/validators/ObjectValidator"
 
 import {
@@ -54,6 +54,7 @@ export const ALBUM_DETAILED: ObjectValidator<AlbumDetailed> = OBJECT({
 	playlistId: STRING(),
 	name: STRING(),
 	artists: LIST(ARTIST_BASIC),
+	year: OR(NUMBER(), NULL()),
 	thumbnails: LIST(THUMBNAIL_FULL)
 })
 
@@ -108,6 +109,7 @@ export const ALBUM_FULL: ObjectValidator<AlbumFull> = OBJECT({
 	playlistId: STRING(),
 	name: STRING(),
 	artists: LIST(ARTIST_BASIC),
+	year: OR(NUMBER(), NULL()),
 	thumbnails: LIST(THUMBNAIL_FULL),
 	description: STRING(),
 	songs: LIST(SONG_DETAILED)

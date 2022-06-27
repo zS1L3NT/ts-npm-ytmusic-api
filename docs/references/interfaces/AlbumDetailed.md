@@ -9,6 +9,7 @@
 | `playlistId` | `string`                                  | Playlist ID for Album |
 | `name`       | `string`                                  | Name                  |
 | `artists`    | [ArtistBasic](./ArtistBasic.html)`[]`     | Creators of the Album |
+| `year`	   | `number \| null`                          | Year of release       |
 | `thumbnails` | [ThumbnailFull](./ThumbnailFull.html)`[]` | Thumbnails            |
 
 ## TypeScript Source Code
@@ -20,6 +21,7 @@ interface AlbumDetailed {
 	playlistId: string
 	name: string
 	artists: ArtistBasic[]
+	year: number | null
 	thumbnails: ThumbnailFull[]
 }
 ```
