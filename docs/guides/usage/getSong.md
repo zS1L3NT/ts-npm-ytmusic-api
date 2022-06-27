@@ -1,6 +1,6 @@
 # Getting a song
 
-`getSong()` will fetch you information about a specific song by it's ID.
+`getSong()` will fetch you information about a specific song by its ID.
 
 ```ts
 ytmusic.getSong("v7bnOxV4jAc").then(song => {

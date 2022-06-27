@@ -1,6 +1,6 @@
 # Getting a video
 
-`getVideo()` will fetch you information about a specific video by it's ID.
+`getVideo()` will fetch you information about a specific video by its ID.
 
 ```ts
 ytmusic.getVideo("v7bnOxV4jAc").then(video => {

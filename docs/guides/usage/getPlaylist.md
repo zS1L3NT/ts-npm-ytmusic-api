@@ -1,6 +1,6 @@
 # Getting a playlist
 
-`getPlaylist()` will fetch you information about a specific playlist by it's ID.
+`getPlaylist()` will fetch you information about a specific playlist by its ID.
 
 ```ts
 ytmusic.getPlaylist("OLAK5uy_nRb467jR73IXKybwzw22_rTYIJ808x4Yc").then(playlist => {

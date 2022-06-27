@@ -1,6 +1,6 @@
 # Getting an artist
 
-`getArtist()` will fetch you information about a specific artist by it's ID.
+`getArtist()` will fetch you information about a specific artist by its ID.
 
 ```ts
 ytmusic.getArtist("UCTUR0sVEkD8T5MlSHqgaI_Q").then(artist => {

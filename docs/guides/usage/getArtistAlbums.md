@@ -1,6 +1,6 @@
 # Getting an artist's albums
 
-`getArtistAlbums()` will fetch you information about a specific artist's albums by it's ID.
+`getArtistAlbums()` will fetch you information about a specific artist's albums by its ID.
 
 ```ts
 ytmusic.getArtistAlbums("UCTUR0sVEkD8T5MlSHqgaI_Q").then(artistAlbums => {
