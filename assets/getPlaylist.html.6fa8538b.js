@@ -1,0 +1,1 @@
+const t={key:"v-748b0604",path:"/guides/usage/getPlaylist.html",title:"Getting a playlist",lang:"en-US",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1656347605e3,contributors:[{name:"Zechariah",email:"zechariahtan144@gmail.com",commits:1}]},filePathRelative:"guides/usage/getPlaylist.md"};export{t as data};

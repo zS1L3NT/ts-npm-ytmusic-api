@@ -1,0 +1,1 @@
+const t={key:"v-56908269",path:"/guides/usage/getArtist.html",title:"Getting an artist",lang:"en-US",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1656347605e3,contributors:[{name:"Zechariah",email:"zechariahtan144@gmail.com",commits:1}]},filePathRelative:"guides/usage/getArtist.md"};export{t as data};

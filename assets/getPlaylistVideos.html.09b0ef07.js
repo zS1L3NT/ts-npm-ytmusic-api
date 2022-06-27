@@ -1,0 +1,1 @@
+const e={key:"v-2dba90c6",path:"/guides/usage/getPlaylistVideos.html",title:"Getting a playlist's videos",lang:"en-US",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1656347605e3,contributors:[{name:"Zechariah",email:"zechariahtan144@gmail.com",commits:1}]},filePathRelative:"guides/usage/getPlaylistVideos.md"};export{e as data};

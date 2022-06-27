@@ -1,0 +1,1 @@
+const e={key:"v-0e0182f1",path:"/references/interfaces.html",title:"Interfaces",lang:"en-US",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1656347605e3,contributors:[{name:"Zechariah",email:"zechariahtan144@gmail.com",commits:1}]},filePathRelative:"references/interfaces.md"};export{e as data};

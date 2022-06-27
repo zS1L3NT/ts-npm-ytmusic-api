@@ -1,1 +1,0 @@
-const e={key:"v-11678f1b",path:"/guides/usage/getSong.html",title:"Getting a song",lang:"en-US",frontmatter:{},excerpt:"",headers:[],git:{updatedTime:1655843056e3,contributors:[{name:"Zechariah",email:"zechariahtan144@gmail.com",commits:1}]},filePathRelative:"guides/usage/getSong.md"};export{e as data};
