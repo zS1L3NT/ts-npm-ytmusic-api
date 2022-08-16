@@ -122,7 +122,7 @@ export default class YTMusic {
 		const headers: Record<string, any> = {
 			...this.client.defaults.headers,
 			"x-origin": this.client.defaults.baseURL,
-			"X-Goog-Visitor-Id": this.config.VISITOR_DATA,
+			"X-Goog-Visitor-Id": this.config.VISITOR_DATA || '',
 			"X-YouTube-Client-Name": this.config.INNERTUBE_CONTEXT_CLIENT_NAME,
 			"X-YouTube-Client-Version": this.config.INNERTUBE_CLIENT_VERSION,
 			"X-YouTube-Device": this.config.DEVICE,
