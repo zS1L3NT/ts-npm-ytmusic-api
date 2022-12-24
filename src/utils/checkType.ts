@@ -1,18 +1,18 @@
-import Validator from "validate-any/dist/classes/Validator"
-import { validate } from "validate-any"
+import { z } from "zod"
+import zodtojson from "zod-to-json-schema"
 
-export default <T>(data: T, validator: Validator<T>): T => {
-	const result = validate(data, validator)
+export default <T extends z.Schema>(data: z.infer<T>, schema: T): z.infer<T> => {
+	const result = schema.safeParse(data)
 	if (result.success) {
-		return result.data
+		return data
 	} else {
 		console.error(
 			"Invalid data schema, please report to https://github.com/zS1L3NT/ts-npm-ytmusic-api/issues/new/choose",
 			JSON.stringify(
 				{
-					expected: validator.getSchema(),
-					actual: data,
-					errors: result.errors
+					schema: zodtojson(schema),
+					data,
+					error: result.error
 				},
 				null,
 				2

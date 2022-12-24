@@ -1,5 +1,4 @@
-import { ArtistBasic, ArtistDetailed, ArtistFull } from "../"
-import { ARTIST_DETAILED, ARTIST_FULL } from "../interfaces"
+import { ArtistBasic, ArtistDetailed, ArtistFull } from "../schemas"
 import checkType from "../utils/checkType"
 import traverseList from "../utils/traverseList"
 import traverseString from "../utils/traverseString"
@@ -15,7 +14,7 @@ export default class ArtistParser {
 
 		const description = traverseString(data, "header", "description", "text")()
 
-		return checkType<ArtistFull>(
+		return checkType(
 			{
 				type: "ARTIST",
 				...artistBasic,
@@ -30,21 +29,21 @@ export default class ArtistParser {
 						AlbumParser.parseArtistTopAlbums(item, artistBasic)
 					)
 			},
-			ARTIST_FULL
+			ArtistFull
 		)
 	}
 
 	public static parseSearchResult(item: any): ArtistDetailed {
 		const flexColumns = traverseList(item, "flexColumns")
 
-		return checkType<ArtistDetailed>(
+		return checkType(
 			{
 				type: "ARTIST",
 				artistId: traverseString(item, "browseId")(),
 				name: traverseString(flexColumns[0], "runs", "text")(),
 				thumbnails: traverseList(item, "thumbnails")
 			},
-			ARTIST_DETAILED
+			ArtistDetailed
 		)
 	}
 }

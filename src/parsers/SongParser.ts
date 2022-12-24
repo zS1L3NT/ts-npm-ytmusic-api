@@ -1,7 +1,4 @@
-import { LIST, OBJECT, STRING } from "validate-any"
-
-import { AlbumBasic, ArtistBasic, SongDetailed, SongFull, ThumbnailFull } from "../"
-import { ALBUM_BASIC, ARTIST_BASIC, SONG_DETAILED, SONG_FULL, THUMBNAIL_FULL } from "../interfaces"
+import { AlbumBasic, ArtistBasic, SongDetailed, SongFull, ThumbnailFull } from "../schemas"
 import checkType from "../utils/checkType"
 import traverseList from "../utils/traverseList"
 import traverseString from "../utils/traverseString"
@@ -9,7 +6,7 @@ import Parser from "./Parser"
 
 export default class SongParser {
 	public static parse(data: any): SongFull {
-		return checkType<SongFull>(
+		return checkType(
 			{
 				type: "SONG",
 				videoId: traverseString(data, "videoDetails", "videoId")(),
@@ -26,14 +23,14 @@ export default class SongParser {
 				formats: traverseList(data, "streamingData", "formats"),
 				adaptiveFormats: traverseList(data, "streamingData", "adaptiveFormats")
 			},
-			SONG_FULL
+			SongFull
 		)
 	}
 
 	public static parseSearchResult(item: any): SongDetailed {
 		const flexColumns = traverseList(item, "flexColumns")
 
-		return checkType<SongDetailed>(
+		return checkType(
 			{
 				type: "SONG",
 				videoId: traverseString(item, "playlistItemData", "videoId")(),
@@ -52,7 +49,7 @@ export default class SongParser {
 				duration: Parser.parseDuration(traverseString(flexColumns[1], "runs", "text")(-1)),
 				thumbnails: traverseList(item, "thumbnails")
 			},
-			SONG_DETAILED
+			SongDetailed
 		)
 	}
 
@@ -60,7 +57,7 @@ export default class SongParser {
 		const flexColumns = traverseList(item, "flexColumns")
 		const videoId = traverseString(item, "playlistItemData", "videoId")()
 
-		return checkType<SongDetailed>(
+		return checkType(
 			{
 				type: "SONG",
 				videoId,
@@ -80,7 +77,7 @@ export default class SongParser {
 				),
 				thumbnails: traverseList(item, "thumbnails")
 			},
-			SONG_DETAILED
+			SongDetailed
 		)
 	}
 
@@ -91,7 +88,7 @@ export default class SongParser {
 		const flexColumns = traverseList(item, "flexColumns")
 		const videoId = traverseString(item, "playlistItemData", "videoId")()
 
-		return checkType<Omit<SongDetailed, "duration">>(
+		return checkType(
 			{
 				type: "SONG",
 				videoId,
@@ -103,14 +100,7 @@ export default class SongParser {
 				},
 				thumbnails: traverseList(item, "thumbnails")
 			},
-			OBJECT({
-				type: STRING("SONG"),
-				videoId: STRING(),
-				name: STRING(),
-				artists: LIST(ARTIST_BASIC),
-				album: ALBUM_BASIC,
-				thumbnails: LIST(THUMBNAIL_FULL)
-			})
+			SongDetailed.omit({ duration: true })
 		)
 	}
 
@@ -123,7 +113,7 @@ export default class SongParser {
 		const flexColumns = traverseList(item, "flexColumns")
 		const videoId = traverseString(item, "playlistItemData", "videoId")()
 
-		return checkType<SongDetailed>(
+		return checkType(
 			{
 				type: "SONG",
 				videoId,
@@ -135,7 +125,7 @@ export default class SongParser {
 				),
 				thumbnails
 			},
-			SONG_DETAILED
+			SongDetailed
 		)
 	}
 }

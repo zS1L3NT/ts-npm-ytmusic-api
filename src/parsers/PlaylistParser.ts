@@ -1,12 +1,11 @@
-import { PlaylistFull } from "../"
-import { PLAYLIST_FULL } from "../interfaces"
+import { PlaylistFull } from "../schemas"
 import checkType from "../utils/checkType"
 import traverseList from "../utils/traverseList"
 import traverseString from "../utils/traverseString"
 
 export default class PlaylistParser {
 	public static parse(data: any, playlistId: string): PlaylistFull {
-		return checkType<PlaylistFull>(
+		return checkType(
 			{
 				type: "PLAYLIST",
 				playlistId,
@@ -22,7 +21,7 @@ export default class PlaylistParser {
 					.replaceAll(",", ""),
 				thumbnails: traverseList(data, "header", "thumbnails")
 			},
-			PLAYLIST_FULL
+			PlaylistFull
 		)
 	}
 
@@ -30,7 +29,7 @@ export default class PlaylistParser {
 		const flexColumns = traverseList(item, "flexColumns")
 		const artistId = traverseString(flexColumns[1], "browseId")()
 
-		return checkType<PlaylistFull>(
+		return checkType(
 			{
 				type: "PLAYLIST",
 				playlistId: traverseString(item, "overlay", "playlistId")(),
@@ -46,7 +45,7 @@ export default class PlaylistParser {
 					.replaceAll(",", ""),
 				thumbnails: traverseList(item, "thumbnails")
 			},
-			PLAYLIST_FULL
+			PlaylistFull
 		)
 	}
 }

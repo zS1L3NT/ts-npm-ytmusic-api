@@ -1,5 +1,4 @@
-import { VideoDetailed, VideoFull } from "../"
-import { VIDEO_DETAILED } from "../interfaces"
+import { VideoDetailed, VideoFull } from "../schemas"
 import checkType from "../utils/checkType"
 import traverse from "../utils/traverse"
 import traverseList from "../utils/traverseList"
@@ -53,7 +52,7 @@ export default class VideoParser {
 			traverseString(item, "playNavigationEndpoint", "videoId")() ||
 			traverseList(item, "thumbnails")[0].url.match(/https:\/\/i\.ytimg\.com\/vi\/(.+)\//)[1]
 
-		return checkType<VideoDetailed>(
+		return checkType(
 			{
 				type: "VIDEO",
 				videoId,
@@ -69,7 +68,7 @@ export default class VideoParser {
 				),
 				thumbnails: traverseList(item, "thumbnails")
 			},
-			VIDEO_DETAILED
+			VideoDetailed
 		)
 	}
 }

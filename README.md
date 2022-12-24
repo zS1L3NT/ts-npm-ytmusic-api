@@ -38,20 +38,21 @@ $ npm run test
 ## Built with
 
 -   TypeScript
-    -   [![@types/mocha](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/@types/mocha?style=flat-square)](https://npmjs.com/package/@types/mocha)
-    -   [![@types/node](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/@types/node?style=flat-square)](https://npmjs.com/package/@types/node)
-    -   [![@types/tough-cookie](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/@types/tough-cookie?style=flat-square)](https://npmjs.com/package/@types/tough-cookie)
-    -   [![typescript](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/typescript?style=flat-square)](https://npmjs.com/package/typescript)
--   Axios
-    -   [![axios](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/axios?style=flat-square)](https://npmjs.com/package/axios)
--   Tough Cookie
-    -   [![tough-cookie](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/tough-cookie?style=flat-square)](https://npmjs.com/package/tough-cookie)
--   Mocha
-    -   [![mocha](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/mocha?style=flat-square)](https://npmjs.com/package/mocha)
-    -   [![mocha.parallel](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/mocha.parallel?style=flat-square)](https://npmjs.com/package/mocha.parallel)
-    -   [![ts-mocha](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/ts-mocha?style=flat-square)](https://npmjs.com/package/ts-mocha)
--   VuePress
-    -   [![@vuepress/plugin-search](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/@vuepress/plugin-search?style=flat-square)](https://npmjs.com/package/@vuepress/plugin-search)
-    -   [![vuepress](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/dev/vuepress?style=flat-square)](https://npmjs.com/package/vuepress)
--   Miscellaneous
-    -   [![validate-any](https://img.shields.io/github/package-json/dependency-version/zS1L3NT/ts-npm-ytmusic-api/validate-any?style=flat-square)](https://npmjs.com/package/validate-any)
+    -   TypeScript
+        -   [![@types/json-schema](https://img.shields.io/badge/%40types%2Fjson--schema-%5E7.0.11-red?style=flat-square)](https://npmjs.com/package/@types/json-schema/v/7.0.11)
+        -   [![@types/mocha](https://img.shields.io/badge/%40types%2Fmocha-%5E10.0.1-red?style=flat-square)](https://npmjs.com/package/@types/mocha/v/10.0.1)
+        -   [![@types/node](https://img.shields.io/badge/%40types%2Fnode-%5E18.11.17-red?style=flat-square)](https://npmjs.com/package/@types/node/v/18.11.17)
+        -   [![@types/tough-cookie](https://img.shields.io/badge/%40types%2Ftough--cookie-%5E4.0.2-red?style=flat-square)](https://npmjs.com/package/@types/tough-cookie/v/4.0.2)
+        -   [![typescript](https://img.shields.io/badge/typescript-%5E4.9.4-red?style=flat-square)](https://npmjs.com/package/typescript/v/4.9.4)
+    -   Mocha
+        -   [![mocha](https://img.shields.io/badge/mocha-%5E10.2.0-red?style=flat-square)](https://npmjs.com/package/mocha/v/10.2.0)
+        -   [![mocha.parallel](https://img.shields.io/badge/mocha.parallel-%5E0.15.6-red?style=flat-square)](https://npmjs.com/package/mocha.parallel/v/0.15.6)
+        -   [![ts-mocha](https://img.shields.io/badge/ts--mocha-%5E10.0.0-red?style=flat-square)](https://npmjs.com/package/ts-mocha/v/10.0.0)
+    -   VuePress
+        -   [![@vuepress/plugin-search](https://img.shields.io/badge/%40vuepress%2Fplugin--search-%5E2.0.0--beta.46-red?style=flat-square)](https://npmjs.com/package/@vuepress/plugin-search/v/2.0.0-beta.46)
+        -   [![vuepress](https://img.shields.io/badge/vuepress-%5E2.0.0--beta.46-red?style=flat-square)](https://npmjs.com/package/vuepress/v/2.0.0-beta.46)
+    -   Miscellaneous
+        -   [![axios](https://img.shields.io/badge/axios-%5E0.27.2-red?style=flat-square)](https://npmjs.com/package/axios/v/0.27.2)
+        -   [![tough-cookie](https://img.shields.io/badge/tough--cookie-%5E4.1.2-red?style=flat-square)](https://npmjs.com/package/tough-cookie/v/4.1.2)
+        -   [![zod](https://img.shields.io/badge/zod-%5E3.20.2-red?style=flat-square)](https://npmjs.com/package/zod/v/3.20.2)
+        -   [![zod-to-json-schema](https://img.shields.io/badge/zod--to--json--schema-%5E3.20.1-red?style=flat-square)](https://npmjs.com/package/zod-to-json-schema/v/3.20.1)

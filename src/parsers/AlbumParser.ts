@@ -1,5 +1,4 @@
-import { AlbumBasic, AlbumDetailed, AlbumFull, ArtistBasic } from "../"
-import { ALBUM_DETAILED, ALBUM_FULL } from "../interfaces"
+import { AlbumBasic, AlbumDetailed, AlbumFull, ArtistBasic } from "../schemas"
 import checkType from "../utils/checkType"
 import traverseList from "../utils/traverseList"
 import traverseString from "../utils/traverseString"
@@ -19,7 +18,7 @@ export default class AlbumParser {
 			}))
 		const thumbnails = traverseList(data, "header", "thumbnails")
 
-		return checkType<AlbumFull>(
+		return checkType(
 			{
 				type: "ALBUM",
 				...albumBasic,
@@ -34,14 +33,14 @@ export default class AlbumParser {
 					SongParser.parseAlbumSong(item, artists, albumBasic, thumbnails)
 				)
 			},
-			ALBUM_FULL
+			AlbumFull
 		)
 	}
 
 	public static parseSearchResult(item: any): AlbumDetailed {
 		const flexColumns = traverseList(item, "flexColumns")
 
-		return checkType<AlbumDetailed>(
+		return checkType(
 			{
 				type: "ALBUM",
 				albumId: traverseString(item, "browseId")(-1),
@@ -56,12 +55,12 @@ export default class AlbumParser {
 				name: traverseString(flexColumns[0], "runs", "text")(),
 				thumbnails: traverseList(item, "thumbnails")
 			},
-			ALBUM_DETAILED
+			AlbumDetailed
 		)
 	}
 
 	public static parseArtistAlbum(item: any, artistBasic: ArtistBasic): AlbumDetailed {
-		return checkType<AlbumDetailed>(
+		return checkType(
 			{
 				type: "ALBUM",
 				albumId: traverseString(item, "browseId")(-1),
@@ -71,12 +70,12 @@ export default class AlbumParser {
 				year: AlbumParser.processYear(traverseString(item, "subtitle", "text")(-1)),
 				thumbnails: traverseList(item, "thumbnails")
 			},
-			ALBUM_DETAILED
+			AlbumDetailed
 		)
 	}
 
 	public static parseArtistTopAlbums(item: any, artistBasic: ArtistBasic): AlbumDetailed {
-		return checkType<AlbumDetailed>(
+		return checkType(
 			{
 				type: "ALBUM",
 				albumId: traverseString(item, "browseId")(-1),
@@ -86,7 +85,7 @@ export default class AlbumParser {
 				year: AlbumParser.processYear(traverseString(item, "subtitle", "text")(-1)),
 				thumbnails: traverseList(item, "thumbnails")
 			},
-			ALBUM_DETAILED
+			AlbumDetailed
 		)
 	}
 
