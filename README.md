@@ -12,7 +12,7 @@ I used to use [youtube-music-api](https://npmjs.com/package/youtube-music-api) a
 Because of this, I decided to build my own version of a youtube music api with TypeScript annotations, testing and written in a way I can understand.
 
 ## Features
-
+20
 -   TypeScript Support for data return types
     -   Data from YouTube can be inconsistent but YTMusic API has been tested and the data matches the TypeScript types 95% of the time
 -   Scrape information directly from YouTube Music API
@@ -37,7 +37,7 @@ $ npm run test
 
 ## Built with
 
--   TypeScript
+-   NodeJS
     -   TypeScript
         -   [![@types/json-schema](https://img.shields.io/badge/%40types%2Fjson--schema-%5E7.0.11-red?style=flat-square)](https://npmjs.com/package/@types/json-schema/v/7.0.11)
         -   [![@types/mocha](https://img.shields.io/badge/%40types%2Fmocha-%5E10.0.1-red?style=flat-square)](https://npmjs.com/package/@types/mocha/v/10.0.1)
