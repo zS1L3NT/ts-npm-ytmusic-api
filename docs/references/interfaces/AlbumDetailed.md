@@ -30,6 +30,8 @@ interface AlbumDetailed {
 
 [ArtistFull#topAlbums](./ArtistFull.html)
 
+[ArtistFull#topSingles](./ArtistFull.html)
+
 [SearchResult](../types/SearchResult.html)
 
 [YTMusic#searchAlbums](../ytmusic/searchAlbums.html)

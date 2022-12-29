@@ -26,6 +26,8 @@ interface VideoDetailed {
 
 ## Usages
 
+[ArtistFull#topVideos](../types/ArtistFull.html)
+
 [SearchResult](../types/SearchResult.html)
 
 [YTMusic#searchVideos](../ytmusic/searchVideos.html)

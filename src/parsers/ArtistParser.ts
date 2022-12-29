@@ -1,10 +1,12 @@
+
+
 import { ArtistBasic, ArtistDetailed, ArtistFull } from "../schemas"
 import checkType from "../utils/checkType"
-import traverse from "../utils/traverse"
 import traverseList from "../utils/traverseList"
 import traverseString from "../utils/traverseString"
 import AlbumParser from "./AlbumParser"
 import SongParser from "./SongParser"
+import VideoParser from "./VideoParser"
 
 export default class ArtistParser {
 	public static parse(data: any, artistId: string): ArtistFull {
@@ -28,7 +30,19 @@ export default class ArtistParser {
 					traverseList(data, "musicCarouselShelfRenderer")
 						?.at(0)
 						?.contents.map((item: any) =>
-							AlbumParser.parseArtistTopAlbums(item, artistBasic)
+							AlbumParser.parseArtistTopAlbum(item, artistBasic)
+						) ?? [],
+				topSingles:
+					traverseList(data, "musicCarouselShelfRenderer")
+						?.at(1)
+						?.contents.map((item: any) =>
+							AlbumParser.parseArtistTopAlbum(item, artistBasic)
+						) ?? [],
+				topVideos:
+					traverseList(data, "musicCarouselShelfRenderer")
+						?.at(2)
+						?.contents.map((item: any) =>
+							VideoParser.parseArtistTopVideo(item, artistBasic)
 						) ?? []
 			},
 			ArtistFull

@@ -74,7 +74,7 @@ export default class AlbumParser {
 		)
 	}
 
-	public static parseArtistTopAlbums(item: any, artistBasic: ArtistBasic): AlbumDetailed {
+	public static parseArtistTopAlbum(item: any, artistBasic: ArtistBasic): AlbumDetailed {
 		return checkType(
 			{
 				type: "ALBUM",

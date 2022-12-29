@@ -11,6 +11,8 @@
 | description | `string`                                                    | Description                          |
 | topSongs    | `Omit<`[SongDetailed](./SongDetailed.html)`, "duration">[]` | Top Songs from Artist                |
 | topAlbums   | [AlbumDetailed](./AlbumDetailed.html)`[]`                   | Top Albums from Artist               |
+| topSingles   | [AlbumDetailed](./AlbumDetailed.html)`[]`                   | Top Singles from Artist               |
+| topVideos    | `Omit<`[VideoDetailed](./VideoDetailed.html)`, "duration">[]` | Top Videos from Artist                |
 
 ## TypeScript Source Code
 
@@ -23,6 +25,8 @@ interface ArtistFull {
 	description: string
 	topSongs: Omit<SongDetailed, "duration">[]
 	topAlbums: AlbumDetailed[]
+	topSingles: AlbumDetailed[]
+	topVideos: Omit<VideoDetailed, "duration">[]
 }
 ```
 

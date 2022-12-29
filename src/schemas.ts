@@ -94,17 +94,10 @@ export const ArtistFull = z.object({
 	type: z.literal("ARTIST"),
 	thumbnails: z.array(ThumbnailFull),
 	description: z.string(),
-	topSongs: z.array(
-		z.object({
-			type: z.literal("SONG"),
-			videoId: z.string(),
-			name: z.string(),
-			artists: z.array(ArtistBasic),
-			album: AlbumBasic,
-			thumbnails: z.array(ThumbnailFull)
-		})
-	),
-	topAlbums: z.array(AlbumDetailed)
+	topSongs: z.array(SongDetailed.omit({ duration: true })),
+	topAlbums: z.array(AlbumDetailed),
+	topSingles: z.array(AlbumDetailed),
+	topVideos: z.array(VideoDetailed.omit({ duration: true }))
 })
 
 export type AlbumFull = z.infer<typeof AlbumFull>
