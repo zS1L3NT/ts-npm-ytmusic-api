@@ -397,7 +397,7 @@ export default class YTMusic {
 		return traverseList(albumsData, "musicTwoRowItemRenderer").map(item =>
 			AlbumParser.parseArtistAlbum(item, {
 				artistId,
-				name: traverseString(albumsData, "header", "text")()
+				name: traverseString(albumsData, "header", "runs", "text")()
 			})
 		)
 	}
