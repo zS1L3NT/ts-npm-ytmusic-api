@@ -13,7 +13,7 @@ export type {
 	SongFull,
 	ThumbnailFull,
 	VideoDetailed,
-	VideoFull
+	VideoFull,
 } from "./schemas"
 
 export default YTMusic

@@ -9,8 +9,16 @@ import SearchParser from "./parsers/SearchParser"
 import SongParser from "./parsers/SongParser"
 import VideoParser from "./parsers/VideoParser"
 import {
-	AlbumDetailed, AlbumFull, ArtistDetailed, ArtistFull, PlaylistFull, SearchResult, SongDetailed,
-	SongFull, VideoDetailed, VideoFull
+	AlbumDetailed,
+	AlbumFull,
+	ArtistDetailed,
+	ArtistFull,
+	PlaylistFull,
+	SearchResult,
+	SongDetailed,
+	SongFull,
+	VideoDetailed,
+	VideoFull,
 } from "./schemas"
 import traverse from "./utils/traverse"
 import traverseList from "./utils/traverseList"
@@ -33,9 +41,9 @@ export default class YTMusic {
 			headers: {
 				"User-Agent":
 					"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.129 Safari/537.36",
-				"Accept-Language": "en-US,en;q=0.5"
+				"Accept-Language": "en-US,en;q=0.5",
 			},
-			withCredentials: true
+			withCredentials: true,
 		})
 
 		this.client.interceptors.request.use(req => {
@@ -89,14 +97,16 @@ export default class YTMusic {
 			.map(s => {
 				try {
 					return JSON.parse(s)
-				} catch {}
+				} catch {
+					return null
+				}
 			})
 			.filter(j => !!j)
 
 		for (const config of configs) {
 			this.config = {
 				...this.config,
-				...config
+				...config,
 			}
 		}
 
@@ -115,7 +125,7 @@ export default class YTMusic {
 	private async constructRequest(
 		endpoint: string,
 		body: Record<string, any> = {},
-		query: Record<string, string> = {}
+		query: Record<string, string> = {},
 	) {
 		if (!this.config) {
 			throw new Error("API not initialized. Make sure to call the initialize() method first")
@@ -131,13 +141,13 @@ export default class YTMusic {
 			"X-YouTube-Page-CL": this.config.PAGE_CL,
 			"X-YouTube-Page-Label": this.config.PAGE_BUILD_LABEL,
 			"X-YouTube-Utc-Offset": String(-new Date().getTimezoneOffset()),
-			"X-YouTube-Time-Zone": new Intl.DateTimeFormat().resolvedOptions().timeZone
+			"X-YouTube-Time-Zone": new Intl.DateTimeFormat().resolvedOptions().timeZone,
 		}
 
 		const searchParams = new URLSearchParams({
 			...query,
 			alt: "json",
-			key: this.config.INNERTUBE_API_KEY!
+			key: this.config.INNERTUBE_API_KEY!,
 		})
 
 		const res = await this.client.post(
@@ -154,42 +164,42 @@ export default class YTMusic {
 						hl: this.config.HL,
 						locationInfo: {
 							locationPermissionAuthorizationStatus:
-								"LOCATION_PERMISSION_AUTHORIZATION_STATUS_UNSUPPORTED"
+								"LOCATION_PERMISSION_AUTHORIZATION_STATUS_UNSUPPORTED",
 						},
 						musicAppInfo: {
 							musicActivityMasterSwitch: "MUSIC_ACTIVITY_MASTER_SWITCH_INDETERMINATE",
 							musicLocationMasterSwitch: "MUSIC_LOCATION_MASTER_SWITCH_INDETERMINATE",
-							pwaInstallabilityStatus: "PWA_INSTALLABILITY_STATUS_UNKNOWN"
+							pwaInstallabilityStatus: "PWA_INSTALLABILITY_STATUS_UNKNOWN",
 						},
-						utcOffsetMinutes: -new Date().getTimezoneOffset()
+						utcOffsetMinutes: -new Date().getTimezoneOffset(),
 					},
 					request: {
 						internalExperimentFlags: [
 							{
 								key: "force_music_enable_outertube_tastebuilder_browse",
-								value: "true"
+								value: "true",
 							},
 							{
 								key: "force_music_enable_outertube_playlist_detail_browse",
-								value: "true"
+								value: "true",
 							},
 							{
 								key: "force_music_enable_outertube_search_suggestions",
-								value: "true"
-							}
+								value: "true",
+							},
 						],
-						sessionIndex: {}
+						sessionIndex: {},
 					},
 					user: {
-						enableSafetyMode: false
-					}
+						enableSafetyMode: false,
+					},
 				},
-				...body
+				...body,
 			},
 			{
 				responseType: "json",
-				headers
-			}
+				headers,
+			},
 		)
 
 		return "responseContext" in res.data ? res.data : res
@@ -204,9 +214,9 @@ export default class YTMusic {
 	public async getSearchSuggestions(query: string): Promise<string[]> {
 		return traverseList(
 			await this.constructRequest("music/get_search_suggestions", {
-				input: query
+				input: query,
 			}),
-			"query"
+			"query",
 		)
 	}
 
@@ -218,7 +228,7 @@ export default class YTMusic {
 	public async search(query: string): Promise<z.infer<typeof SearchResult>[]> {
 		const searchData = await this.constructRequest("search", {
 			query,
-			params: null
+			params: null,
 		})
 
 		return traverseList(searchData, "musicResponsiveListItemRenderer")
@@ -234,11 +244,11 @@ export default class YTMusic {
 	public async searchSongs(query: string): Promise<z.infer<typeof SongDetailed>[]> {
 		const searchData = await this.constructRequest("search", {
 			query,
-			params: "Eg-KAQwIARAAGAAgACgAMABqChAEEAMQCRAFEAo%3D"
+			params: "Eg-KAQwIARAAGAAgACgAMABqChAEEAMQCRAFEAo%3D",
 		})
 
 		return traverseList(searchData, "musicResponsiveListItemRenderer").map(
-			SongParser.parseSearchResult
+			SongParser.parseSearchResult,
 		)
 	}
 
@@ -250,11 +260,11 @@ export default class YTMusic {
 	public async searchVideos(query: string): Promise<z.infer<typeof VideoDetailed>[]> {
 		const searchData = await this.constructRequest("search", {
 			query,
-			params: "Eg-KAQwIABABGAAgACgAMABqChAEEAMQCRAFEAo%3D"
+			params: "Eg-KAQwIABABGAAgACgAMABqChAEEAMQCRAFEAo%3D",
 		})
 
 		return traverseList(searchData, "musicResponsiveListItemRenderer").map(
-			VideoParser.parseSearchResult
+			VideoParser.parseSearchResult,
 		)
 	}
 
@@ -266,11 +276,11 @@ export default class YTMusic {
 	public async searchArtists(query: string): Promise<z.infer<typeof ArtistDetailed>[]> {
 		const searchData = await this.constructRequest("search", {
 			query,
-			params: "Eg-KAQwIABAAGAAgASgAMABqChAEEAMQCRAFEAo%3D"
+			params: "Eg-KAQwIABAAGAAgASgAMABqChAEEAMQCRAFEAo%3D",
 		})
 
 		return traverseList(searchData, "musicResponsiveListItemRenderer").map(
-			ArtistParser.parseSearchResult
+			ArtistParser.parseSearchResult,
 		)
 	}
 
@@ -282,11 +292,11 @@ export default class YTMusic {
 	public async searchAlbums(query: string): Promise<z.infer<typeof AlbumDetailed>[]> {
 		const searchData = await this.constructRequest("search", {
 			query,
-			params: "Eg-KAQwIABAAGAEgACgAMABqChAEEAMQCRAFEAo%3D"
+			params: "Eg-KAQwIABAAGAEgACgAMABqChAEEAMQCRAFEAo%3D",
 		})
 
 		return traverseList(searchData, "musicResponsiveListItemRenderer").map(
-			AlbumParser.parseSearchResult
+			AlbumParser.parseSearchResult,
 		)
 	}
 
@@ -298,11 +308,11 @@ export default class YTMusic {
 	public async searchPlaylists(query: string): Promise<z.infer<typeof PlaylistFull>[]> {
 		const searchData = await this.constructRequest("search", {
 			query,
-			params: "Eg-KAQwIABAAGAAgACgBMABqChAEEAMQCRAFEAo%3D"
+			params: "Eg-KAQwIABAAGAAgACgBMABqChAEEAMQCRAFEAo%3D",
 		})
 
 		return traverseList(searchData, "musicResponsiveListItemRenderer").map(
-			PlaylistParser.parseSearchResult
+			PlaylistParser.parseSearchResult,
 		)
 	}
 
@@ -344,7 +354,7 @@ export default class YTMusic {
 	 */
 	public async getArtist(artistId: string): Promise<z.infer<typeof ArtistFull>> {
 		const data = await this.constructRequest("browse", {
-			browseId: artistId
+			browseId: artistId,
 		})
 
 		return ArtistParser.parse(data, artistId)
@@ -358,25 +368,25 @@ export default class YTMusic {
 	 */
 	public async getArtistSongs(artistId: string): Promise<z.infer<typeof SongDetailed>[]> {
 		const artistData = await this.constructRequest("browse", {
-			browseId: artistId
+			browseId: artistId,
 		})
 		const browseToken = traverse(artistData, "musicShelfRenderer", "title", "browseId")
 
 		if (browseToken instanceof Array) return []
 
 		const songsData = await this.constructRequest("browse", {
-			browseId: browseToken
+			browseId: browseToken,
 		})
 		const continueToken = traverse(songsData, "continuation")
 		const moreSongsData = await this.constructRequest(
 			"browse",
 			{},
-			{ continuation: continueToken }
+			{ continuation: continueToken },
 		)
 
 		return [
 			...traverseList(songsData, "musicResponsiveListItemRenderer"),
-			...traverseList(moreSongsData, "musicResponsiveListItemRenderer")
+			...traverseList(moreSongsData, "musicResponsiveListItemRenderer"),
 		].map(SongParser.parseArtistSong)
 	}
 
@@ -388,7 +398,7 @@ export default class YTMusic {
 	 */
 	public async getArtistAlbums(artistId: string): Promise<z.infer<typeof AlbumDetailed>[]> {
 		const artistData = await this.constructRequest("browse", {
-			browseId: artistId
+			browseId: artistId,
 		})
 		const artistAlbumsData = traverseList(artistData, "musicCarouselShelfRenderer")[0]
 		const browseBody = traverse(artistAlbumsData, "moreContentButton", "browseEndpoint")
@@ -398,8 +408,8 @@ export default class YTMusic {
 		return traverseList(albumsData, "musicTwoRowItemRenderer").map(item =>
 			AlbumParser.parseArtistAlbum(item, {
 				artistId,
-				name: traverseString(albumsData, "header", "runs", "text")()
-			})
+				name: traverseString(albumsData, "header", "runs", "text")(),
+			}),
 		)
 	}
 
@@ -411,7 +421,7 @@ export default class YTMusic {
 	 */
 	public async getAlbum(albumId: string): Promise<z.infer<typeof AlbumFull>> {
 		const data = await this.constructRequest("browse", {
-			browseId: albumId
+			browseId: albumId,
 		})
 
 		return AlbumParser.parse(data, albumId)
@@ -426,7 +436,7 @@ export default class YTMusic {
 	public async getPlaylist(playlistId: string): Promise<z.infer<typeof PlaylistFull>> {
 		if (playlistId.startsWith("PL")) playlistId = "VL" + playlistId
 		const data = await this.constructRequest("browse", {
-			browseId: playlistId
+			browseId: playlistId,
 		})
 
 		return PlaylistParser.parse(data, playlistId)
@@ -441,18 +451,16 @@ export default class YTMusic {
 	public async getPlaylistVideos(playlistId: string): Promise<z.infer<typeof VideoDetailed>[]> {
 		if (playlistId.startsWith("PL")) playlistId = "VL" + playlistId
 		const playlistData = await this.constructRequest("browse", {
-			browseId: playlistId
+			browseId: playlistId,
 		})
 
 		const songs = traverseList(
 			playlistData,
 			"musicPlaylistShelfRenderer",
-			"musicResponsiveListItemRenderer"
+			"musicResponsiveListItemRenderer",
 		)
 		let continuation = traverse(playlistData, "continuation")
-		while (true) {
-			if (continuation instanceof Array) break
-
+		while (!(continuation instanceof Array)) {
 			const songsData = await this.constructRequest("browse", {}, { continuation })
 			songs.push(...traverseList(songsData, "musicResponsiveListItemRenderer"))
 			continuation = traverse(songsData, "continuation")

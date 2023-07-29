@@ -1,6 +1,6 @@
 const traverse = (data: any, ...keys: string[]) => {
 	const again = (data: any, key: string): any => {
-		let res = []
+		const res = []
 
 		if (data instanceof Object && key in data) {
 			res.push(data[key])
@@ -12,7 +12,7 @@ const traverse = (data: any, ...keys: string[]) => {
 			res.push(
 				...Object.keys(data)
 					.map(k => again(data[k], key))
-					.flat()
+					.flat(),
 			)
 		}
 

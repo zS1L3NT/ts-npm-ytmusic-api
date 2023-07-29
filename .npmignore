@@ -7,3 +7,4 @@
 .editorconfig
 .npmrc
 tsconfig.json
+.eslintrc.json

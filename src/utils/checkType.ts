@@ -13,11 +13,11 @@ export default <T extends z.Schema>(data: z.infer<T>, schema: T): z.infer<T> => 
 					{
 						schema: zodtojson(schema),
 						data,
-						error: result.error
+						error: result.error,
 					},
 					null,
-					2
-				)
+					2,
+				),
 			)
 		}
 		return data

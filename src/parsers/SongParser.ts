@@ -14,16 +14,16 @@ export default class SongParser {
 				artists: [
 					{
 						artistId: traverseString(data, "videoDetails", "channelId")(),
-						name: traverseString(data, "author")()
-					}
+						name: traverseString(data, "author")(),
+					},
 				],
 				duration: +traverseString(data, "videoDetails", "lengthSeconds")(),
 				thumbnails: traverseList(data, "videoDetails", "thumbnails"),
 				description: traverseString(data, "description")(),
 				formats: traverseList(data, "streamingData", "formats"),
-				adaptiveFormats: traverseList(data, "streamingData", "adaptiveFormats")
+				adaptiveFormats: traverseList(data, "streamingData", "adaptiveFormats"),
 			},
-			SongFull
+			SongFull,
 		)
 	}
 
@@ -39,17 +39,17 @@ export default class SongParser {
 					.filter(run => "navigationEndpoint" in run)
 					.map(run => ({
 						artistId: traverseString(run, "browseId")(),
-						name: traverseString(run, "text")()
+						name: traverseString(run, "text")(),
 					}))
 					.slice(0, -1),
 				album: {
 					albumId: traverseString(flexColumns[1], "runs", "browseId")(-1),
-					name: traverseString(flexColumns[1], "runs", "text")(-3)
+					name: traverseString(flexColumns[1], "runs", "text")(-3),
 				},
 				duration: Parser.parseDuration(traverseString(flexColumns[1], "runs", "text")(-1)),
-				thumbnails: traverseList(item, "thumbnails")
+				thumbnails: traverseList(item, "thumbnails"),
 			},
-			SongDetailed
+			SongDetailed,
 		)
 	}
 
@@ -66,24 +66,24 @@ export default class SongParser {
 					.filter(run => "navigationEndpoint" in run)
 					.map(run => ({
 						artistId: traverseString(run, "browseId")(),
-						name: traverseString(run, "text")()
+						name: traverseString(run, "text")(),
 					})),
 				album: {
 					albumId: traverseString(flexColumns[2], "browseId")(),
-					name: traverseString(flexColumns[2], "runs", "text")()
+					name: traverseString(flexColumns[2], "runs", "text")(),
 				},
 				duration: Parser.parseDuration(
-					traverseString(item, "fixedColumns", "runs", "text")()
+					traverseString(item, "fixedColumns", "runs", "text")(),
 				),
-				thumbnails: traverseList(item, "thumbnails")
+				thumbnails: traverseList(item, "thumbnails"),
 			},
-			SongDetailed
+			SongDetailed,
 		)
 	}
 
 	public static parseArtistTopSong(
 		item: any,
-		artistBasic: ArtistBasic
+		artistBasic: ArtistBasic,
 	): Omit<SongDetailed, "duration"> {
 		const flexColumns = traverseList(item, "flexColumns")
 		const videoId = traverseString(item, "playlistItemData", "videoId")()
@@ -96,11 +96,11 @@ export default class SongParser {
 				artists: [artistBasic],
 				album: {
 					albumId: traverseString(flexColumns[2], "browseId")(),
-					name: traverseString(flexColumns[2], "runs", "text")()
+					name: traverseString(flexColumns[2], "runs", "text")(),
 				},
-				thumbnails: traverseList(item, "thumbnails")
+				thumbnails: traverseList(item, "thumbnails"),
 			},
-			SongDetailed.omit({ duration: true })
+			SongDetailed.omit({ duration: true }),
 		)
 	}
 
@@ -108,7 +108,7 @@ export default class SongParser {
 		item: any,
 		artists: ArtistBasic[],
 		albumBasic: AlbumBasic,
-		thumbnails: ThumbnailFull[]
+		thumbnails: ThumbnailFull[],
 	): SongDetailed {
 		const flexColumns = traverseList(item, "flexColumns")
 		const videoId = traverseString(item, "playlistItemData", "videoId")()
@@ -121,11 +121,11 @@ export default class SongParser {
 				artists,
 				album: albumBasic,
 				duration: Parser.parseDuration(
-					traverseString(item, "fixedColumns", "runs", "text")()
+					traverseString(item, "fixedColumns", "runs", "text")(),
 				),
-				thumbnails
+				thumbnails,
 			},
-			SongDetailed
+			SongDetailed,
 		)
 	}
 }

@@ -13,7 +13,12 @@
 	"scripts": {
 		"test": "ts-mocha --timeout 30000 src/__tests__/**/*.spec.ts",
 		"docs:dev": "vuepress dev docs",
-		"docs:build": "vuepress build docs"
+		"docs:build": "vuepress build docs",
+		"lint": "eslint src",
+		"lint:fix": "eslint src --fix",
+		"prettier": "prettier src --check",
+		"prettier:fix": "prettier src --write",
+		"clean": "tsc --noEmit && eslint src --fix && prettier src --write"
 	},
 	"dependencies": {
 		"axios": "^0.27.2",
@@ -26,10 +31,17 @@
 		"@types/mocha": "^10.0.1",
 		"@types/node": "^18.11.17",
 		"@types/tough-cookie": "^4.0.2",
+		"@typescript-eslint/eslint-plugin": "latest",
+		"@typescript-eslint/parser": "latest",
 		"@vuepress/plugin-search": "^2.0.0-beta.46",
+		"eslint": "latest",
+		"eslint-config-prettier": "latest",
+		"eslint-plugin-simple-import-sort": "latest",
 		"mocha": "^10.2.0",
 		"mocha.parallel": "^0.15.6",
+		"prettier": "latest",
 		"ts-mocha": "^10.0.0",
+		"ts-node": "^10.9.1",
 		"typescript": "^4.9.4",
 		"vuepress": "^2.0.0-beta.46"
 	},

@@ -1,5 +1,3 @@
-
-
 import { ArtistBasic, ArtistDetailed, ArtistFull } from "../schemas"
 import checkType from "../utils/checkType"
 import traverseList from "../utils/traverseList"
@@ -12,7 +10,7 @@ export default class ArtistParser {
 	public static parse(data: any, artistId: string): ArtistFull {
 		const artistBasic: ArtistBasic = {
 			artistId,
-			name: traverseString(data, "header", "title", "text")()
+			name: traverseString(data, "header", "title", "text")(),
 		}
 
 		const description = traverseString(data, "header", "description", "text")()
@@ -24,28 +22,28 @@ export default class ArtistParser {
 				thumbnails: traverseList(data, "header", "thumbnails"),
 				description,
 				topSongs: traverseList(data, "musicShelfRenderer", "contents").map(item =>
-					SongParser.parseArtistTopSong(item, artistBasic)
+					SongParser.parseArtistTopSong(item, artistBasic),
 				),
 				topAlbums:
 					traverseList(data, "musicCarouselShelfRenderer")
 						?.at(0)
 						?.contents.map((item: any) =>
-							AlbumParser.parseArtistTopAlbum(item, artistBasic)
+							AlbumParser.parseArtistTopAlbum(item, artistBasic),
 						) ?? [],
 				topSingles:
 					traverseList(data, "musicCarouselShelfRenderer")
 						?.at(1)
 						?.contents.map((item: any) =>
-							AlbumParser.parseArtistTopAlbum(item, artistBasic)
+							AlbumParser.parseArtistTopAlbum(item, artistBasic),
 						) ?? [],
 				topVideos:
 					traverseList(data, "musicCarouselShelfRenderer")
 						?.at(2)
 						?.contents.map((item: any) =>
-							VideoParser.parseArtistTopVideo(item, artistBasic)
-						) ?? []
+							VideoParser.parseArtistTopVideo(item, artistBasic),
+						) ?? [],
 			},
-			ArtistFull
+			ArtistFull,
 		)
 	}
 
@@ -57,9 +55,9 @@ export default class ArtistParser {
 				type: "ARTIST",
 				artistId: traverseString(item, "browseId")(),
 				name: traverseString(flexColumns[0], "runs", "text")(),
-				thumbnails: traverseList(item, "thumbnails")
+				thumbnails: traverseList(item, "thumbnails"),
 			},
-			ArtistDetailed
+			ArtistDetailed,
 		)
 	}
 }

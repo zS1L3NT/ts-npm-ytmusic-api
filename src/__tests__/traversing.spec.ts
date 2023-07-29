@@ -1,12 +1,19 @@
+import { equal } from "assert"
 import describeParallel from "mocha.parallel"
 import { z } from "zod"
 
 import {
-	AlbumDetailed, AlbumFull, ArtistDetailed, ArtistFull, PlaylistFull, SongDetailed, SongFull,
-	VideoDetailed, VideoFull
+	AlbumDetailed,
+	AlbumFull,
+	ArtistDetailed,
+	ArtistFull,
+	PlaylistFull,
+	SongDetailed,
+	SongFull,
+	VideoDetailed,
+	VideoFull,
 } from "../schemas"
 import YTMusic from "../YTMusic"
-import { equal } from "assert"
 
 const errors = <z.ZodError<any>[]>[]
 const queries = ["Lilac", "Weekend", "Eill", "Eminem", "Lisa Hannigan"]
@@ -61,8 +68,8 @@ queries.forEach(query => {
 					AlbumDetailed.or(ArtistDetailed)
 						.or(PlaylistFull)
 						.or(SongDetailed)
-						.or(VideoDetailed)
-				)
+						.or(VideoDetailed),
+				),
 			)
 		})
 

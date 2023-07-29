@@ -18,7 +18,7 @@ export default class Parser {
 					K: number * 1000,
 					M: number * 1000 * 1000,
 					B: number * 1000 * 1000 * 1000,
-					T: number * 1000 * 1000 * 1000 * 1000
+					T: number * 1000 * 1000 * 1000 * 1000,
 				}[multiplier!] || NaN
 			)
 		} else {

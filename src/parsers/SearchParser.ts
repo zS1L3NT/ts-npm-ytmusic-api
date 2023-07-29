@@ -17,7 +17,7 @@ export default class SearchParser {
 			| "Single"
 			| "Album"
 			| "Playlist"
-		
+
 		const parsers = {
 			Song: SongParser.parseSearchResult,
 			Video: VideoParser.parseSearchResult,
@@ -25,7 +25,7 @@ export default class SearchParser {
 			EP: AlbumParser.parseSearchResult,
 			Single: AlbumParser.parseSearchResult,
 			Album: AlbumParser.parseSearchResult,
-			Playlist: PlaylistParser.parseSearchResult
+			Playlist: PlaylistParser.parseSearchResult,
 		}
 
 		if (parsers[type]) {

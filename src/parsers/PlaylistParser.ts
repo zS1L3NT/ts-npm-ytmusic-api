@@ -12,11 +12,11 @@ export default class PlaylistParser {
 				name: traverseString(data, "header", "title", "text")(),
 				artist: {
 					artistId: traverseString(data, "header", "subtitle", "browseId")(),
-					name: traverseString(data, "header", "subtitle", "text")(2)
+					name: traverseString(data, "header", "subtitle", "text")(2),
 				},
-				thumbnails: traverseList(data, "header", "thumbnails")
+				thumbnails: traverseList(data, "header", "thumbnails"),
 			},
-			PlaylistFull
+			PlaylistFull,
 		)
 	}
 
@@ -30,11 +30,11 @@ export default class PlaylistParser {
 				name: traverseString(flexColumns[0], "runs", "text")(),
 				artist: {
 					artistId: traverseString(flexColumns[1], "browseId")(),
-					name: traverseString(flexColumns[1], "runs", "text")(-3)
+					name: traverseString(flexColumns[1], "runs", "text")(-3),
 				},
-				thumbnails: traverseList(item, "thumbnails")
+				thumbnails: traverseList(item, "thumbnails"),
 			},
-			PlaylistFull
+			PlaylistFull,
 		)
 	}
 }

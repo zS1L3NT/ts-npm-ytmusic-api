@@ -14,8 +14,8 @@ export default class VideoParser {
 			artists: [
 				{
 					artistId: traverseString(data, "videoDetails", "channelId")(),
-					name: traverseString(data, "author")()
-				}
+					name: traverseString(data, "author")(),
+				},
 			],
 			duration: +traverseString(data, "videoDetails", "lengthSeconds")(),
 			thumbnails: traverseList(data, "videoDetails", "thumbnails"),
@@ -23,7 +23,7 @@ export default class VideoParser {
 			unlisted: traverse(data, "unlisted"),
 			familySafe: traverse(data, "familySafe"),
 			paid: traverse(data, "paid"),
-			tags: traverseList(data, "tags")
+			tags: traverseList(data, "tags"),
 		}
 	}
 
@@ -39,23 +39,23 @@ export default class VideoParser {
 				.filter(run => "navigationEndpoint" in run)
 				.map(run => ({
 					artistId: traverseString(run, "browseId")(),
-					name: traverseString(run, "text")()
+					name: traverseString(run, "text")(),
 				})),
 			duration: Parser.parseDuration(traverseString(flexColumns[1], "text")(-1)),
-			thumbnails: traverseList(item, "thumbnails")
+			thumbnails: traverseList(item, "thumbnails"),
 		}
 	}
 
 	public static parseArtistTopVideo(
 		item: any,
-		artistBasic: ArtistBasic
+		artistBasic: ArtistBasic,
 	): Omit<VideoDetailed, "duration"> {
 		return {
 			type: "VIDEO",
 			videoId: traverseString(item, "videoId")(),
 			name: traverseString(item, "runs", "text")(),
 			artists: [artistBasic],
-			thumbnails: traverseList(item, "thumbnails")
+			thumbnails: traverseList(item, "thumbnails"),
 		}
 	}
 
@@ -74,14 +74,14 @@ export default class VideoParser {
 					.filter(run => "navigationEndpoint" in run)
 					.map(run => ({
 						artistId: traverseString(run, "browseId")(),
-						name: traverseString(run, "text")()
+						name: traverseString(run, "text")(),
 					})),
 				duration: Parser.parseDuration(
-					traverseString(item, "fixedColumns", "runs", "text")()
+					traverseString(item, "fixedColumns", "runs", "text")(),
 				),
-				thumbnails: traverseList(item, "thumbnails")
+				thumbnails: traverseList(item, "thumbnails"),
 			},
-			VideoDetailed
+			VideoDetailed,
 		)
 	}
 }
