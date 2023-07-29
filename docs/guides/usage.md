@@ -17,3 +17,12 @@ In an async context, you can initialize the API in one line
 const ytmusic = await new YTMusic().initialize()
 // Use API here
 ```
+
+## Custom Cookies
+
+If you want to use your own cookies for all requests, you can do so like this
+
+```ts
+const ytmusic = await new YTMusic()
+	.initialize("COOKIES=here; COOKIES=here; COOKIES=here")
+```

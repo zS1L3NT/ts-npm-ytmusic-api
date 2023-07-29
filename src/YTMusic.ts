@@ -57,15 +57,7 @@ export default class YTMusic {
 				if (!res.config.baseURL) return
 
 				const setCookie = res.headers["set-cookie"] as Array<string> | string
-				const cookieStrings: string[] = []
-
-				if (setCookie instanceof Array) {
-					cookieStrings.push(...setCookie)
-				} else {
-					cookieStrings.push(setCookie)
-				}
-
-				for (const cookieString of cookieStrings) {
+				for (const cookieString of [setCookie].flat()) {
 					const cookie = Cookie.parse(`${cookieString}`)
 					if (!cookie) return
 
@@ -79,7 +71,16 @@ export default class YTMusic {
 	/**
 	 * Initializes the API
 	 */
-	public async initialize() {
+	public async initialize(cookies?: string) {
+		if (cookies) {
+			for (const cookieString of cookies.split("; ")) {
+				const cookie = Cookie.parse(`${cookieString}`)
+				if (!cookie) return
+
+				this.cookiejar.setCookieSync(cookie, "https://music.youtube.com/")
+			}
+		}
+
 		const html = (await this.client.get("/")).data as string
 		const setConfigs = html.match(/ytcfg\.set\(.*\)/) || []
 
