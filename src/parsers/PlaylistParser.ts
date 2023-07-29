@@ -22,7 +22,6 @@ export default class PlaylistParser {
 
 	public static parseSearchResult(item: any): PlaylistFull {
 		const flexColumns = traverseList(item, "flexColumns")
-		const artistId = traverseString(flexColumns[1], "browseId")()
 
 		return checkType(
 			{
@@ -30,8 +29,8 @@ export default class PlaylistParser {
 				playlistId: traverseString(item, "overlay", "playlistId")(),
 				name: traverseString(flexColumns[0], "runs", "text")(),
 				artist: {
-					artistId,
-					name: traverseString(flexColumns[1], "runs", "text")(-2)
+					artistId: traverseString(flexColumns[1], "browseId")(),
+					name: traverseString(flexColumns[1], "runs", "text")(0)
 				},
 				thumbnails: traverseList(item, "thumbnails")
 			},
