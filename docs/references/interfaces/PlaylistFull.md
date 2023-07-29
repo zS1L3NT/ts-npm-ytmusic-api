@@ -8,7 +8,6 @@
 | playlistId | `string`                            | Playlist ID                      |
 | name       | `string`                            | Name                             |
 | artist     | [ArtistBasic](#ArtistBasic)         | Creator of the Playlist          |
-| videoCount | `number`                            | Number of videos in the Playlist |
 | thumbnails | [ThumbnailFull](#ThumbnailFull)`[]` | Thumbnails                       |
 
 ## TypeScript Source Code
@@ -19,7 +18,6 @@ interface PlaylistFull {
 	playlistId: string
 	name: string
 	artist: ArtistBasic
-	videoCount: number
 	thumbnails: ThumbnailFull[]
 }
 ```
