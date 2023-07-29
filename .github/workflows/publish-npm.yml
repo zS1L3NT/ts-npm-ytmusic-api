@@ -30,9 +30,9 @@ jobs:
                   echo 'registry=https://registry.npmjs.org/' >> .npmrc
                   echo 'always-auth=true' >> .npmrc
 
-            # - name: Publishing to NPM
-            #   run: |
-            #       pnpm publish --no-git-checks
-            #   env:
-            #       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-            #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Publishing to NPM
+              run: |
+                  pnpm publish --no-git-checks
+              env:
+                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
