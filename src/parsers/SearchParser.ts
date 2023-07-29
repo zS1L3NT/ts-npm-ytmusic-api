@@ -7,7 +7,7 @@ import SongParser from "./SongParser"
 import VideoParser from "./VideoParser"
 
 export default class SearchParser {
-	public static parse(item: any): SearchResult {
+	public static parse(item: any): SearchResult | null {
 		const flexColumns = traverseList(item, "flexColumns")
 		const type = traverseList(flexColumns[1], "runs", "text").at(0) as
 			| "Song"
@@ -17,8 +17,8 @@ export default class SearchParser {
 			| "Single"
 			| "Album"
 			| "Playlist"
-
-		return {
+		
+		const parsers = {
 			Song: SongParser.parseSearchResult,
 			Video: VideoParser.parseSearchResult,
 			Artist: ArtistParser.parseSearchResult,
@@ -26,6 +26,12 @@ export default class SearchParser {
 			Single: AlbumParser.parseSearchResult,
 			Album: AlbumParser.parseSearchResult,
 			Playlist: PlaylistParser.parseSearchResult
-		}[type](item)
+		}
+
+		if (parsers[type]) {
+			return parsers[type](item)
+		} else {
+			return null
+		}
 	}
 }

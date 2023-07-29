@@ -14,11 +14,6 @@ export default class PlaylistParser {
 					artistId: traverseString(data, "header", "subtitle", "browseId")(),
 					name: traverseString(data, "header", "subtitle", "text")(2)
 				},
-				videoCount: +traverseList(data, "header", "secondSubtitle", "text")
-					.at(0)
-					.split(" ")
-					.at(0)
-					.replaceAll(",", ""),
 				thumbnails: traverseList(data, "header", "thumbnails")
 			},
 			PlaylistFull
@@ -27,7 +22,6 @@ export default class PlaylistParser {
 
 	public static parseSearchResult(item: any): PlaylistFull {
 		const flexColumns = traverseList(item, "flexColumns")
-		const artistId = traverseString(flexColumns[1], "browseId")()
 
 		return checkType(
 			{
@@ -35,14 +29,9 @@ export default class PlaylistParser {
 				playlistId: traverseString(item, "overlay", "playlistId")(),
 				name: traverseString(flexColumns[0], "runs", "text")(),
 				artist: {
-					artistId,
-					name: traverseString(flexColumns[1], "runs", "text")(-2)
+					artistId: traverseString(flexColumns[1], "browseId")(),
+					name: traverseString(flexColumns[1], "runs", "text")(-3)
 				},
-				videoCount: +traverseList(flexColumns[1], "runs", "text")
-					.at(-1)
-					.split(" ")
-					.at(0)
-					.replaceAll(",", ""),
 				thumbnails: traverseList(item, "thumbnails")
 			},
 			PlaylistFull

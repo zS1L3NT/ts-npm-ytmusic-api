@@ -1,4 +1,3 @@
-import assert from "assert"
 import describeParallel from "mocha.parallel"
 import { z } from "zod"
 
@@ -7,15 +6,16 @@ import {
 	VideoDetailed, VideoFull
 } from "../schemas"
 import YTMusic from "../YTMusic"
+import { equal } from "assert"
 
 const errors = <z.ZodError<any>[]>[]
 const queries = ["Lilac", "Weekend", "Eill", "Eminem", "Lisa Hannigan"]
 const expect = (data: any, schema: z.Schema) => {
 	const result = schema.safeParse(data)
-	if (!result.success) {
+	if (!result.success && "error" in result) {
 		errors.push(result.error)
 	}
-	assert.equal(result.success, true)
+	equal(result.success, true)
 }
 
 const ytmusic = new YTMusic()

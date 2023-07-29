@@ -119,7 +119,6 @@ export const PlaylistFull = z.object({
 	playlistId: z.string(),
 	name: z.string(),
 	artist: ArtistBasic,
-	videoCount: z.number(),
 	thumbnails: z.array(ThumbnailFull)
 })
 
