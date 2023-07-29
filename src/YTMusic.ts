@@ -220,7 +220,9 @@ export default class YTMusic {
 			params: null
 		})
 
-		return traverseList(searchData, "musicResponsiveListItemRenderer").map(SearchParser.parse)
+		return traverseList(searchData, "musicResponsiveListItemRenderer")
+			.map(SearchParser.parse)
+			.filter(Boolean) as z.infer<typeof SearchResult>[]
 	}
 
 	/**

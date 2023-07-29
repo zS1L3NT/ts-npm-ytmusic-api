@@ -30,7 +30,7 @@ export default class PlaylistParser {
 				name: traverseString(flexColumns[0], "runs", "text")(),
 				artist: {
 					artistId: traverseString(flexColumns[1], "browseId")(),
-					name: traverseString(flexColumns[1], "runs", "text")(0)
+					name: traverseString(flexColumns[1], "runs", "text")(-3)
 				},
 				thumbnails: traverseList(item, "thumbnails")
 			},
