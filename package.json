@@ -11,6 +11,7 @@
 		"url": "https://github.com/zS1L3NT/ts-npm-ytmusic-api"
 	},
 	"scripts": {
+		"build": "tsc",
 		"test": "ts-mocha --timeout 30000 src/__tests__/**/*.spec.ts",
 		"docs:dev": "vuepress dev docs",
 		"docs:build": "vuepress build docs",
@@ -42,7 +43,7 @@
 		"prettier": "latest",
 		"ts-mocha": "^10.0.0",
 		"ts-node": "^10.9.1",
-		"typescript": "^4.9.4",
+		"typescript": "latest",
 		"vuepress": "^2.0.0-beta.46"
 	},
 	"keywords": [
