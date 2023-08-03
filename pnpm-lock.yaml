@@ -409,14 +409,14 @@ packages:
       eslint-visitor-keys: 3.4.2
     dev: true
 
-  /@vitejs/plugin-vue@2.3.3(vite@2.9.9)(vue@3.2.36):
+  /@vitejs/plugin-vue@2.3.3(vite@2.9.16)(vue@3.2.36):
     resolution: {integrity: sha512-SmQLDyhz+6lGJhPELsBdzXGc+AcaT8stgkbiTFGpXPe8Tl1tJaBw1A6pxDqDuRsVkD8uscrkx3hA7QDOoKYtyw==}
     engines: {node: '>=12.0.0'}
     peerDependencies:
       vite: ^2.5.10
       vue: ^3.2.25
     dependencies:
-      vite: 2.9.9
+      vite: 2.9.16
       vue: 3.2.36
     dev: true
 
@@ -510,7 +510,7 @@ packages:
   /@vuepress/bundler-vite@2.0.0-beta.46:
     resolution: {integrity: sha512-lS0DKLiWzPHRVLOEViExKrApEYX661LsDf/lNFu5du1iqmNSNi3BvZbXUHnupzM8h02uOSa/VP6jzawWINqkYg==}
     dependencies:
-      '@vitejs/plugin-vue': 2.3.3(vite@2.9.9)(vue@3.2.36)
+      '@vitejs/plugin-vue': 2.3.3(vite@2.9.16)(vue@3.2.36)
       '@vuepress/client': 2.0.0-beta.46
       '@vuepress/core': 2.0.0-beta.46
       '@vuepress/shared': 2.0.0-beta.46
@@ -519,7 +519,7 @@ packages:
       connect-history-api-fallback: 1.6.0
       postcss: 8.4.14
       rollup: 2.75.3
-      vite: 2.9.9
+      vite: 2.9.16
       vue: 3.2.36
       vue-router: 4.0.15(vue@3.2.36)
     transitivePeerDependencies:
@@ -2668,8 +2668,8 @@ packages:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
     dev: true
 
-  /vite@2.9.9:
-    resolution: {integrity: sha512-ffaam+NgHfbEmfw/Vuh6BHKKlI/XIAhxE5QSS7gFLIngxg171mg1P3a4LSRME0z2ZU1ScxoKzphkipcYwSD5Ew==}
+  /vite@2.9.16:
+    resolution: {integrity: sha512-X+6q8KPyeuBvTQV8AVSnKDvXoBMnTx8zxh54sOwmmuOdxkjMmEJXH2UEchA+vTMps1xw9vL64uwJOWryULg7nA==}
     engines: {node: '>=12.2.0'}
     hasBin: true
     peerDependencies:
