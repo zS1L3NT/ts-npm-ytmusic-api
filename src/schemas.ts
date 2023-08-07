@@ -59,6 +59,15 @@ export const AlbumDetailed = z.object({
 	thumbnails: z.array(ThumbnailFull),
 })
 
+export type PlaylistDetailed = z.infer<typeof PlaylistDetailed>
+export const PlaylistDetailed = z.object({
+	type: z.literal("PLAYLIST"),
+	playlistId: z.string(),
+	name: z.string(),
+	artist: ArtistBasic,
+	thumbnails: z.array(ThumbnailFull),
+})
+
 export type SongFull = z.infer<typeof SongFull>
 export const SongFull = z.object({
 	type: z.literal("SONG"),
@@ -119,6 +128,7 @@ export const PlaylistFull = z.object({
 	playlistId: z.string(),
 	name: z.string(),
 	artist: ArtistBasic,
+	videoCount: z.number(),
 	thumbnails: z.array(ThumbnailFull),
 })
 
@@ -126,4 +136,4 @@ export type SearchResult = z.infer<typeof SearchResult>
 export const SearchResult = SongDetailed.or(VideoDetailed)
 	.or(AlbumDetailed)
 	.or(ArtistDetailed)
-	.or(PlaylistFull)
+	.or(PlaylistDetailed)

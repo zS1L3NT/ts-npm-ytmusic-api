@@ -7,6 +7,7 @@ import {
 	AlbumFull,
 	ArtistDetailed,
 	ArtistFull,
+	PlaylistDetailed,
 	PlaylistFull,
 	SongDetailed,
 	SongFull,
@@ -57,7 +58,7 @@ queries.forEach(query => {
 
 		it("Search Playlists", async () => {
 			const playlists = await ytmusic.searchPlaylists(query)
-			expect(playlists, z.array(PlaylistFull))
+			expect(playlists, z.array(PlaylistDetailed))
 		})
 
 		it("Search All", async () => {
@@ -66,7 +67,7 @@ queries.forEach(query => {
 				results,
 				z.array(
 					AlbumDetailed.or(ArtistDetailed)
-						.or(PlaylistFull)
+						.or(PlaylistDetailed)
 						.or(SongDetailed)
 						.or(VideoDetailed),
 				),

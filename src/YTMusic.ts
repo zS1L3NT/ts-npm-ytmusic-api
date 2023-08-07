@@ -13,6 +13,7 @@ import {
 	AlbumFull,
 	ArtistDetailed,
 	ArtistFull,
+	PlaylistDetailed,
 	PlaylistFull,
 	SearchResult,
 	SongDetailed,
@@ -305,7 +306,7 @@ export default class YTMusic {
 	 *
 	 * @param query Query string
 	 */
-	public async searchPlaylists(query: string): Promise<z.infer<typeof PlaylistFull>[]> {
+	public async searchPlaylists(query: string): Promise<z.infer<typeof PlaylistDetailed>[]> {
 		const searchData = await this.constructRequest("search", {
 			query,
 			params: "Eg-KAQwIABAAGAAgACgBMABqChAEEAMQCRAFEAo%3D",

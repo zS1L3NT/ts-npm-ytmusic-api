@@ -10,10 +10,10 @@ See the [guide](../../guides/usage/searchPlaylists.html) for information on how 
 
 ## Returns
 
-`Promise<`[PlaylistFull](../interfaces/PlaylistFull.html)`[]>`
+`Promise<`[PlaylistDetailed](../interfaces/PlaylistDetailed.html)`[]>`
 
 ## TypeScript Source Code
 
 ```ts
-public async searchPlaylists(query: string): Promise<PlaylistFull[]>
+public async searchPlaylists(query: string): Promise<PlaylistDetailed[]>
 ```

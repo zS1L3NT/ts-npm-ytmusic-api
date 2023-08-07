@@ -1,4 +1,4 @@
-# PlaylistFull
+# PlaylistDetailed
 
 ## Properties
 
@@ -8,22 +8,22 @@
 | playlistId | `string`                            | Playlist ID                      |
 | name       | `string`                            | Name                             |
 | artist     | [ArtistBasic](#ArtistBasic)         | Creator of the Playlist          |
-| videoCount | `number`                    | Number of videos in the Playlist |
 | thumbnails | [ThumbnailFull](#ThumbnailFull)`[]` | Thumbnails                       |
 
 ## TypeScript Source Code
 
 ```ts
-interface PlaylistFull {
+interface PlaylistDetailed {
 	type: "PLAYLIST"
 	playlistId: string
 	name: string
 	artist: ArtistBasic
-	videoCount: number
 	thumbnails: ThumbnailFull[]
 }
 ```
 
 ## Usages
 
-[YTMusic#getPlaylist](../ytmusic/getPlaylist.html)
+[SearchResult](../types/SearchResult.html)
+
+[YTMusic#searchPlaylists](../ytmusic/searchPlaylists.html)

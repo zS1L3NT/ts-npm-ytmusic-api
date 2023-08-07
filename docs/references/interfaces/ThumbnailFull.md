@@ -28,4 +28,6 @@ interface ThumbnailFull {
 
 [AlbumDetailed#thumbnails](./AlbumDetailed.html)
 
+[PlaylistDetailed#thumbnails](./PlaylistDetailed.html)
+
 [PlaylistFull#thumbnails](./PlaylistFull.html)

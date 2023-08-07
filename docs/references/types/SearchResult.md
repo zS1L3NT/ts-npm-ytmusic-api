@@ -8,7 +8,7 @@ Either
 -   [VideoDetailed](../interfaces/VideoDetailed.html)
 -   [AlbumDetailed](../interfaces/AlbumDetailed.html)
 -   [ArtistDetailed](../interfaces/ArtistDetailed.html)
--   [PlaylistFull](../interfaces/PlaylistFull.html)
+-   [PlaylistDetailed](../interfaces/PlaylistDetailed.html)
 
 ## TypeScript Source Code
 
@@ -18,7 +18,7 @@ type SearchResult =
 	| VideoDetailed
 	| AlbumDetailed
 	| ArtistDetailed
-	| PlaylistFull
+	| PlaylistDetailed
 ```
 
 ## Usages

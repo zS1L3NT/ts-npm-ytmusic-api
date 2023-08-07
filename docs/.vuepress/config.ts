@@ -227,6 +227,10 @@ export default defineUserConfig({
 								link: "/references/interfaces/AlbumFull.html"
 							},
 							{
+								text: "PlaylistDetailed",
+								link: "/references/interfaces/PlaylistDetailed.html"
+							},
+							{
 								text: "PlaylistFull",
 								link: "/references/interfaces/PlaylistFull.html"
 							}

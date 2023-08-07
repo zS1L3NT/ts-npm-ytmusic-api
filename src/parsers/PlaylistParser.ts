@@ -1,4 +1,4 @@
-import { PlaylistFull } from "../schemas"
+import { PlaylistDetailed, PlaylistFull } from "../schemas"
 import checkType from "../utils/checkType"
 import traverseList from "../utils/traverseList"
 import traverseString from "../utils/traverseString"
@@ -14,13 +14,19 @@ export default class PlaylistParser {
 					artistId: traverseString(data, "header", "subtitle", "browseId")(),
 					name: traverseString(data, "header", "subtitle", "text")(2),
 				},
+				videoCount:
+					+traverseList(data, "header", "secondSubtitle", "text")
+						.at(2)
+						.split(" ")
+						.at(0)
+						.replaceAll(",", "") ?? null,
 				thumbnails: traverseList(data, "header", "thumbnails"),
 			},
 			PlaylistFull,
 		)
 	}
 
-	public static parseSearchResult(item: any): PlaylistFull {
+	public static parseSearchResult(item: any): PlaylistDetailed {
 		const flexColumns = traverseList(item, "flexColumns")
 
 		return checkType(
@@ -34,7 +40,7 @@ export default class PlaylistParser {
 				},
 				thumbnails: traverseList(item, "thumbnails"),
 			},
-			PlaylistFull,
+			PlaylistDetailed,
 		)
 	}
 }

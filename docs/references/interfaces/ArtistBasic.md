@@ -24,4 +24,6 @@ interface ArtistBasic {
 
 [AlbumDetailed#artists](./AlbumDetailed.html)
 
+[PlaylistDetailed#artist](./PlaylistDetailed.html)
+
 [PlaylistFull#artist](./PlaylistFull.html)

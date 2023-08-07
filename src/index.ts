@@ -7,6 +7,7 @@ export type {
 	ArtistBasic,
 	ArtistDetailed,
 	ArtistFull,
+	PlaylistDetailed,
 	PlaylistFull,
 	SearchResult,
 	SongDetailed,

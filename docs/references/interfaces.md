@@ -11,4 +11,5 @@
 -   [AlbumBasic](./interfaces/AlbumBasic.html)
 -   [AlbumDetailed](./interfaces/AlbumDetailed.html)
 -   [AlbumFull](./interfaces/AlbumFull.html)
+-   [PlaylistDetailed](./interfaces/PlaylistDetailed.html)
 -   [PlaylistFull](./interfaces/PlaylistFull.html)
