@@ -107,6 +107,8 @@ export const ArtistFull = z.object({
 	topAlbums: z.array(AlbumDetailed),
 	topSingles: z.array(AlbumDetailed),
 	topVideos: z.array(VideoDetailed.omit({ duration: true })),
+    featuredOn: z.array(PlaylistDetailed),
+    similarArtists: z.array(ArtistDetailed),
 })
 
 export type AlbumFull = z.infer<typeof AlbumFull>
