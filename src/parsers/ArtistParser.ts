@@ -54,7 +54,7 @@ export default class ArtistParser {
 						?.at(4)
 						?.contents.map((item: any) =>
                         	this.parseSimilarArtists(item),
-					) ?? [],
+						) ?? [],
 			},
 			ArtistFull,
 		)
