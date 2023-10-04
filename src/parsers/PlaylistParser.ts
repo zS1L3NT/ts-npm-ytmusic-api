@@ -43,4 +43,20 @@ export default class PlaylistParser {
 			PlaylistDetailed,
 		)
 	}
+
+	public static parseArtistFeaturedOn(item: any): PlaylistDetailed {
+		return checkType(
+			{
+				type: "PLAYLIST",
+				playlistId: traverseString(item, "navigationEndpoint", "browseId")(),
+				name: traverseString(item, "runs", "text")(),
+				artist: {
+					artistId: traverseString(item, "browseId")(),
+					name: traverseString(item, "runs", "text")(-3),
+				},
+				thumbnails: traverseList(item, "thumbnails"),
+			},
+			PlaylistDetailed,
+		)
+	}
 }
