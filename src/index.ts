@@ -15,6 +15,6 @@ export type {
 	ThumbnailFull,
 	VideoDetailed,
 	VideoFull,
-} from "./schemas"
+} from "./@types/types"
 
 export default YTMusic

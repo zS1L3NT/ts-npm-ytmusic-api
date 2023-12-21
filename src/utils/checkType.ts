@@ -1,17 +1,16 @@
-import { z } from "zod"
-import zodtojson from "zod-to-json-schema"
+import { Type } from "arktype"
 
-export default <T extends z.Schema>(data: z.infer<T>, schema: T): z.infer<T> => {
-	const result = schema.safeParse(data)
-	if (result.success) {
-		return data
+export default <T>(data: T, type: Type<T>): T => {
+	const result = type(data)
+	if (result.data) {
+		return result.data as T
 	} else {
 		if ("error" in result) {
 			console.error(
-				"Invalid data schema, please report to https://github.com/zS1L3NT/ts-npm-ytmusic-api/issues/new/choose",
+				"Invalid data type, please report to https://github.com/zS1L3NT/ts-npm-ytmusic-api/issues/new/choose",
 				JSON.stringify(
 					{
-						schema: zodtojson(schema),
+						type: type.definition,
 						data,
 						error: result.error,
 					},

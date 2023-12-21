@@ -1,4 +1,4 @@
-import { SearchResult } from "../schemas"
+import { SearchResult } from "../@types/types"
 import traverseList from "../utils/traverseList"
 import AlbumParser from "./AlbumParser"
 import ArtistParser from "./ArtistParser"

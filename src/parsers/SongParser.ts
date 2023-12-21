@@ -1,4 +1,4 @@
-import { AlbumBasic, ArtistBasic, SongDetailed, SongFull, ThumbnailFull } from "../schemas"
+import { AlbumBasic, ArtistBasic, SongDetailed, SongFull, ThumbnailFull } from "../@types/types"
 import checkType from "../utils/checkType"
 import traverseList from "../utils/traverseList"
 import traverseString from "../utils/traverseString"
@@ -81,10 +81,7 @@ export default class SongParser {
 		)
 	}
 
-	public static parseArtistTopSong(
-		item: any,
-		artistBasic: ArtistBasic,
-	): Omit<SongDetailed, "duration"> {
+	public static parseArtistTopSong(item: any, artistBasic: ArtistBasic): SongDetailed {
 		const flexColumns = traverseList(item, "flexColumns")
 		const videoId = traverseString(item, "playlistItemData", "videoId")()
 
@@ -98,9 +95,10 @@ export default class SongParser {
 					albumId: traverseString(flexColumns[2], "browseId")(),
 					name: traverseString(flexColumns[2], "runs", "text")(),
 				},
+				duration: null,
 				thumbnails: traverseList(item, "thumbnails"),
 			},
-			SongDetailed.omit({ duration: true }),
+			SongDetailed,
 		)
 	}
 

@@ -17,13 +17,11 @@
 		"clean": "tsc --noEmit && eslint src --fix && prettier src --write && rm tsconfig.tsbuildinfo"
 	},
 	"dependencies": {
+		"arktype": "^1.0.28-alpha",
 		"axios": "^0.27.2",
-		"tough-cookie": "^4.1.2",
-		"zod": "^3.20.2",
-		"zod-to-json-schema": "^3.20.1"
+		"tough-cookie": "^4.1.2"
 	},
 	"devDependencies": {
-		"@types/json-schema": "^7.0.11",
 		"@types/tough-cookie": "^4.0.2",
 		"@typescript-eslint/eslint-plugin": "latest",
 		"@typescript-eslint/parser": "latest",

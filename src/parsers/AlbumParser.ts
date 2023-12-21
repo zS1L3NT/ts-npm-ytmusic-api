@@ -1,4 +1,4 @@
-import { AlbumBasic, AlbumDetailed, AlbumFull, ArtistBasic } from "../schemas"
+import { AlbumBasic, AlbumDetailed, AlbumFull, ArtistBasic } from "../@types/types"
 import checkType from "../utils/checkType"
 import traverseList from "../utils/traverseList"
 import traverseString from "../utils/traverseString"

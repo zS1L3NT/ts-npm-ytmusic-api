@@ -1,4 +1,4 @@
-import { PlaylistDetailed, PlaylistFull } from "../schemas"
+import { PlaylistDetailed, PlaylistFull } from "../@types/types"
 import checkType from "../utils/checkType"
 import traverseList from "../utils/traverseList"
 import traverseString from "../utils/traverseString"

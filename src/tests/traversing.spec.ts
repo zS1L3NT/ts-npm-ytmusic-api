@@ -1,6 +1,6 @@
+import { arrayOf, Problem, Type, type } from "arktype"
 import { equal } from "assert"
 import { afterAll, beforeAll, describe, it } from "bun:test"
-import { z } from "zod"
 
 import {
 	AlbumDetailed,
@@ -9,21 +9,22 @@ import {
 	ArtistFull,
 	PlaylistDetailed,
 	PlaylistFull,
+	SearchResult,
 	SongDetailed,
 	SongFull,
 	VideoDetailed,
 	VideoFull,
-} from "../schemas"
+} from "../@types/types"
 import YTMusic from "../YTMusic"
 
-const errors = <z.ZodError<any>[]>[]
+const errors: Problem[] = []
 const queries = ["Lilac", "Weekend", "Eill", "Eminem", "Lisa Hannigan"]
-const expect = (data: any, schema: z.Schema) => {
-	const result = schema.safeParse(data)
-	if (!result.success && "error" in result) {
-		errors.push(result.error)
+const expect = (data: any, type: Type) => {
+	const result = type(data)
+	if (!result.data && "problems" in result) {
+		errors.push(...result.problems!)
 	}
-	equal(result.success, true)
+	equal(!!result.data, true)
 }
 
 const ytmusic = new YTMusic()
@@ -33,45 +34,37 @@ queries.forEach(query => {
 	describe("Query: " + query, () => {
 		it("Search suggestions", async () => {
 			const suggestions = await ytmusic.getSearchSuggestions(query)
-			expect(suggestions, z.array(z.string()))
+			expect(suggestions, type("string[]"))
 		})
 
 		it("Search Songs", async () => {
 			const songs = await ytmusic.searchSongs(query)
-			expect(songs, z.array(SongDetailed))
+			expect(songs, arrayOf(SongDetailed))
 		})
 
 		it("Search Videos", async () => {
 			const videos = await ytmusic.searchVideos(query)
-			expect(videos, z.array(VideoDetailed))
+			expect(videos, arrayOf(VideoDetailed))
 		})
 
 		it("Search Artists", async () => {
 			const artists = await ytmusic.searchArtists(query)
-			expect(artists, z.array(ArtistDetailed))
+			expect(artists, arrayOf(ArtistDetailed))
 		})
 
 		it("Search Albums", async () => {
 			const albums = await ytmusic.searchAlbums(query)
-			expect(albums, z.array(AlbumDetailed))
+			expect(albums, arrayOf(AlbumDetailed))
 		})
 
 		it("Search Playlists", async () => {
 			const playlists = await ytmusic.searchPlaylists(query)
-			expect(playlists, z.array(PlaylistDetailed))
+			expect(playlists, arrayOf(PlaylistDetailed))
 		})
 
 		it("Search All", async () => {
 			const results = await ytmusic.search(query)
-			expect(
-				results,
-				z.array(
-					AlbumDetailed.or(ArtistDetailed)
-						.or(PlaylistDetailed)
-						.or(SongDetailed)
-						.or(VideoDetailed),
-				),
-			)
+			expect(results, arrayOf(SearchResult))
 		})
 
 		it("Get details of the first song result", async () => {
@@ -95,13 +88,13 @@ queries.forEach(query => {
 		it("Get the songs of the first artist result", async () => {
 			const artists = await ytmusic.searchArtists(query)
 			const songs = await ytmusic.getArtistSongs(artists[0]!.artistId)
-			expect(songs, z.array(SongDetailed))
+			expect(songs, arrayOf(SongDetailed))
 		})
 
 		it("Get the albums of the first artist result", async () => {
 			const artists = await ytmusic.searchArtists(query)
 			const albums = await ytmusic.getArtistAlbums(artists[0]!.artistId)
-			expect(albums, z.array(AlbumDetailed))
+			expect(albums, arrayOf(AlbumDetailed))
 		})
 
 		it("Get details of the first album result", async () => {
@@ -119,7 +112,7 @@ queries.forEach(query => {
 		it("Get the videos of the first playlist result", async () => {
 			const playlists = await ytmusic.searchPlaylists(query)
 			const videos = await ytmusic.getPlaylistVideos(playlists[0]!.playlistId)
-			expect(videos, z.array(VideoDetailed))
+			expect(videos, arrayOf(VideoDetailed))
 		})
 	})
 })

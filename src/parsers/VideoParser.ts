@@ -1,4 +1,4 @@
-import { ArtistBasic, VideoDetailed, VideoFull } from "../schemas"
+import { ArtistBasic, VideoDetailed, VideoFull } from "../@types/types"
 import checkType from "../utils/checkType"
 import traverse from "../utils/traverse"
 import traverseList from "../utils/traverseList"
@@ -46,15 +46,13 @@ export default class VideoParser {
 		}
 	}
 
-	public static parseArtistTopVideo(
-		item: any,
-		artistBasic: ArtistBasic,
-	): Omit<VideoDetailed, "duration"> {
+	public static parseArtistTopVideo(item: any, artistBasic: ArtistBasic): VideoDetailed {
 		return {
 			type: "VIDEO",
 			videoId: traverseString(item, "videoId")(),
 			name: traverseString(item, "runs", "text")(),
 			artists: [artistBasic],
+			duration: null,
 			thumbnails: traverseList(item, "thumbnails"),
 		}
 	}
