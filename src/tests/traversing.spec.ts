@@ -1,5 +1,5 @@
 import { equal } from "assert"
-import describeParallel from "mocha.parallel"
+import { afterAll, beforeAll, describe, it } from "bun:test"
 import { z } from "zod"
 
 import {
@@ -27,10 +27,10 @@ const expect = (data: any, schema: z.Schema) => {
 }
 
 const ytmusic = new YTMusic()
-before(() => ytmusic.initialize())
+beforeAll(() => ytmusic.initialize())
 
 queries.forEach(query => {
-	describeParallel("Query: " + query, () => {
+	describe("Query: " + query, () => {
 		it("Search suggestions", async () => {
 			const suggestions = await ytmusic.getSearchSuggestions(query)
 			expect(suggestions, z.array(z.string()))
@@ -124,4 +124,4 @@ queries.forEach(query => {
 	})
 })
 
-after(() => console.log("Issues:", errors))
+afterAll(() => console.log("Issues:", errors))

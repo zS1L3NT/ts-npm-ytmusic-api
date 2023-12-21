@@ -1,10 +1,10 @@
 {
 	"name": "ytmusic-api",
-	"version": "4.4.0",
+	"version": "4.5.0",
 	"description": "YouTube Music API",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
-	"author": "zS1L3NT <zechariahtan144@gmail.com> (http://www.zectan.com)",
+	"author": "zS1L3NT <dev@zectan.com> (http://www.zectan.com)",
 	"license": "GPL-3.0",
 	"repository": {
 		"type": "git",
@@ -12,14 +12,9 @@
 	},
 	"scripts": {
 		"build": "tsc",
-		"test": "ts-mocha --timeout 30000 src/__tests__/**/*.spec.ts",
 		"docs:dev": "vuepress dev docs",
 		"docs:build": "vuepress build docs",
-		"lint": "eslint src",
-		"lint:fix": "eslint src --fix",
-		"prettier": "prettier src --check",
-		"prettier:fix": "prettier src --write",
-		"clean": "tsc --noEmit && eslint src --fix && prettier src --write"
+		"clean": "tsc --noEmit && eslint src --fix && prettier src --write && rm tsconfig.tsbuildinfo"
 	},
 	"dependencies": {
 		"axios": "^0.27.2",
@@ -29,20 +24,15 @@
 	},
 	"devDependencies": {
 		"@types/json-schema": "^7.0.11",
-		"@types/mocha": "^10.0.1",
-		"@types/node": "^18.11.17",
 		"@types/tough-cookie": "^4.0.2",
 		"@typescript-eslint/eslint-plugin": "latest",
 		"@typescript-eslint/parser": "latest",
 		"@vuepress/plugin-search": "^2.0.0-beta.46",
+		"bun-types": "^1.0.18-1",
 		"eslint": "latest",
 		"eslint-config-prettier": "latest",
 		"eslint-plugin-simple-import-sort": "latest",
-		"mocha": "^10.2.0",
-		"mocha.parallel": "^0.15.6",
 		"prettier": "latest",
-		"ts-mocha": "^10.0.0",
-		"ts-node": "^10.9.1",
 		"typescript": "latest",
 		"vuepress": "^2.0.0-beta.46"
 	},

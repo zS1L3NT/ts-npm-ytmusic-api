@@ -2,16 +2,16 @@
 	"compilerOptions": {
 		/** Transpiler */
 		"target": "esnext",
-		"lib": ["esnext"], // "dom", "dom.iterable", "esnext"
-		"module": "commonjs", // esnext
-		"moduleResolution": "node",
+		"lib": ["esnext"],
+		"module": "esnext",
+		"moduleResolution": "bundler",
 		"esModuleInterop": true,
 		"allowSyntheticDefaultImports": true,
 
 		/** Project */
 		"rootDir": "src",
 		"outDir": "dist",
-		"typeRoots": ["./node_modules/@types", "./src/@types"],
+		"types": ["bun-types"],
 		"declaration": true,
 
 		/** Type Checking */
@@ -28,16 +28,15 @@
 		"noImplicitOverride": true,
 		"allowUnusedLabels": true,
 		"resolveJsonModule": true,
-		"forceConsistentCasingInFileNames": true
+		"forceConsistentCasingInFileNames": true,
 
 		/** Other */
-		// "noEmit": true,
-		// "allowJs": true,
-		// "jsx": "react-jsx",
-		// "skipLibCheck": true,
-		// "isolatedModules": true,
-		// "incremental": true
+		"noEmit": true,
+		"allowJs": true,
+		"jsx": "react-jsx",
+		"skipLibCheck": true,
+		"isolatedModules": true,
+		"incremental": true
 	},
-	"include": ["src"],
-	"exclude": ["src/__tests__"]
+	"include": ["src", "src/tests"]
 }

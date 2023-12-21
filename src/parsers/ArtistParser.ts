@@ -3,9 +3,9 @@ import checkType from "../utils/checkType"
 import traverseList from "../utils/traverseList"
 import traverseString from "../utils/traverseString"
 import AlbumParser from "./AlbumParser"
+import PlaylistParser from "./PlaylistParser"
 import SongParser from "./SongParser"
 import VideoParser from "./VideoParser"
-import PlaylistParser from "./PlaylistParser";
 
 export default class ArtistParser {
 	public static parse(data: any, artistId: string): ArtistFull {
@@ -46,15 +46,12 @@ export default class ArtistParser {
 				featuredOn:
 					traverseList(data, "musicCarouselShelfRenderer")
 						?.at(3)
-						?.contents.map((item: any) =>
-							PlaylistParser.parseArtistFeaturedOn(item),
-						) ?? [],
+						?.contents.map((item: any) => PlaylistParser.parseArtistFeaturedOn(item)) ??
+					[],
 				similarArtists:
 					traverseList(data, "musicCarouselShelfRenderer")
 						?.at(4)
-						?.contents.map((item: any) =>
-                        	this.parseSimilarArtists(item),
-						) ?? [],
+						?.contents.map((item: any) => this.parseSimilarArtists(item)) ?? [],
 			},
 			ArtistFull,
 		)
