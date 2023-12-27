@@ -347,6 +347,23 @@ export default class YTMusic {
 	}
 
 	/**
+	 * Get lyrics of a specific Song
+	 * 
+	 * @param videoId Video ID
+	 * @returns Lyrics
+	 */
+	public async getLyrics(videoId: string) {
+		if (!videoId.match(/^[a-zA-Z0-9-_]{11}$/)) throw new Error("Invalid videoId")
+		const data = await this.constructRequest("next", { videoId })
+		const browseId = traverse(traverseList(data, "tabs", "tabRenderer")[1], "browseId")
+
+		const lyricsData = await this.constructRequest("browse", { browseId })
+		const lyrics = traverseString(lyricsData, "description", "runs", "text")()
+
+		return lyrics ? lyrics.replaceAll("\r", "").split("\n") : null
+	}
+
+	/**
 	 * Get all possible information of an Artist
 	 *
 	 * @param artistId Artist ID

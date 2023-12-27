@@ -21,10 +21,10 @@ const errors: Problem[] = []
 const queries = ["Lilac", "Weekend", "Eill", "Eminem", "Lisa Hannigan"]
 const expect = (data: any, type: Type) => {
 	const result = type(data)
-	if (!result.data && "problems" in result) {
+	if (!result.data && result.problems?.length) {
 		errors.push(...result.problems!)
 	}
-	equal(!!result.data, true)
+	equal(result.problems, undefined)
 }
 
 const ytmusic = new YTMusic()
@@ -65,6 +65,12 @@ queries.forEach(query => {
 		it("Search All", async () => {
 			const results = await ytmusic.search(query)
 			expect(results, arrayOf(SearchResult))
+		})
+
+		it("Get lyrics of the first song result", async () => {
+			const songs = await ytmusic.searchSongs(query)
+			const lyrics = await ytmusic.getLyrics(songs[0]!.videoId)
+			expect(lyrics, type("string[]|null"))
 		})
 
 		it("Get details of the first song result", async () => {
