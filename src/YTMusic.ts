@@ -389,16 +389,12 @@ export default class YTMusic {
 	 * @returns Artist's Songs
 	 */
 	public async getArtistSongs(artistId: string): Promise<(typeof SongDetailed.infer)[]> {
-		const artistData = await this.constructRequest("browse", {
-			browseId: artistId,
-		})
+		const artistData = await this.constructRequest("browse", { browseId: artistId })
 		const browseToken = traverse(artistData, "musicShelfRenderer", "title", "browseId")
 
 		if (browseToken instanceof Array) return []
 
-		const songsData = await this.constructRequest("browse", {
-			browseId: browseToken,
-		})
+		const songsData = await this.constructRequest("browse", { browseId: browseToken })
 		const continueToken = traverse(songsData, "continuation")
 		const moreSongsData = await this.constructRequest(
 			"browse",
@@ -409,7 +405,12 @@ export default class YTMusic {
 		return [
 			...traverseList(songsData, "musicResponsiveListItemRenderer"),
 			...traverseList(moreSongsData, "musicResponsiveListItemRenderer"),
-		].map(SongParser.parseArtistSong)
+		].map(s =>
+			SongParser.parseArtistSong(s, {
+				artistId,
+				name: traverseString(artistData, "header", "title", "text")(),
+			}),
+		)
 	}
 
 	/**

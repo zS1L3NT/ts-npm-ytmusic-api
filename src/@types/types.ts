@@ -9,7 +9,7 @@ export const ThumbnailFull = type({
 
 export type ArtistBasic = typeof ArtistBasic.infer
 export const ArtistBasic = type({
-	artistId: "string|null",
+	artistId: "string|null", // Only null for YouTube Music
 	name: "string",
 })
 
@@ -24,7 +24,7 @@ export const SongDetailed = type({
 	type: '"SONG"',
 	videoId: "string",
 	name: "string",
-	artists: [ArtistBasic, "[]"],
+	artist: ArtistBasic,
 	album: AlbumBasic,
 	duration: "number|null",
 	thumbnails: [ThumbnailFull, "[]"],
@@ -35,7 +35,7 @@ export const VideoDetailed = type({
 	type: '"VIDEO"',
 	videoId: "string",
 	name: "string",
-	artists: [ArtistBasic, "[]"],
+	artist: ArtistBasic,
 	duration: "number|null",
 	thumbnails: [ThumbnailFull, "[]"],
 })
@@ -54,7 +54,7 @@ export const AlbumDetailed = type({
 	albumId: "string",
 	playlistId: "string",
 	name: "string",
-	artists: [ArtistBasic, "[]"],
+	artist: ArtistBasic,
 	year: "number|null",
 	thumbnails: [ThumbnailFull, "[]"],
 })
@@ -73,10 +73,9 @@ export const SongFull = type({
 	type: '"SONG"',
 	videoId: "string",
 	name: "string",
-	artists: [ArtistBasic, "[]"],
+	artist: ArtistBasic,
 	duration: "number",
 	thumbnails: [ThumbnailFull, "[]"],
-	description: "string",
 	formats: "any[]",
 	adaptiveFormats: "any[]",
 })
@@ -86,10 +85,9 @@ export const VideoFull = type({
 	type: '"VIDEO"',
 	videoId: "string",
 	name: "string",
-	artists: [ArtistBasic, "[]"],
+	artist: ArtistBasic,
 	duration: "number",
 	thumbnails: [ThumbnailFull, "[]"],
-	description: "string",
 	unlisted: "boolean",
 	familySafe: "boolean",
 	paid: "boolean",
@@ -102,7 +100,6 @@ export const ArtistFull = type({
 	name: "string",
 	type: '"ARTIST"',
 	thumbnails: [ThumbnailFull, "[]"],
-	description: "string",
 	topSongs: [SongDetailed, "[]"],
 	topAlbums: [AlbumDetailed, "[]"],
 	topSingles: [AlbumDetailed, "[]"],
@@ -117,7 +114,7 @@ export const AlbumFull = type({
 	albumId: "string",
 	playlistId: "string",
 	name: "string",
-	artists: [ArtistBasic, "[]"],
+	artist: ArtistBasic,
 	year: "number|null",
 	thumbnails: [ThumbnailFull, "[]"],
 	songs: [SongDetailed, "[]"],

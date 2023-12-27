@@ -14,14 +14,11 @@ export default class ArtistParser {
 			name: traverseString(data, "header", "title", "text")(),
 		}
 
-		const description = traverseString(data, "header", "description", "text")()
-
 		return checkType(
 			{
 				type: "ARTIST",
 				...artistBasic,
 				thumbnails: traverseList(data, "header", "thumbnails"),
-				description,
 				topSongs: traverseList(data, "musicShelfRenderer", "contents").map(item =>
 					SongParser.parseArtistTopSong(item, artistBasic),
 				),
@@ -46,8 +43,9 @@ export default class ArtistParser {
 				featuredOn:
 					traverseList(data, "musicCarouselShelfRenderer")
 						?.at(3)
-						?.contents.map((item: any) => PlaylistParser.parseArtistFeaturedOn(item)) ??
-					[],
+						?.contents.map((item: any) =>
+							PlaylistParser.parseArtistFeaturedOn(item, artistBasic),
+						) ?? [],
 				similarArtists:
 					traverseList(data, "musicCarouselShelfRenderer")
 						?.at(4)
@@ -58,7 +56,7 @@ export default class ArtistParser {
 	}
 
 	public static parseSearchResult(item: any): ArtistDetailed {
-		const columns = traverseList(item, "flexColumns")
+		const columns = traverseList(item, "flexColumns", "runs").flat()
 
 		// No specific way to identify the title
 		const title = columns[0]
@@ -67,7 +65,7 @@ export default class ArtistParser {
 			{
 				type: "ARTIST",
 				artistId: traverseString(item, "browseId")(),
-				name: traverseString(title, "runs", "text")(),
+				name: traverseString(title, "text")(),
 				thumbnails: traverseList(item, "thumbnails"),
 			},
 			ArtistDetailed,

@@ -12,15 +12,12 @@ export default class VideoParser {
 			type: "VIDEO",
 			videoId: traverseString(data, "videoDetails", "videoId")(),
 			name: traverseString(data, "videoDetails", "title")(),
-			artists: [
-				{
-					artistId: traverseString(data, "videoDetails", "channelId")(),
-					name: traverseString(data, "author")(),
-				},
-			],
+			artist: {
+				artistId: traverseString(data, "videoDetails", "channelId")(),
+				name: traverseString(data, "author")(),
+			},
 			duration: +traverseString(data, "videoDetails", "lengthSeconds")(),
 			thumbnails: traverseList(data, "videoDetails", "thumbnails"),
-			description: traverseString(data, "description")(),
 			unlisted: traverse(data, "unlisted"),
 			familySafe: traverse(data, "familySafe"),
 			paid: traverse(data, "paid"),
@@ -39,12 +36,10 @@ export default class VideoParser {
 			type: "VIDEO",
 			videoId: traverseString(item, "playNavigationEndpoint", "videoId")(),
 			name: traverseString(title, "text")(),
-			artists: [
-				{
-					name: traverseString(artist, "text")(),
-					artistId: traverseString(artist, "browseId")(),
-				},
-			],
+			artist: {
+				name: traverseString(artist, "text")(),
+				artistId: traverseString(artist, "browseId")(),
+			},
 			duration: Parser.parseDuration(duration.text),
 			thumbnails: traverseList(item, "thumbnails"),
 		}
@@ -55,7 +50,7 @@ export default class VideoParser {
 			type: "VIDEO",
 			videoId: traverseString(item, "videoId")(),
 			name: traverseString(item, "runs", "text")(),
-			artists: [artistBasic],
+			artist: artistBasic,
 			duration: null,
 			thumbnails: traverseList(item, "thumbnails"),
 		}
@@ -77,12 +72,10 @@ export default class VideoParser {
 						/https:\/\/i\.ytimg\.com\/vi\/(.+)\//,
 					)[1],
 				name: traverseString(title, "text")(),
-				artists: [
-					{
-						name: traverseString(artist, "text")(),
-						artistId: traverseString(artist, "browseId")() || null,
-					},
-				],
+				artist: {
+					name: traverseString(artist, "text")(),
+					artistId: traverseString(artist, "browseId")() || null,
+				},
 				duration: duration ? Parser.parseDuration(duration.text) : null,
 				thumbnails: traverseList(item, "thumbnails"),
 			},

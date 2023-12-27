@@ -12,15 +12,12 @@ export default class SongParser {
 				type: "SONG",
 				videoId: traverseString(data, "videoDetails", "videoId")(),
 				name: traverseString(data, "videoDetails", "title")(),
-				artists: [
-					{
-						artistId: traverseString(data, "videoDetails", "channelId")(),
-						name: traverseString(data, "author")(),
-					},
-				],
+				artist: {
+					name: traverseString(data, "author")(),
+					artistId: traverseString(data, "videoDetails", "channelId")(),
+				},
 				duration: +traverseString(data, "videoDetails", "lengthSeconds")(),
 				thumbnails: traverseList(data, "videoDetails", "thumbnails"),
-				description: traverseString(data, "description")(),
 				formats: traverseList(data, "streamingData", "formats"),
 				adaptiveFormats: traverseList(data, "streamingData", "adaptiveFormats"),
 			},
@@ -41,12 +38,10 @@ export default class SongParser {
 				type: "SONG",
 				videoId: traverseString(item, "playlistItemData", "videoId")(),
 				name: traverseString(title, "text")(),
-				artists: [
-					{
-						name: traverseString(artist, "text")(),
-						artistId: traverseString(artist, "browseId")(),
-					},
-				],
+				artist: {
+					name: traverseString(artist, "text")(),
+					artistId: traverseString(artist, "browseId")(),
+				},
 				album: {
 					name: traverseString(album, "text")(),
 					albumId: traverseString(album, "browseId")(),
@@ -58,11 +53,10 @@ export default class SongParser {
 		)
 	}
 
-	public static parseArtistSong(item: any): SongDetailed {
+	public static parseArtistSong(item: any, artistBasic: ArtistBasic): SongDetailed {
 		const columns = traverseList(item, "flexColumns", "runs").flat()
 
 		const title = columns.find(isTitle)
-		const artist = columns.find(isArtist)
 		const album = columns.find(isAlbum)
 		const duration = columns.find(isDuration)
 
@@ -71,12 +65,7 @@ export default class SongParser {
 				type: "SONG",
 				videoId: traverseString(item, "playlistItemData", "videoId")(),
 				name: traverseString(title, "text")(),
-				artists: [
-					{
-						name: traverseString(artist, "text")(),
-						artistId: traverseString(artist, "browseId")(),
-					},
-				],
+				artist: artistBasic,
 				album: {
 					name: traverseString(album, "text")(),
 					albumId: traverseString(album, "browseId")(),
@@ -99,7 +88,7 @@ export default class SongParser {
 				type: "SONG",
 				videoId: traverseString(item, "playlistItemData", "videoId")(),
 				name: traverseString(title, "text")(),
-				artists: [artistBasic],
+				artist: artistBasic,
 				album: {
 					name: traverseString(album, "text")(),
 					albumId: traverseString(album, "browseId")(),
@@ -113,7 +102,7 @@ export default class SongParser {
 
 	public static parseAlbumSong(
 		item: any,
-		artists: ArtistBasic[],
+		artistBasic: ArtistBasic,
 		albumBasic: AlbumBasic,
 		thumbnails: ThumbnailFull[],
 	): SongDetailed {
@@ -127,7 +116,7 @@ export default class SongParser {
 				type: "SONG",
 				videoId: traverseString(item, "playlistItemData", "videoId")(),
 				name: traverseString(title, "text")(),
-				artists,
+				artist: artistBasic,
 				album: albumBasic,
 				duration: duration ? Parser.parseDuration(duration.text) : null,
 				thumbnails,
