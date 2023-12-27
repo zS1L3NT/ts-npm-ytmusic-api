@@ -1,6 +1,6 @@
 {
 	"name": "ytmusic-api",
-	"version": "5.0.0",
+	"version": "5.0.1",
 	"description": "YouTube Music API",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
@@ -11,7 +11,7 @@
 		"url": "https://github.com/zS1L3NT/ts-npm-ytmusic-api"
 	},
 	"scripts": {
-		"build": "tsc",
+		"build": "tsc && rm tsconfig.tsbuildinfo",
 		"clean": "tsc --noEmit && eslint src --fix && prettier src --write && rm tsconfig.tsbuildinfo"
 	},
 	"dependencies": {
