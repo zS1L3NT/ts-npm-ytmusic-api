@@ -1,9 +1,7 @@
 import { ArtistBasic, PlaylistDetailed, PlaylistFull } from "../@types/types"
 import checkType from "../utils/checkType"
 import { isArtist } from "../utils/filters"
-import traverse from "../utils/traverse"
-import traverseList from "../utils/traverseList"
-import traverseString from "../utils/traverseString"
+import { traverse, traverseList, traverseString } from "../utils/traverse"
 
 export default class PlaylistParser {
 	public static parse(data: any, playlistId: string): PlaylistFull {
@@ -13,10 +11,10 @@ export default class PlaylistParser {
 			{
 				type: "PLAYLIST",
 				playlistId,
-				name: traverseString(data, "header", "title", "text")(),
+				name: traverseString(data, "header", "title", "text"),
 				artist: {
-					name: traverseString(artist, "text")(),
-					artistId: traverseString(artist, "browseId")() || null,
+					name: traverseString(artist, "text"),
+					artistId: traverseString(artist, "browseId") || null,
 				},
 				videoCount:
 					+traverseList(data, "header", "secondSubtitle", "text")
@@ -40,11 +38,11 @@ export default class PlaylistParser {
 		return checkType(
 			{
 				type: "PLAYLIST",
-				playlistId: traverseString(item, "overlay", "playlistId")(),
-				name: traverseString(title, "text")(),
+				playlistId: traverseString(item, "overlay", "playlistId"),
+				name: traverseString(title, "text"),
 				artist: {
-					name: traverseString(artist, "text")(),
-					artistId: traverseString(artist, "browseId")() || null,
+					name: traverseString(artist, "text"),
+					artistId: traverseString(artist, "browseId") || null,
 				},
 				thumbnails: traverseList(item, "thumbnails"),
 			},
@@ -56,8 +54,8 @@ export default class PlaylistParser {
 		return checkType(
 			{
 				type: "PLAYLIST",
-				playlistId: traverseString(item, "navigationEndpoint", "browseId")(),
-				name: traverseString(item, "runs", "text")(),
+				playlistId: traverseString(item, "navigationEndpoint", "browseId"),
+				name: traverseString(item, "runs", "text"),
 				artist: artistBasic,
 				thumbnails: traverseList(item, "thumbnails"),
 			},

@@ -1,8 +1,7 @@
 import { AlbumBasic, ArtistBasic, SongDetailed, SongFull, ThumbnailFull } from "../@types/types"
 import checkType from "../utils/checkType"
 import { isAlbum, isArtist, isDuration, isTitle } from "../utils/filters"
-import traverseList from "../utils/traverseList"
-import traverseString from "../utils/traverseString"
+import { traverseList, traverseString } from "../utils/traverse"
 import Parser from "./Parser"
 
 export default class SongParser {
@@ -10,13 +9,13 @@ export default class SongParser {
 		return checkType(
 			{
 				type: "SONG",
-				videoId: traverseString(data, "videoDetails", "videoId")(),
-				name: traverseString(data, "videoDetails", "title")(),
+				videoId: traverseString(data, "videoDetails", "videoId"),
+				name: traverseString(data, "videoDetails", "title"),
 				artist: {
-					name: traverseString(data, "author")(),
-					artistId: traverseString(data, "videoDetails", "channelId")(),
+					name: traverseString(data, "author"),
+					artistId: traverseString(data, "videoDetails", "channelId"),
 				},
-				duration: +traverseString(data, "videoDetails", "lengthSeconds")(),
+				duration: +traverseString(data, "videoDetails", "lengthSeconds"),
 				thumbnails: traverseList(data, "videoDetails", "thumbnails"),
 				formats: traverseList(data, "streamingData", "formats"),
 				adaptiveFormats: traverseList(data, "streamingData", "adaptiveFormats"),
@@ -36,15 +35,15 @@ export default class SongParser {
 		return checkType(
 			{
 				type: "SONG",
-				videoId: traverseString(item, "playlistItemData", "videoId")(),
-				name: traverseString(title, "text")(),
+				videoId: traverseString(item, "playlistItemData", "videoId"),
+				name: traverseString(title, "text"),
 				artist: {
-					name: traverseString(artist, "text")(),
-					artistId: traverseString(artist, "browseId")() || null,
+					name: traverseString(artist, "text"),
+					artistId: traverseString(artist, "browseId") || null,
 				},
 				album: {
-					name: traverseString(album, "text")(),
-					albumId: traverseString(album, "browseId")(),
+					name: traverseString(album, "text"),
+					albumId: traverseString(album, "browseId"),
 				},
 				duration: Parser.parseDuration(duration.text),
 				thumbnails: traverseList(item, "thumbnails"),
@@ -63,12 +62,12 @@ export default class SongParser {
 		return checkType(
 			{
 				type: "SONG",
-				videoId: traverseString(item, "playlistItemData", "videoId")(),
-				name: traverseString(title, "text")(),
+				videoId: traverseString(item, "playlistItemData", "videoId"),
+				name: traverseString(title, "text"),
 				artist: artistBasic,
 				album: {
-					name: traverseString(album, "text")(),
-					albumId: traverseString(album, "browseId")(),
+					name: traverseString(album, "text"),
+					albumId: traverseString(album, "browseId"),
 				},
 				duration: duration ? Parser.parseDuration(duration.text) : null,
 				thumbnails: traverseList(item, "thumbnails"),
@@ -86,12 +85,12 @@ export default class SongParser {
 		return checkType(
 			{
 				type: "SONG",
-				videoId: traverseString(item, "playlistItemData", "videoId")(),
-				name: traverseString(title, "text")(),
+				videoId: traverseString(item, "playlistItemData", "videoId"),
+				name: traverseString(title, "text"),
 				artist: artistBasic,
 				album: {
-					name: traverseString(album, "text")(),
-					albumId: traverseString(album, "browseId")(),
+					name: traverseString(album, "text"),
+					albumId: traverseString(album, "browseId"),
 				},
 				duration: null,
 				thumbnails: traverseList(item, "thumbnails"),
@@ -114,8 +113,8 @@ export default class SongParser {
 		return checkType(
 			{
 				type: "SONG",
-				videoId: traverseString(item, "playlistItemData", "videoId")(),
-				name: traverseString(title, "text")(),
+				videoId: traverseString(item, "playlistItemData", "videoId"),
+				name: traverseString(title, "text"),
 				artist: artistBasic,
 				album: albumBasic,
 				duration: duration ? Parser.parseDuration(duration.text) : null,

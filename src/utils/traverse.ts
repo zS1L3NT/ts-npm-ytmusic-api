@@ -1,4 +1,4 @@
-const traverse = (data: any, ...keys: string[]) => {
+export const traverse = (data: any, ...keys: string[]) => {
 	const again = (data: any, key: string): any => {
 		const res = []
 
@@ -27,4 +27,10 @@ const traverse = (data: any, ...keys: string[]) => {
 	return value
 }
 
-export default traverse
+export const traverseList = (data: any, ...keys: string[]): any[] => {
+	return [traverse(data, ...keys)].flat()
+}
+
+export const traverseString = (data: any, ...keys: string[]): string => {
+	return traverseList(data, ...keys).at(0) || ""
+}

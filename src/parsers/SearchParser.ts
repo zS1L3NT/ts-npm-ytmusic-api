@@ -1,5 +1,5 @@
 import { SearchResult } from "../@types/types"
-import traverseList from "../utils/traverseList"
+import { traverseList } from "../utils/traverse"
 import AlbumParser from "./AlbumParser"
 import ArtistParser from "./ArtistParser"
 import PlaylistParser from "./PlaylistParser"

@@ -9,7 +9,7 @@ export const ThumbnailFull = type({
 
 export type ArtistBasic = typeof ArtistBasic.infer
 export const ArtistBasic = type({
-	artistId: "string|null", // Only null for YouTube Music
+	artistId: "string|null",
 	name: "string",
 })
 

@@ -1,7 +1,6 @@
 import { ArtistDetailed, ArtistFull } from "../@types/types"
 import checkType from "../utils/checkType"
-import traverseList from "../utils/traverseList"
-import traverseString from "../utils/traverseString"
+import { traverseList, traverseString } from "../utils/traverse"
 import AlbumParser from "./AlbumParser"
 import PlaylistParser from "./PlaylistParser"
 import SongParser from "./SongParser"
@@ -11,7 +10,7 @@ export default class ArtistParser {
 	public static parse(data: any, artistId: string): ArtistFull {
 		const artistBasic = {
 			artistId,
-			name: traverseString(data, "header", "title", "text")(),
+			name: traverseString(data, "header", "title", "text"),
 		}
 
 		return checkType(
@@ -64,8 +63,8 @@ export default class ArtistParser {
 		return checkType(
 			{
 				type: "ARTIST",
-				artistId: traverseString(item, "browseId")(),
-				name: traverseString(title, "text")(),
+				artistId: traverseString(item, "browseId"),
+				name: traverseString(title, "text"),
 				thumbnails: traverseList(item, "thumbnails"),
 			},
 			ArtistDetailed,
@@ -76,8 +75,8 @@ export default class ArtistParser {
 		return checkType(
 			{
 				type: "ARTIST",
-				artistId: traverseString(item, "browseId")(),
-				name: traverseString(item, "runs", "text")(),
+				artistId: traverseString(item, "browseId"),
+				name: traverseString(item, "runs", "text"),
 				thumbnails: traverseList(item, "thumbnails"),
 			},
 			ArtistDetailed,

@@ -20,9 +20,7 @@ import PlaylistParser from "./parsers/PlaylistParser"
 import SearchParser from "./parsers/SearchParser"
 import SongParser from "./parsers/SongParser"
 import VideoParser from "./parsers/VideoParser"
-import traverse from "./utils/traverse"
-import traverseList from "./utils/traverseList"
-import traverseString from "./utils/traverseString"
+import { traverse, traverseList, traverseString } from "./utils/traverse"
 
 export default class YTMusic {
 	private cookiejar: CookieJar
@@ -358,7 +356,7 @@ export default class YTMusic {
 		const browseId = traverse(traverseList(data, "tabs", "tabRenderer")[1], "browseId")
 
 		const lyricsData = await this.constructRequest("browse", { browseId })
-		const lyrics = traverseString(lyricsData, "description", "runs", "text")()
+		const lyrics = traverseString(lyricsData, "description", "runs", "text")
 
 		return lyrics
 			? lyrics
@@ -408,7 +406,7 @@ export default class YTMusic {
 		].map(s =>
 			SongParser.parseArtistSong(s, {
 				artistId,
-				name: traverseString(artistData, "header", "title", "text")(),
+				name: traverseString(artistData, "header", "title", "text"),
 			}),
 		)
 	}
@@ -431,7 +429,7 @@ export default class YTMusic {
 		return traverseList(albumsData, "musicTwoRowItemRenderer").map(item =>
 			AlbumParser.parseArtistAlbum(item, {
 				artistId,
-				name: traverseString(albumsData, "header", "runs", "text")(),
+				name: traverseString(albumsData, "header", "runs", "text"),
 			}),
 		)
 	}

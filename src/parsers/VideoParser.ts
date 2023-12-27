@@ -1,22 +1,20 @@
 import { ArtistBasic, VideoDetailed, VideoFull } from "../@types/types"
 import checkType from "../utils/checkType"
 import { isArtist, isDuration, isTitle } from "../utils/filters"
-import traverse from "../utils/traverse"
-import traverseList from "../utils/traverseList"
-import traverseString from "../utils/traverseString"
+import { traverse, traverseList, traverseString } from "../utils/traverse"
 import Parser from "./Parser"
 
 export default class VideoParser {
 	public static parse(data: any): VideoFull {
 		return {
 			type: "VIDEO",
-			videoId: traverseString(data, "videoDetails", "videoId")(),
-			name: traverseString(data, "videoDetails", "title")(),
+			videoId: traverseString(data, "videoDetails", "videoId"),
+			name: traverseString(data, "videoDetails", "title"),
 			artist: {
-				artistId: traverseString(data, "videoDetails", "channelId")(),
-				name: traverseString(data, "author")(),
+				artistId: traverseString(data, "videoDetails", "channelId"),
+				name: traverseString(data, "author"),
 			},
-			duration: +traverseString(data, "videoDetails", "lengthSeconds")(),
+			duration: +traverseString(data, "videoDetails", "lengthSeconds"),
 			thumbnails: traverseList(data, "videoDetails", "thumbnails"),
 			unlisted: traverse(data, "unlisted"),
 			familySafe: traverse(data, "familySafe"),
@@ -34,11 +32,11 @@ export default class VideoParser {
 
 		return {
 			type: "VIDEO",
-			videoId: traverseString(item, "playNavigationEndpoint", "videoId")(),
-			name: traverseString(title, "text")(),
+			videoId: traverseString(item, "playNavigationEndpoint", "videoId"),
+			name: traverseString(title, "text"),
 			artist: {
 				artistId: traverseString(artist, "browseId") || null,
-				name: traverseString(artist, "text")(),
+				name: traverseString(artist, "text"),
 			},
 			duration: Parser.parseDuration(duration.text),
 			thumbnails: traverseList(item, "thumbnails"),
@@ -48,8 +46,8 @@ export default class VideoParser {
 	public static parseArtistTopVideo(item: any, artistBasic: ArtistBasic): VideoDetailed {
 		return {
 			type: "VIDEO",
-			videoId: traverseString(item, "videoId")(),
-			name: traverseString(item, "runs", "text")(),
+			videoId: traverseString(item, "videoId"),
+			name: traverseString(item, "runs", "text"),
 			artist: artistBasic,
 			duration: null,
 			thumbnails: traverseList(item, "thumbnails"),
@@ -67,14 +65,14 @@ export default class VideoParser {
 			{
 				type: "VIDEO",
 				videoId:
-					traverseString(item, "playNavigationEndpoint", "videoId")() ||
+					traverseString(item, "playNavigationEndpoint", "videoId") ||
 					traverseList(item, "thumbnails")[0].url.match(
 						/https:\/\/i\.ytimg\.com\/vi\/(.+)\//,
 					)[1],
-				name: traverseString(title, "text")(),
+				name: traverseString(title, "text"),
 				artist: {
-					name: traverseString(artist, "text")(),
-					artistId: traverseString(artist, "browseId")() || null,
+					name: traverseString(artist, "text"),
+					artistId: traverseString(artist, "browseId") || null,
 				},
 				duration: duration ? Parser.parseDuration(duration.text) : null,
 				thumbnails: traverseList(item, "thumbnails"),
