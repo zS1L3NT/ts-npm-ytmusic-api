@@ -1,6 +1,6 @@
 {
 	"name": "ytmusic-api",
-	"version": "4.5.0",
+	"version": "5.0.0",
 	"description": "YouTube Music API",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
@@ -12,8 +12,6 @@
 	},
 	"scripts": {
 		"build": "tsc",
-		"docs:dev": "vuepress dev docs",
-		"docs:build": "vuepress build docs",
 		"clean": "tsc --noEmit && eslint src --fix && prettier src --write && rm tsconfig.tsbuildinfo"
 	},
 	"dependencies": {
@@ -25,14 +23,12 @@
 		"@types/tough-cookie": "^4.0.2",
 		"@typescript-eslint/eslint-plugin": "latest",
 		"@typescript-eslint/parser": "latest",
-		"@vuepress/plugin-search": "^2.0.0-beta.46",
 		"bun-types": "^1.0.18-1",
 		"eslint": "latest",
 		"eslint-config-prettier": "latest",
 		"eslint-plugin-simple-import-sort": "latest",
 		"prettier": "latest",
-		"typescript": "latest",
-		"vuepress": "^2.0.0-beta.46"
+		"typescript": "latest"
 	},
 	"keywords": [
 		"youtube",

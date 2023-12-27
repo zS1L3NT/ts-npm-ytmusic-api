@@ -1,6 +1,5 @@
 /node_modules
 /src
-/docs
 /.github
 .gitignore
 .prettierrc

@@ -4,8 +4,6 @@
 
 YouTube Music API (Unofficial) is a YouTube Music data scraper. It comes with TypeScript support API for return types. The NPM package can be found [here](https://npmjs.com/package/ytmusic-api)
 
-**Full documentation is available [here](http://ytmusic-api.zectan.com).**
-
 ## Motivation
 
 I used to use [youtube-music-api](https://npmjs.com/package/youtube-music-api) as my youtube music api data scraper. I liked looking into the source code of how it works but it never made sense to me. I also didn't like that there were no TypeScript annotations for the return types of methods.
@@ -22,6 +20,20 @@ Because of this, I decided to build my own version of a youtube music api with T
     -   Artists
     -   Albums
     -   Playlists
+    -   Lyrics
+
+## Usage
+
+```js
+import YTMusic from "ytmusic-api"
+
+const ytmusic = new YTMusic()
+await ytmusic.initialize(/* Optional: Custom cookies */)
+
+ytmusic.search("Never gonna give you up").then(songs => {
+	console.log(songs)
+})
+```
 
 ## Credits
 
@@ -29,38 +41,27 @@ A lot of the credit should go to [youtube-music-api](https://npmjs.com/package/y
 
 ## Testing
 
-YTMusic API's data return types are tested with Mocha. To run the tests, run the command
+YTMusic API's data return types are tested with Bun Test. To run the tests, run the command
 
 ```
-$ npm run test
+$ bun test
 ```
 
 ## Built with
 
 -   NodeJS
     -   TypeScript
-        -   [![@types/json-schema](https://img.shields.io/badge/%40types%2Fjson--schema-%5E7.0.11-red?style=flat-square)](https://npmjs.com/package/@types/json-schema/v/7.0.11)
-        -   [![@types/mocha](https://img.shields.io/badge/%40types%2Fmocha-%5E10.0.1-red?style=flat-square)](https://npmjs.com/package/@types/mocha/v/10.0.1)
-        -   [![@types/node](https://img.shields.io/badge/%40types%2Fnode-%5E18.11.17-red?style=flat-square)](https://npmjs.com/package/@types/node/v/18.11.17)
         -   [![@types/tough-cookie](https://img.shields.io/badge/%40types%2Ftough--cookie-%5E4.0.2-red?style=flat-square)](https://npmjs.com/package/@types/tough-cookie/v/4.0.2)
         -   [![@typescript-eslint/eslint-plugin](https://img.shields.io/badge/%40typescript--eslint%2Feslint--plugin-latest-red?style=flat-square)](https://npmjs.com/package/@typescript-eslint/eslint-plugin/v/latest)
         -   [![@typescript-eslint/parser](https://img.shields.io/badge/%40typescript--eslint%2Fparser-latest-red?style=flat-square)](https://npmjs.com/package/@typescript-eslint/parser/v/latest)
-        -   [![ts-node](https://img.shields.io/badge/ts--node-%5E10.9.1-red?style=flat-square)](https://npmjs.com/package/ts-node/v/10.9.1)
+        -   [![bun-types](https://img.shields.io/badge/bun--types-%5E1.0.18--1-red?style=flat-square)](https://npmjs.com/package/bun-types/v/1.0.18-1)
         -   [![typescript](https://img.shields.io/badge/typescript-latest-red?style=flat-square)](https://npmjs.com/package/typescript/v/latest)
-    -   Mocha
-        -   [![mocha](https://img.shields.io/badge/mocha-%5E10.2.0-red?style=flat-square)](https://npmjs.com/package/mocha/v/10.2.0)
-        -   [![mocha.parallel](https://img.shields.io/badge/mocha.parallel-%5E0.15.6-red?style=flat-square)](https://npmjs.com/package/mocha.parallel/v/0.15.6)
-        -   [![ts-mocha](https://img.shields.io/badge/ts--mocha-%5E10.0.0-red?style=flat-square)](https://npmjs.com/package/ts-mocha/v/10.0.0)
-    -   VuePress
-        -   [![@vuepress/plugin-search](https://img.shields.io/badge/%40vuepress%2Fplugin--search-%5E2.0.0--beta.46-red?style=flat-square)](https://npmjs.com/package/@vuepress/plugin-search/v/2.0.0-beta.46)
-        -   [![vuepress](https://img.shields.io/badge/vuepress-%5E2.0.0--beta.46-red?style=flat-square)](https://npmjs.com/package/vuepress/v/2.0.0-beta.46)
     -   ESLint
         -   [![eslint](https://img.shields.io/badge/eslint-latest-red?style=flat-square)](https://npmjs.com/package/eslint/v/latest)
         -   [![eslint-config-prettier](https://img.shields.io/badge/eslint--config--prettier-latest-red?style=flat-square)](https://npmjs.com/package/eslint-config-prettier/v/latest)
         -   [![eslint-plugin-simple-import-sort](https://img.shields.io/badge/eslint--plugin--simple--import--sort-latest-red?style=flat-square)](https://npmjs.com/package/eslint-plugin-simple-import-sort/v/latest)
         -   [![prettier](https://img.shields.io/badge/prettier-latest-red?style=flat-square)](https://npmjs.com/package/prettier/v/latest)
     -   Miscellaneous
+        -   [![arktype](https://img.shields.io/badge/arktype-%5E1.0.28--alpha-red?style=flat-square)](https://npmjs.com/package/arktype/v/1.0.28-alpha)
         -   [![axios](https://img.shields.io/badge/axios-%5E0.27.2-red?style=flat-square)](https://npmjs.com/package/axios/v/0.27.2)
         -   [![tough-cookie](https://img.shields.io/badge/tough--cookie-%5E4.1.2-red?style=flat-square)](https://npmjs.com/package/tough-cookie/v/4.1.2)
-        -   [![zod](https://img.shields.io/badge/zod-%5E3.20.2-red?style=flat-square)](https://npmjs.com/package/zod/v/3.20.2)
-        -   [![zod-to-json-schema](https://img.shields.io/badge/zod--to--json--schema-%5E3.20.1-red?style=flat-square)](https://npmjs.com/package/zod-to-json-schema/v/3.20.1)
