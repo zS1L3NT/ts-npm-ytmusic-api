@@ -16,7 +16,7 @@ export default class PlaylistParser {
 				name: traverseString(data, "header", "title", "text")(),
 				artist: {
 					name: traverseString(artist, "text")(),
-					artistId: traverseString(artist, "browseId")(),
+					artistId: traverseString(artist, "browseId")() || null,
 				},
 				videoCount:
 					+traverseList(data, "header", "secondSubtitle", "text")
@@ -35,8 +35,7 @@ export default class PlaylistParser {
 
 		// No specific way to identify the title
 		const title = columns[0]
-		// Possibility to be empty because it's by YouTube Music
-		const artist = columns.find(isArtist)
+		const artist = columns.find(isArtist) || columns[3]
 
 		return checkType(
 			{
@@ -44,7 +43,7 @@ export default class PlaylistParser {
 				playlistId: traverseString(item, "overlay", "playlistId")(),
 				name: traverseString(title, "text")(),
 				artist: {
-					name: artist ? traverseString(artist, "text")() : "YouTube Music",
+					name: traverseString(artist, "text")(),
 					artistId: traverseString(artist, "browseId")() || null,
 				},
 				thumbnails: traverseList(item, "thumbnails"),

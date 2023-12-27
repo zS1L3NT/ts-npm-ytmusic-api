@@ -29,7 +29,7 @@ export default class VideoParser {
 		const columns = traverseList(item, "flexColumns", "runs").flat()
 
 		const title = columns.find(isTitle)
-		const artist = columns.find(isArtist)
+		const artist = columns.find(isArtist) || columns[1]
 		const duration = columns.find(isDuration)
 
 		return {
@@ -37,8 +37,8 @@ export default class VideoParser {
 			videoId: traverseString(item, "playNavigationEndpoint", "videoId")(),
 			name: traverseString(title, "text")(),
 			artist: {
+				artistId: traverseString(artist, "browseId") || null,
 				name: traverseString(artist, "text")(),
-				artistId: traverseString(artist, "browseId")(),
 			},
 			duration: Parser.parseDuration(duration.text),
 			thumbnails: traverseList(item, "thumbnails"),

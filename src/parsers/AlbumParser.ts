@@ -15,7 +15,7 @@ export default class AlbumParser {
 
 		const artistData = traverse(data, "header", "subtitle", "runs")
 		const artistBasic: ArtistBasic = {
-			artistId: traverseString(artistData, "browseId")(),
+			artistId: traverseString(artistData, "browseId")() || null,
 			name: traverseString(artistData, "text")(),
 		}
 

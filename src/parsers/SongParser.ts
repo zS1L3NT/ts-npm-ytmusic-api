@@ -29,7 +29,7 @@ export default class SongParser {
 		const columns = traverseList(item, "flexColumns", "runs").flat()
 
 		const title = columns.find(isTitle)
-		const artist = columns.find(isArtist)
+		const artist = columns.find(isArtist) || columns[1]
 		const album = columns.find(isAlbum)
 		const duration = columns.find(isDuration)
 
@@ -40,7 +40,7 @@ export default class SongParser {
 				name: traverseString(title, "text")(),
 				artist: {
 					name: traverseString(artist, "text")(),
-					artistId: traverseString(artist, "browseId")(),
+					artistId: traverseString(artist, "browseId")() || null,
 				},
 				album: {
 					name: traverseString(album, "text")(),
