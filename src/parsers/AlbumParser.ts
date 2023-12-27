@@ -10,12 +10,14 @@ export default class AlbumParser {
 			albumId,
 			name: traverseString(data, "header", "title", "text")(),
 		}
+
 		const artists: ArtistBasic[] = traverseList(data, "header", "subtitle", "runs")
 			.filter(run => "navigationEndpoint" in run)
 			.map(run => ({
 				artistId: traverseString(run, "browseId")(),
 				name: traverseString(run, "text")(),
 			}))
+
 		const thumbnails = traverseList(data, "header", "thumbnails")
 
 		return checkType(
@@ -28,7 +30,6 @@ export default class AlbumParser {
 					traverseString(data, "header", "subtitle", "text")(-1),
 				),
 				thumbnails,
-				description: traverseString(data, "description", "text")(),
 				songs: traverseList(data, "musicResponsiveListItemRenderer").map(item =>
 					SongParser.parseAlbumSong(item, artists, albumBasic, thumbnails),
 				),

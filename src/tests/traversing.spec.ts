@@ -21,8 +21,14 @@ const errors: Problem[] = []
 const queries = ["Lilac", "Weekend", "Eill", "Eminem", "Lisa Hannigan"]
 const expect = (data: any, type: Type) => {
 	const result = type(data)
-	if (!result.data && result.problems?.length) {
+	if (result.problems?.length) {
 		errors.push(...result.problems!)
+	} else {
+		const empty = JSON.stringify(result.data).match(/"\w+":""/g)
+		if (empty) {
+			console.log(result.data, empty)
+		}
+		equal(empty, null)
 	}
 	equal(result.problems, undefined)
 }

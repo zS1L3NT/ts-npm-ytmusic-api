@@ -9,7 +9,7 @@ export const ThumbnailFull = type({
 
 export type ArtistBasic = typeof ArtistBasic.infer
 export const ArtistBasic = type({
-	artistId: "string",
+	artistId: "string|null",
 	name: "string",
 })
 
@@ -120,7 +120,6 @@ export const AlbumFull = type({
 	artists: [ArtistBasic, "[]"],
 	year: "number|null",
 	thumbnails: [ThumbnailFull, "[]"],
-	description: "string",
 	songs: [SongDetailed, "[]"],
 })
 

@@ -1,4 +1,4 @@
-import { ArtistBasic, ArtistDetailed, ArtistFull } from "../@types/types"
+import { ArtistDetailed, ArtistFull } from "../@types/types"
 import checkType from "../utils/checkType"
 import traverseList from "../utils/traverseList"
 import traverseString from "../utils/traverseString"
@@ -9,7 +9,7 @@ import VideoParser from "./VideoParser"
 
 export default class ArtistParser {
 	public static parse(data: any, artistId: string): ArtistFull {
-		const artistBasic: ArtistBasic = {
+		const artistBasic = {
 			artistId,
 			name: traverseString(data, "header", "title", "text")(),
 		}
@@ -58,13 +58,16 @@ export default class ArtistParser {
 	}
 
 	public static parseSearchResult(item: any): ArtistDetailed {
-		const flexColumns = traverseList(item, "flexColumns")
+		const columns = traverseList(item, "flexColumns")
+
+		// No specific way to identify the title
+		const title = columns[0]
 
 		return checkType(
 			{
 				type: "ARTIST",
 				artistId: traverseString(item, "browseId")(),
-				name: traverseString(flexColumns[0], "runs", "text")(),
+				name: traverseString(title, "runs", "text")(),
 				thumbnails: traverseList(item, "thumbnails"),
 			},
 			ArtistDetailed,

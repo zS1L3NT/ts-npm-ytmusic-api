@@ -1,18 +1,22 @@
 import { PlaylistDetailed, PlaylistFull } from "../@types/types"
 import checkType from "../utils/checkType"
+import { isArtist } from "../utils/filters"
+import traverse from "../utils/traverse"
 import traverseList from "../utils/traverseList"
 import traverseString from "../utils/traverseString"
 
 export default class PlaylistParser {
 	public static parse(data: any, playlistId: string): PlaylistFull {
+		const artist = traverse(data, "header", "subtitle")
+
 		return checkType(
 			{
 				type: "PLAYLIST",
 				playlistId,
 				name: traverseString(data, "header", "title", "text")(),
 				artist: {
-					artistId: traverseString(data, "header", "subtitle", "browseId")(),
-					name: traverseString(data, "header", "subtitle", "text")(2),
+					name: traverseString(artist, "text")(),
+					artistId: traverseString(artist, "browseId")(),
 				},
 				videoCount:
 					+traverseList(data, "header", "secondSubtitle", "text")
@@ -27,16 +31,21 @@ export default class PlaylistParser {
 	}
 
 	public static parseSearchResult(item: any): PlaylistDetailed {
-		const flexColumns = traverseList(item, "flexColumns")
+		const columns = traverseList(item, "flexColumns", "runs").flat()
+
+		// No specific way to identify the title
+		const title = columns[0]
+		// Possibility to be empty because it's by YouTube Music
+		const artist = columns.find(isArtist)
 
 		return checkType(
 			{
 				type: "PLAYLIST",
 				playlistId: traverseString(item, "overlay", "playlistId")(),
-				name: traverseString(flexColumns[0], "runs", "text")(),
+				name: traverseString(title, "text")(),
 				artist: {
-					artistId: traverseString(flexColumns[1], "browseId")(),
-					name: traverseString(flexColumns[1], "runs", "text")(-3),
+					name: artist ? traverseString(artist, "text")() : "YouTube Music",
+					artistId: traverseString(artist, "browseId")() || null,
 				},
 				thumbnails: traverseList(item, "thumbnails"),
 			},

@@ -348,7 +348,7 @@ export default class YTMusic {
 
 	/**
 	 * Get lyrics of a specific Song
-	 * 
+	 *
 	 * @param videoId Video ID
 	 * @returns Lyrics
 	 */
@@ -360,7 +360,12 @@ export default class YTMusic {
 		const lyricsData = await this.constructRequest("browse", { browseId })
 		const lyrics = traverseString(lyricsData, "description", "runs", "text")()
 
-		return lyrics ? lyrics.replaceAll("\r", "").split("\n") : null
+		return lyrics
+			? lyrics
+					.replaceAll("\r", "")
+					.split("\n")
+					.filter(v => !!v)
+			: null
 	}
 
 	/**
