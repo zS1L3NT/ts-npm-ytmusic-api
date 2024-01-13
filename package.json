@@ -1,6 +1,6 @@
 {
 	"name": "ytmusic-api",
-	"version": "5.0.2",
+	"version": "5.0.3",
 	"description": "YouTube Music API",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
@@ -15,7 +15,7 @@
 		"clean": "tsc --noEmit && eslint src --fix && prettier src --write && rm tsconfig.tsbuildinfo"
 	},
 	"dependencies": {
-		"arktype": "^1.0.28-alpha",
+		"arktype": "1.0.29-alpha",
 		"axios": "^0.27.2",
 		"tough-cookie": "^4.1.2"
 	},
