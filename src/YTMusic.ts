@@ -77,7 +77,9 @@ export default class YTMusic {
 	/**
 	 * Initializes the API
 	 */
-	public async initialize(cookies?: string) {
+	public async initialize(options?: { cookies?: string; GL?: string; HL?: string }) {
+		const { cookies, GL, HL } = options ?? {}
+
 		if (cookies) {
 			for (const cookieString of cookies.split("; ")) {
 				const cookie = Cookie.parse(`${cookieString}`)
@@ -107,6 +109,13 @@ export default class YTMusic {
 				...config,
 			}
 		}
+
+		if (!this.config) {
+			this.config = {}
+		}
+
+		if (GL) this.config.GL = GL
+		if (HL) this.config.HL = HL
 
 		return this
 	}

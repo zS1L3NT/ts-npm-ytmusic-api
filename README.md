@@ -62,6 +62,6 @@ $ bun test
         -   [![eslint-plugin-simple-import-sort](https://img.shields.io/badge/eslint--plugin--simple--import--sort-latest-red?style=flat-square)](https://npmjs.com/package/eslint-plugin-simple-import-sort/v/latest)
         -   [![prettier](https://img.shields.io/badge/prettier-latest-red?style=flat-square)](https://npmjs.com/package/prettier/v/latest)
     -   Miscellaneous
-        -   [![arktype](https://img.shields.io/badge/arktype-%5E1.0.28--alpha-red?style=flat-square)](https://npmjs.com/package/arktype/v/1.0.28-alpha)
+        -   [![arktype](https://img.shields.io/badge/arktype-%5E1.0.29--alpha-red?style=flat-square)](https://npmjs.com/package/arktype/v/1.0.29-alpha)
         -   [![axios](https://img.shields.io/badge/axios-%5E0.27.2-red?style=flat-square)](https://npmjs.com/package/axios/v/0.27.2)
         -   [![tough-cookie](https://img.shields.io/badge/tough--cookie-%5E4.1.2-red?style=flat-square)](https://npmjs.com/package/tough-cookie/v/4.1.2)
