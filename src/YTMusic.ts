@@ -502,6 +502,11 @@ export default class YTMusic {
 		return songs.map(VideoParser.parsePlaylistVideo)
 	}
 
+	/**
+	 * Get content for the home page.
+	 *
+	 * @returns Mixed HomePageContent
+	 */
 	public async getHome(): Promise<HomePageContent[]> {
 		const results: HomePageContent[] = []
 		const page = await this.constructRequest("browse", { browseId: FE_MUSIC_HOME })
