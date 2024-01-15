@@ -1,4 +1,4 @@
-import { ArtistBasic, PlaylistDetailed, PlaylistFull } from "../@types/types"
+import { ArtistBasic, PlaylistDetailed, PlaylistFull, PlaylistWatch } from "../@types/types"
 import checkType from "../utils/checkType"
 import { isArtist } from "../utils/filters"
 import { traverse, traverseList, traverseString } from "../utils/traverse"
@@ -60,6 +60,18 @@ export default class PlaylistParser {
 				thumbnails: traverseList(item, "thumbnails"),
 			},
 			PlaylistDetailed,
+		)
+	}
+
+	public static parseWatchPlaylist(item: any): PlaylistWatch {
+		return checkType(
+			{
+				type: "PLAYLIST",
+				playlistId: traverseString(item, "navigationEndpoint", "playlistId"),
+				name: traverseString(item, "runs", "text"),
+				thumbnails: traverseList(item, "thumbnails"),
+			},
+			PlaylistWatch,
 		)
 	}
 }

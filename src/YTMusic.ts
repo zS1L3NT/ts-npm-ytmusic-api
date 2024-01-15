@@ -6,6 +6,7 @@ import {
 	AlbumFull,
 	ArtistDetailed,
 	ArtistFull,
+	HomePageContent,
 	PlaylistDetailed,
 	PlaylistFull,
 	SearchResult,
@@ -21,6 +22,8 @@ import SearchParser from "./parsers/SearchParser"
 import SongParser from "./parsers/SongParser"
 import VideoParser from "./parsers/VideoParser"
 import { traverse, traverseList, traverseString } from "./utils/traverse"
+import { FE_MUSIC_HOME } from "./constants"
+import Parser from "./parsers/Parser"
 
 export default class YTMusic {
 	private cookiejar: CookieJar
@@ -497,5 +500,16 @@ export default class YTMusic {
 		}
 
 		return songs.map(VideoParser.parsePlaylistVideo)
+	}
+
+	public async getHome(): Promise<HomePageContent[]> {
+		const results: HomePageContent[] = []
+		const page = await this.constructRequest("browse", { browseId: FE_MUSIC_HOME })
+		traverseList(page, "sectionListRenderer", "contents").forEach(content => {
+			const parsed = Parser.parseMixedContent(content)
+			parsed && results.push(parsed)
+		})
+
+		return results
 	}
 }

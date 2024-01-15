@@ -29,7 +29,7 @@ export default class SongParser {
 
 		const title = columns.find(isTitle)
 		const artist = columns.find(isArtist) || columns[1]
-		const album = columns.find(isAlbum)
+		const album = columns.find(isAlbum) ?? null
 		const duration = columns.find(isDuration)
 
 		return checkType(
@@ -41,11 +41,11 @@ export default class SongParser {
 					name: traverseString(artist, "text"),
 					artistId: traverseString(artist, "browseId") || null,
 				},
-				album: {
+				album: album && {
 					name: traverseString(album, "text"),
 					albumId: traverseString(album, "browseId"),
 				},
-				duration: Parser.parseDuration(duration.text),
+				duration: Parser.parseDuration(duration?.text),
 				thumbnails: traverseList(item, "thumbnails"),
 			},
 			SongDetailed,

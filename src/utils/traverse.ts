@@ -1,9 +1,10 @@
 export const traverse = (data: any, ...keys: string[]) => {
-	const again = (data: any, key: string): any => {
+	const again = (data: any, key: string, deadEnd = false): any => {
 		const res = []
 
 		if (data instanceof Object && key in data) {
 			res.push(data[key])
+			if (deadEnd) return res.length === 1 ? res[0] : res
 		}
 
 		if (data instanceof Array) {
@@ -20,8 +21,9 @@ export const traverse = (data: any, ...keys: string[]) => {
 	}
 
 	let value = data
+	const lastKey = keys.at(-1)
 	for (const key of keys) {
-		value = again(value, key)
+		value = again(value, key, lastKey === key)
 	}
 
 	return value
