@@ -1,5 +1,5 @@
 import { arrayOf, Problem, Type } from "arktype"
-import { equal } from "assert"
+import { equal, ok } from "assert"
 import { afterAll, beforeEach, describe, it } from "bun:test"
 
 import { HomePageContent } from "../@types/types"
@@ -25,6 +25,7 @@ const expect = (data: any, type: Type) => {
 	}
 	equal(result.problems, undefined)
 }
+
 const ytmusic = new YTMusic()
 beforeEach(() => {
 	const index = 0
@@ -34,8 +35,10 @@ beforeEach(() => {
 describe(`Query: ${FE_MUSIC_HOME}`, () => {
 	configs.forEach(config => {
 		it(`Get ${config.GL} ${config.HL}`, async () => {
-			const page = await ytmusic.getHome()
-			expect(page, arrayOf(HomePageContent))
+			const homePageContents = await ytmusic.getHome()
+			ok(homePageContents.length)
+			expect(homePageContents, arrayOf(HomePageContent))
+			console.log("Length: ", homePageContents.length)
 		})
 	})
 })

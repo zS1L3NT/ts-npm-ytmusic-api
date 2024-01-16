@@ -510,7 +510,7 @@ export default class YTMusic {
 	public async getHome(): Promise<HomePageContent[]> {
 		const results: HomePageContent[] = []
 		const page = await this.constructRequest("browse", { browseId: FE_MUSIC_HOME })
-		traverseList(page, "contents").forEach(content => {
+		traverseList(page, "sectionListRenderer", "contents").forEach(content => {
 			const parsed = Parser.parseMixedContent(content)
 			parsed && results.push(parsed)
 		})
@@ -518,7 +518,7 @@ export default class YTMusic {
 		let continuation = traverseString(page, "continuation")
 		while (continuation) {
 			const nextPage = await this.constructRequest("browse", {}, { continuation })
-			traverseList(nextPage, "contents").forEach(content => {
+			traverseList(nextPage, "sectionListContinuation", "contents").forEach(content => {
 				const parsed = Parser.parseMixedContent(content)
 				parsed && results.push(parsed)
 			})

@@ -39,7 +39,6 @@ export default class AlbumParser {
 
 	public static parseSearchResult(item: any): AlbumDetailed {
 		const columns = traverseList(item, "flexColumns", "runs").flat()
-		columns.push(item)
 
 		// No specific way to identify the title
 		const title = columns[0]
