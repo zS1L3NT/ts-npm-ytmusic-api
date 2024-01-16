@@ -25,11 +25,12 @@ export default class SongParser {
 	}
 
 	public static parseSearchResult(item: any): SongDetailed {
-		const columns = traverseList(item, "flexColumns", "runs").flat()
+		const columns = traverseList(item, "flexColumns", "runs")
 
-		const title = columns.find(isTitle)
-		const artist = columns.find(isArtist) || columns[1]
-		const album = columns.find(isAlbum)
+		// It is not possible to identify the title and author
+		const title = columns[0]
+		const artist = columns[1]
+		const album = columns.find(isAlbum) ?? null
 		const duration = columns.find(isDuration)
 
 		return checkType(
@@ -41,11 +42,11 @@ export default class SongParser {
 					name: traverseString(artist, "text"),
 					artistId: traverseString(artist, "browseId") || null,
 				},
-				album: {
+				album: album && {
 					name: traverseString(album, "text"),
 					albumId: traverseString(album, "browseId"),
 				},
-				duration: Parser.parseDuration(duration.text),
+				duration: Parser.parseDuration(duration?.text),
 				thumbnails: traverseList(item, "thumbnails"),
 			},
 			SongDetailed,

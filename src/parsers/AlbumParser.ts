@@ -39,21 +39,25 @@ export default class AlbumParser {
 
 	public static parseSearchResult(item: any): AlbumDetailed {
 		const columns = traverseList(item, "flexColumns", "runs").flat()
+		columns.push(item)
 
 		// No specific way to identify the title
 		const title = columns[0]
 		const artist = columns.find(isArtist) || columns[3]
+		const playlistId =
+			traverseString(item, "overlay", "playlistId") ||
+			traverseString(item, "thumbnailOverlay", "playlistId")
 
 		return checkType(
 			{
 				type: "ALBUM",
 				albumId: traverseList(item, "browseId").at(-1),
-				playlistId: traverseString(item, "overlay", "playlistId"),
+				playlistId,
 				artist: {
 					name: traverseString(artist, "text"),
 					artistId: traverseString(artist, "browseId") || null,
 				},
-				year: AlbumParser.processYear(columns.at(-1).text),
+				year: AlbumParser.processYear(columns.at(-1)?.text),
 				name: traverseString(title, "text"),
 				thumbnails: traverseList(item, "thumbnails"),
 			},
@@ -92,6 +96,6 @@ export default class AlbumParser {
 	}
 
 	private static processYear(year: string) {
-		return year.match(/^\d{4}$/) ? +year : null
+		return year && year.match(/^\d{4}$/) ? +year : null
 	}
 }

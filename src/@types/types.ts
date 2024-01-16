@@ -25,7 +25,7 @@ export const SongDetailed = type({
 	videoId: "string",
 	name: "string",
 	artist: ArtistBasic,
-	album: AlbumBasic,
+	album: union(AlbumBasic, "null"),
 	duration: "number|null",
 	thumbnails: [ThumbnailFull, "[]"],
 })
@@ -135,3 +135,23 @@ export const SearchResult = union(
 	SongDetailed,
 	union(VideoDetailed, union(AlbumDetailed, union(ArtistDetailed, PlaylistDetailed))),
 )
+
+export type PlaylistWatch = typeof PlaylistWatch.infer
+export const PlaylistWatch = type({
+	type: '"PLAYLIST"',
+	playlistId: "string",
+	name: "string",
+	thumbnails: [ThumbnailFull, "[]"],
+})
+
+export type HomePageContent = typeof HomePageContent.infer
+export const HomePageContent = type({
+	title: "string",
+	contents: [
+		union(
+			PlaylistWatch,
+			union(ArtistDetailed, union(AlbumDetailed, union(PlaylistDetailed, SongDetailed))),
+		),
+		"[]",
+	],
+})
