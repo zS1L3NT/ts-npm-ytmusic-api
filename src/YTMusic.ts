@@ -70,7 +70,7 @@ export default class YTMusic {
 					const cookie = Cookie.parse(`${cookieString}`)
 					if (!cookie) return
 
-					this.cookiejar.setCookieSync(cookie, res.config.baseURL)
+					this.cookiejar.setCookieSync(cookie, res.config.baseURL, { ignoreError: true })
 				}
 			}
 			return res
@@ -88,7 +88,9 @@ export default class YTMusic {
 				const cookie = Cookie.parse(`${cookieString}`)
 				if (!cookie) return
 
-				this.cookiejar.setCookieSync(cookie, "https://music.youtube.com/")
+				this.cookiejar.setCookieSync(cookie, "https://music.youtube.com/", {
+					ignoreError: true,
+				})
 			}
 		}
 
