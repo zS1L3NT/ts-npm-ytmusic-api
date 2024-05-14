@@ -1,17 +1,29 @@
 {
 	"name": "ytmusic-api",
-	"version": "5.2.1",
+	"version": "5.2.2-alpha.7",
 	"description": "YouTube Music API",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
+	"main": "./dist/cjs/index.js",
+	"module": "./dist/esm/index.js",
+	"types": "./dist/types/index.d.ts",
+	"files": [
+		"dist"
+	],
 	"author": "zS1L3NT <dev@zectan.com> (http://www.zectan.com)",
 	"license": "GPL-3.0",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/zS1L3NT/ts-npm-ytmusic-api"
 	},
+	"exports": {
+		"./package.json": "./package.json",
+		".": {
+			"types": "./dist/types/index.d.ts",
+			"require": "./dist/cjs/index.js",
+			"import": "./dist/esm/index.js"
+		}
+	},
 	"scripts": {
-		"build": "tsc && rm tsconfig.tsbuildinfo",
+		"build": "tsup src/index.ts --dts --format cjs,esm --clean --out-dir dist",
 		"clean": "tsc --noEmit && eslint src --fix && prettier src --write && rm tsconfig.tsbuildinfo"
 	},
 	"dependencies": {
@@ -28,6 +40,7 @@
 		"eslint-config-prettier": "latest",
 		"eslint-plugin-simple-import-sort": "latest",
 		"prettier": "latest",
+		"tsup": "^8.0.2",
 		"typescript": "latest"
 	},
 	"keywords": [
