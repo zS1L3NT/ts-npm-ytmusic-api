@@ -30,12 +30,13 @@
 		"allowUnusedLabels": true,
 		"resolveJsonModule": true,
 		"forceConsistentCasingInFileNames": true,
+		"exactOptionalPropertyTypes": true,
 
 		/** Other */
 		// "noEmit": false,
 		// "allowJs": true,
 		// "jsx": "react-jsx",
-		// "skipLibCheck": true,
+		"skipLibCheck": true
 		// "isolatedModules": true,
 		// "incremental": true
 	},

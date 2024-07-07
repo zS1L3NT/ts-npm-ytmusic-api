@@ -5,9 +5,7 @@
 	"main": "./dist/cjs/index.js",
 	"module": "./dist/esm/index.js",
 	"types": "./dist/types/index.d.ts",
-	"files": [
-		"dist"
-	],
+	"files": ["dist"],
 	"author": "zS1L3NT <dev@zectan.com> (http://www.zectan.com)",
 	"license": "GPL-3.0",
 	"repository": {
@@ -24,28 +22,18 @@
 	},
 	"scripts": {
 		"build": "tsup src/index.ts --dts --format cjs,esm --clean --out-dir dist",
-		"clean": "tsc --noEmit && eslint src --fix && prettier src --write && rm tsconfig.tsbuildinfo"
+		"lint": "tsc --noEmit && rm tsconfig.tsbuildinfo ; biome format --write"
 	},
 	"dependencies": {
-		"arktype": "1.0.29-alpha",
-		"axios": "^0.27.2",
-		"tough-cookie": "^4.1.2"
+		"@biomejs/biome": "1.8.3",
+		"axios": "^1.7.2",
+		"tough-cookie": "^4.1.4"
 	},
 	"devDependencies": {
-		"@types/tough-cookie": "^4.0.2",
-		"@typescript-eslint/eslint-plugin": "latest",
-		"@typescript-eslint/parser": "latest",
-		"bun-types": "^1.0.18-1",
-		"eslint": "latest",
-		"eslint-config-prettier": "latest",
-		"eslint-plugin-simple-import-sort": "latest",
-		"prettier": "latest",
-		"tsup": "^8.0.2",
-		"typescript": "latest"
+		"@types/tough-cookie": "^4.0.5",
+		"bun-types": "^1.1.18",
+		"tsup": "^8.1.0",
+		"typescript": "5.1"
 	},
-	"keywords": [
-		"youtube",
-		"music",
-		"api"
-	]
+	"keywords": ["youtube", "music", "api"]
 }
