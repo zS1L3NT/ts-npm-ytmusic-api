@@ -22,18 +22,20 @@
 	},
 	"scripts": {
 		"build": "tsup src/index.ts --dts --format cjs,esm --clean --out-dir dist",
-		"lint": "tsc --noEmit && rm tsconfig.tsbuildinfo ; biome format --write"
+		"lint": "tsc --noEmit ; bunx @biomejs/biome check --write"
 	},
 	"dependencies": {
 		"@biomejs/biome": "1.8.3",
 		"axios": "^1.7.2",
-		"tough-cookie": "^4.1.4"
+		"tough-cookie": "^4.1.4",
+		"zod": "^3.23.8"
 	},
 	"devDependencies": {
 		"@types/tough-cookie": "^4.0.5",
 		"bun-types": "^1.1.18",
 		"tsup": "^8.1.0",
-		"typescript": "5.1"
+		"typescript": "5.1",
+		"zod-to-json-schema": "^3.23.1"
 	},
 	"keywords": ["youtube", "music", "api"]
 }

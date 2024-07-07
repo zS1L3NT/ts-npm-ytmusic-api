@@ -1,28 +1,28 @@
-import { ArtistBasic, PlaylistDetailed, PlaylistFull, PlaylistWatch } from "../@types/types"
+import { ArtistBasic, PlaylistDetailed, PlaylistFull } from "../types"
 import checkType from "../utils/checkType"
 import { isArtist } from "../utils/filters"
 import { traverse, traverseList, traverseString } from "../utils/traverse"
 
 export default class PlaylistParser {
 	public static parse(data: any, playlistId: string): PlaylistFull {
-		const artist = traverse(data, "header", "subtitle")
+		const artist = traverse(data, "tabs", "straplineTextOne")
 
 		return checkType(
 			{
 				type: "PLAYLIST",
 				playlistId,
-				name: traverseString(data, "header", "title", "text"),
+				name: traverseString(data, "tabs", "title", "text"),
 				artist: {
 					name: traverseString(artist, "text"),
 					artistId: traverseString(artist, "browseId") || null,
 				},
 				videoCount:
-					+traverseList(data, "header", "secondSubtitle", "text")
+					+traverseList(data, "tabs", "secondSubtitle", "text")
 						.at(2)
 						.split(" ")
 						.at(0)
 						.replaceAll(",", "") ?? null,
-				thumbnails: traverseList(data, "header", "thumbnails"),
+				thumbnails: traverseList(data, "tabs", "thumbnails"),
 			},
 			PlaylistFull,
 		)
@@ -63,15 +63,21 @@ export default class PlaylistParser {
 		)
 	}
 
-	public static parseWatchPlaylist(item: any): PlaylistWatch {
+	public static parseHomeSection(item: any): PlaylistDetailed {
+		const artist = traverse(item, "subtitle", "runs")
+
 		return checkType(
 			{
 				type: "PLAYLIST",
 				playlistId: traverseString(item, "navigationEndpoint", "playlistId"),
 				name: traverseString(item, "runs", "text"),
+				artist: {
+					name: traverseString(artist, "text"),
+					artistId: traverseString(artist, "browseId") || null,
+				},
 				thumbnails: traverseList(item, "thumbnails"),
 			},
-			PlaylistWatch,
+			PlaylistDetailed,
 		)
 	}
 }

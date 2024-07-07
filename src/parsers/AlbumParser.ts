@@ -1,4 +1,4 @@
-import { AlbumBasic, AlbumDetailed, AlbumFull, ArtistBasic } from "../@types/types"
+import { AlbumBasic, AlbumDetailed, AlbumFull, ArtistBasic } from "../types"
 import checkType from "../utils/checkType"
 import { isArtist } from "../utils/filters"
 import { traverse, traverseList, traverseString } from "../utils/traverse"
@@ -8,25 +8,25 @@ export default class AlbumParser {
 	public static parse(data: any, albumId: string): AlbumFull {
 		const albumBasic: AlbumBasic = {
 			albumId,
-			name: traverseString(data, "header", "title", "text"),
+			name: traverseString(data, "tabs", "title", "text"),
 		}
 
-		const artistData = traverse(data, "header", "subtitle", "runs")
+		const artistData = traverse(data, "tabs", "straplineTextOne", "runs")
 		const artistBasic: ArtistBasic = {
 			artistId: traverseString(artistData, "browseId") || null,
 			name: traverseString(artistData, "text"),
 		}
 
-		const thumbnails = traverseList(data, "header", "thumbnails")
+		const thumbnails = traverseList(data, "background", "thumbnails")
 
 		return checkType(
 			{
 				type: "ALBUM",
 				...albumBasic,
-				playlistId: traverseString(data, "buttonRenderer", "playlistId"),
+				playlistId: traverseString(data, "musicPlayButtonRenderer", "playlistId"),
 				artist: artistBasic,
 				year: AlbumParser.processYear(
-					traverseList(data, "header", "subtitle", "text").at(-1),
+					traverseList(data, "tabs", "subtitle", "text").at(-1),
 				),
 				thumbnails,
 				songs: traverseList(data, "musicResponsiveListItemRenderer").map(item =>
@@ -88,6 +88,26 @@ export default class AlbumParser {
 				name: traverseString(item, "title", "text"),
 				artist: artistBasic,
 				year: AlbumParser.processYear(traverseList(item, "subtitle", "text").at(-1)),
+				thumbnails: traverseList(item, "thumbnails"),
+			},
+			AlbumDetailed,
+		)
+	}
+
+	public static parseHomeSection(item: any): AlbumDetailed {
+		const artist = traverse(item, "subtitle", "runs").at(-1)
+
+		return checkType(
+			{
+				type: "ALBUM",
+				albumId: traverseString(item, "title", "browseId"),
+				playlistId: traverseString(item, "thumbnailOverlay", "playlistId"),
+				name: traverseString(item, "title", "text"),
+				artist: {
+					name: traverseString(artist, "text"),
+					artistId: traverseString(artist, "browseId") || null,
+				},
+				year: null,
 				thumbnails: traverseList(item, "thumbnails"),
 			},
 			AlbumDetailed,

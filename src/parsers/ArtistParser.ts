@@ -1,4 +1,4 @@
-import { ArtistDetailed, ArtistFull } from "../@types/types"
+import { ArtistDetailed, ArtistFull } from "../types"
 import checkType from "../utils/checkType"
 import { traverseList, traverseString } from "../utils/traverse"
 import AlbumParser from "./AlbumParser"

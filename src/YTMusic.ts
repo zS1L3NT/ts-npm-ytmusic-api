@@ -1,20 +1,6 @@
 import axios, { AxiosInstance } from "axios"
 import { Cookie, CookieJar } from "tough-cookie"
 
-import {
-	AlbumDetailed,
-	AlbumFull,
-	ArtistDetailed,
-	ArtistFull,
-	HomePageContent,
-	PlaylistDetailed,
-	PlaylistFull,
-	SearchResult,
-	SongDetailed,
-	SongFull,
-	VideoDetailed,
-	VideoFull,
-} from "./@types/types"
 import { FE_MUSIC_HOME } from "./constants"
 import AlbumParser from "./parsers/AlbumParser"
 import ArtistParser from "./parsers/ArtistParser"
@@ -23,7 +9,23 @@ import PlaylistParser from "./parsers/PlaylistParser"
 import SearchParser from "./parsers/SearchParser"
 import SongParser from "./parsers/SongParser"
 import VideoParser from "./parsers/VideoParser"
+import {
+	AlbumDetailed,
+	AlbumFull,
+	ArtistDetailed,
+	ArtistFull,
+	HomeSection,
+	PlaylistDetailed,
+	PlaylistFull,
+	SearchResult,
+	SongDetailed,
+	SongFull,
+	VideoDetailed,
+	VideoFull,
+} from "./types"
 import { traverse, traverseList, traverseString } from "./utils/traverse"
+
+axios.defaults.headers.common["Accept-Encoding"] = "gzip"
 
 export default class YTMusic {
 	private cookiejar: CookieJar
@@ -48,31 +50,27 @@ export default class YTMusic {
 		})
 
 		this.client.interceptors.request.use(req => {
-			if (!req.baseURL) return
-
-			const cookieString = this.cookiejar.getCookieStringSync(req.baseURL)
-			if (cookieString) {
-				if (!req.headers) {
-					req.headers = {}
+			if (req.baseURL) {
+				const cookieString = this.cookiejar.getCookieStringSync(req.baseURL)
+				if (cookieString) {
+					req.headers["cookie"] = cookieString
 				}
-				req.headers["Cookie"] = cookieString
 			}
 
 			return req
 		})
 
 		this.client.interceptors.response.use(res => {
-			if ("set-cookie" in res.headers) {
-				if (!res.config.baseURL) return
-
-				const setCookie = res.headers["set-cookie"] as Array<string> | string
-				for (const cookieString of [setCookie].flat()) {
-					const cookie = Cookie.parse(`${cookieString}`)
-					if (!cookie) return
-
-					this.cookiejar.setCookieSync(cookie, res.config.baseURL)
+			if (res.headers && res.config.baseURL) {
+				const cookieStrings = res.headers["set-cookie"] || []
+				for (const cookieString of cookieStrings) {
+					const cookie = Cookie.parse(cookieString)
+					if (cookie) {
+						this.cookiejar.setCookieSync(cookie, res.config.baseURL)
+					}
 				}
 			}
+
 			return res
 		})
 	}
@@ -80,7 +78,11 @@ export default class YTMusic {
 	/**
 	 * Initializes the API
 	 */
-	public async initialize(options?: { cookies?: string; GL?: string; HL?: string }) {
+	public async initialize(options?: {
+		cookies?: string
+		GL?: string
+		HL?: string
+	}) {
 		const { cookies, GL, HL } = options ?? {}
 
 		if (cookies) {
@@ -235,7 +237,7 @@ export default class YTMusic {
 	 *
 	 * @param query Query string
 	 */
-	public async search(query: string): Promise<(typeof SearchResult.infer)[]> {
+	public async search(query: string): Promise<SearchResult[]> {
 		const searchData = await this.constructRequest("search", {
 			query,
 			params: null,
@@ -243,7 +245,7 @@ export default class YTMusic {
 
 		return traverseList(searchData, "musicResponsiveListItemRenderer")
 			.map(SearchParser.parse)
-			.filter(Boolean) as (typeof SearchResult.infer)[]
+			.filter(Boolean) as SearchResult[]
 	}
 
 	/**
@@ -251,7 +253,7 @@ export default class YTMusic {
 	 *
 	 * @param query Query string
 	 */
-	public async searchSongs(query: string): Promise<(typeof SongDetailed.infer)[]> {
+	public async searchSongs(query: string): Promise<SongDetailed[]> {
 		const searchData = await this.constructRequest("search", {
 			query,
 			params: "Eg-KAQwIARAAGAAgACgAMABqChAEEAMQCRAFEAo%3D",
@@ -267,7 +269,7 @@ export default class YTMusic {
 	 *
 	 * @param query Query string
 	 */
-	public async searchVideos(query: string): Promise<(typeof VideoDetailed.infer)[]> {
+	public async searchVideos(query: string): Promise<VideoDetailed[]> {
 		const searchData = await this.constructRequest("search", {
 			query,
 			params: "Eg-KAQwIABABGAAgACgAMABqChAEEAMQCRAFEAo%3D",
@@ -283,7 +285,7 @@ export default class YTMusic {
 	 *
 	 * @param query Query string
 	 */
-	public async searchArtists(query: string): Promise<(typeof ArtistDetailed.infer)[]> {
+	public async searchArtists(query: string): Promise<ArtistDetailed[]> {
 		const searchData = await this.constructRequest("search", {
 			query,
 			params: "Eg-KAQwIABAAGAAgASgAMABqChAEEAMQCRAFEAo%3D",
@@ -299,7 +301,7 @@ export default class YTMusic {
 	 *
 	 * @param query Query string
 	 */
-	public async searchAlbums(query: string): Promise<(typeof AlbumDetailed.infer)[]> {
+	public async searchAlbums(query: string): Promise<AlbumDetailed[]> {
 		const searchData = await this.constructRequest("search", {
 			query,
 			params: "Eg-KAQwIABAAGAEgACgAMABqChAEEAMQCRAFEAo%3D",
@@ -315,7 +317,7 @@ export default class YTMusic {
 	 *
 	 * @param query Query string
 	 */
-	public async searchPlaylists(query: string): Promise<(typeof PlaylistDetailed.infer)[]> {
+	public async searchPlaylists(query: string): Promise<PlaylistDetailed[]> {
 		const searchData = await this.constructRequest("search", {
 			query,
 			params: "Eg-KAQwIABAAGAAgACgBMABqChAEEAMQCRAFEAo%3D",
@@ -332,7 +334,7 @@ export default class YTMusic {
 	 * @param videoId Video ID
 	 * @returns Song Data
 	 */
-	public async getSong(videoId: string): Promise<typeof SongFull.infer> {
+	public async getSong(videoId: string): Promise<SongFull> {
 		if (!videoId.match(/^[a-zA-Z0-9-_]{11}$/)) throw new Error("Invalid videoId")
 		const data = await this.constructRequest("player", { videoId })
 
@@ -347,7 +349,7 @@ export default class YTMusic {
 	 * @param videoId Video ID
 	 * @returns Video Data
 	 */
-	public async getVideo(videoId: string): Promise<typeof VideoFull.infer> {
+	public async getVideo(videoId: string): Promise<VideoFull> {
 		if (!videoId.match(/^[a-zA-Z0-9-_]{11}$/)) throw new Error("Invalid videoId")
 		const data = await this.constructRequest("player", { videoId })
 
@@ -384,7 +386,7 @@ export default class YTMusic {
 	 * @param artistId Artist ID
 	 * @returns Artist Data
 	 */
-	public async getArtist(artistId: string): Promise<typeof ArtistFull.infer> {
+	public async getArtist(artistId: string): Promise<ArtistFull> {
 		const data = await this.constructRequest("browse", {
 			browseId: artistId,
 		})
@@ -398,13 +400,17 @@ export default class YTMusic {
 	 * @param artistId Artist ID
 	 * @returns Artist's Songs
 	 */
-	public async getArtistSongs(artistId: string): Promise<(typeof SongDetailed.infer)[]> {
-		const artistData = await this.constructRequest("browse", { browseId: artistId })
+	public async getArtistSongs(artistId: string): Promise<SongDetailed[]> {
+		const artistData = await this.constructRequest("browse", {
+			browseId: artistId,
+		})
 		const browseToken = traverse(artistData, "musicShelfRenderer", "title", "browseId")
 
 		if (browseToken instanceof Array) return []
 
-		const songsData = await this.constructRequest("browse", { browseId: browseToken })
+		const songsData = await this.constructRequest("browse", {
+			browseId: browseToken,
+		})
 		const continueToken = traverse(songsData, "continuation")
 		const moreSongsData = await this.constructRequest(
 			"browse",
@@ -429,7 +435,7 @@ export default class YTMusic {
 	 * @param artistId Artist ID
 	 * @returns Artist's Albums
 	 */
-	public async getArtistAlbums(artistId: string): Promise<(typeof AlbumDetailed.infer)[]> {
+	public async getArtistAlbums(artistId: string): Promise<AlbumDetailed[]> {
 		const artistData = await this.constructRequest("browse", {
 			browseId: artistId,
 		})
@@ -452,7 +458,7 @@ export default class YTMusic {
 	 * @param albumId Album ID
 	 * @returns Album Data
 	 */
-	public async getAlbum(albumId: string): Promise<typeof AlbumFull.infer> {
+	public async getAlbum(albumId: string): Promise<AlbumFull> {
 		const data = await this.constructRequest("browse", {
 			browseId: albumId,
 		})
@@ -466,7 +472,7 @@ export default class YTMusic {
 	 * @param playlistId Playlist ID
 	 * @returns Playlist Data
 	 */
-	public async getPlaylist(playlistId: string): Promise<typeof PlaylistFull.infer> {
+	public async getPlaylist(playlistId: string): Promise<PlaylistFull> {
 		if (playlistId.startsWith("PL")) playlistId = "VL" + playlistId
 		const data = await this.constructRequest("browse", {
 			browseId: playlistId,
@@ -481,7 +487,7 @@ export default class YTMusic {
 	 * @param playlistId Playlist ID
 	 * @returns Playlist's Videos
 	 */
-	public async getPlaylistVideos(playlistId: string): Promise<(typeof VideoDetailed.infer)[]> {
+	public async getPlaylistVideos(playlistId: string): Promise<VideoDetailed[]> {
 		if (playlistId.startsWith("PL")) playlistId = "VL" + playlistId
 		const playlistData = await this.constructRequest("browse", {
 			browseId: playlistId,
@@ -503,28 +509,23 @@ export default class YTMusic {
 	}
 
 	/**
-	 * Get content for the home page.
+	 * Get sections for the home page.
 	 *
-	 * @returns Mixed HomePageContent
+	 * @returns Mixed HomeSection
 	 */
-	public async getHome(): Promise<HomePageContent[]> {
-		const results: HomePageContent[] = []
-		const page = await this.constructRequest("browse", { browseId: FE_MUSIC_HOME })
-		traverseList(page, "sectionListRenderer", "contents").forEach(content => {
-			const parsed = Parser.parseMixedContent(content)
-			parsed && results.push(parsed)
+	public async getHomeSections(): Promise<HomeSection[]> {
+		const data = await this.constructRequest("browse", {
+			browseId: FE_MUSIC_HOME,
 		})
 
-		let continuation = traverseString(page, "continuation")
+		const sections = traverseList("sectionListRenderer", "contents")
+		let continuation = traverseString(data, "continuation")
 		while (continuation) {
-			const nextPage = await this.constructRequest("browse", {}, { continuation })
-			traverseList(nextPage, "sectionListContinuation", "contents").forEach(content => {
-				const parsed = Parser.parseMixedContent(content)
-				parsed && results.push(parsed)
-			})
-			continuation = traverseString(nextPage, "continuation")
+			const data = await this.constructRequest("browse", {}, { continuation })
+			sections.push(...traverseList(data, "sectionListContinuation", "contents"))
+			continuation = traverseString(data, "continuation")
 		}
 
-		return results
+		return sections.map(Parser.parseHomeSection)
 	}
 }

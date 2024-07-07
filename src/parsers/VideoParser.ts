@@ -1,4 +1,4 @@
-import { ArtistBasic, VideoDetailed, VideoFull } from "../@types/types"
+import { ArtistBasic, VideoDetailed, VideoFull } from "../types"
 import checkType from "../utils/checkType"
 import { isArtist, isDuration, isTitle } from "../utils/filters"
 import { traverse, traverseList, traverseString } from "../utils/traverse"
@@ -38,7 +38,7 @@ export default class VideoParser {
 				artistId: traverseString(artist, "browseId") || null,
 				name: traverseString(artist, "text"),
 			},
-			duration: Parser.parseDuration(duration.text),
+			duration: Parser.parseDuration(duration?.text),
 			thumbnails: traverseList(item, "thumbnails"),
 		}
 	}
@@ -74,7 +74,7 @@ export default class VideoParser {
 					name: traverseString(artist, "text"),
 					artistId: traverseString(artist, "browseId") || null,
 				},
-				duration: duration ? Parser.parseDuration(duration.text) : null,
+				duration: Parser.parseDuration(duration?.text),
 				thumbnails: traverseList(item, "thumbnails"),
 			},
 			VideoDetailed,
