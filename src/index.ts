@@ -1,3 +1,5 @@
+import YTMusic from "./YTMusic"
+
 export type {
 	AlbumBasic,
 	AlbumDetailed,
@@ -16,4 +18,4 @@ export type {
 	HomeSection,
 } from "./types"
 
-export { default as YTMusic } from "./YTMusic"
+export default YTMusic
