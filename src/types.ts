@@ -35,6 +35,8 @@ export const SongDetailed = z
 		album: z.nullable(AlbumBasic),
 		duration: z.nullable(z.number()),
 		thumbnails: z.array(ThumbnailFull),
+            playlistId: z.string(),
+            params: z.string()
 	})
 	.strict()
 
@@ -47,6 +49,8 @@ export const VideoDetailed = z
 		artist: ArtistBasic,
 		duration: z.nullable(z.number()),
 		thumbnails: z.array(ThumbnailFull),
+            playlistId: z.string(),
+            params: z.string()
 	})
 	.strict()
 
