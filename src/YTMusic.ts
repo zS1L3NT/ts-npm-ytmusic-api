@@ -9,12 +9,14 @@ import PlaylistParser from "./parsers/PlaylistParser"
 import SearchParser from "./parsers/SearchParser"
 import SongParser from "./parsers/SongParser"
 import VideoParser from "./parsers/VideoParser"
+import NextParser from "./parsers/NextParser"
 import {
 	AlbumDetailed,
 	AlbumFull,
 	ArtistDetailed,
 	ArtistFull,
 	HomeSection,
+	NextResult,
 	PlaylistDetailed,
 	PlaylistFull,
 	SearchResult,
@@ -527,5 +529,28 @@ export default class YTMusic {
 		}
 
 		return sections.map(Parser.parseHomeSection)
+	}
+
+      /**
+	 * Get content for next song.
+	 *
+	 * @param videoId Video ID
+	 * @param playlistId Playlist ID
+	 * @param paramString
+	 *
+	 * @returns List of the next song
+	 */
+	public async getNext(videoId: string, playlistId: string, paramString?: string): Promise<NextResult[]> {
+		const data = await this.constructRequest("next", {
+			enablePersistentPlaylistPanel: true,
+			isAudioOnly: true,
+			params: paramString,
+			playlistId: playlistId,
+			tunerSettingValue: "AUTOMIX_SETTING_NORMAL",
+			videoId: videoId,
+		})
+
+		const contents = traverse(traverseList(data, "tabs", "tabRenderer")[0], "contents")
+		return contents.map(NextParser.parse)
 	}
 }

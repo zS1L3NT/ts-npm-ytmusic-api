@@ -172,3 +172,17 @@ export const HomeSection = z
 		contents: z.array(z.union([AlbumDetailed, PlaylistDetailed, SongDetailed])),
 	})
 	.strict()
+
+export type NextResult = z.infer<typeof NextResult>
+export const NextResult = z
+      .object({
+            index: z.number(),
+            name: z.string(),
+            artist: ArtistBasic,
+            playlistId: z.string(),
+            videoId: z.string(),
+            selected: z.boolean(),
+            params: z.string(),
+            thumbnails: z.array(ThumbnailFull)
+      })
+      .strict()

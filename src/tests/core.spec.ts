@@ -16,10 +16,21 @@ import {
 	SongFull,
 	VideoDetailed,
 	VideoFull,
+	NextResult
 } from "../types"
 
 const errors: ZodError[] = []
 const queries = ["Lilac", "Weekend", "Eill", "Eminem", "Lisa Hannigan"]
+
+const nextQueries = [
+      //   videoId        playlistId
+      ["0-q1KafFCLU", "RDAMVMv7bnOxV4jAc"], 
+      ["3_g2un5M350", "RDAOHSpo_Uv9STIRtF73zMywLg"],
+      ["k9r74T2d5zc", "RDAO58VCzmAxo6veMZY49UqvQw"],
+      ["2JFLxtcMQBM", "RDAOASZzAB4N6PSfsOwzAhxYyQ"],
+      ["g9m6oj9JvnE", "RDAOjWghT6s3mcT8SVl7jgbCXw"]
+]
+
 const expect = (data: any, type: ZodType) => {
 	const result = type.safeParse(data)
 
@@ -39,7 +50,7 @@ const expect = (data: any, type: ZodType) => {
 const ytmusic = new YTMusic()
 beforeAll(() => ytmusic.initialize())
 
-queries.forEach(query => {
+queries.forEach((query, index) => {
 	describe("Query: " + query, () => {
 		it("Search suggestions", async () => {
 			const suggestions = await ytmusic.getSearchSuggestions(query)
@@ -74,6 +85,11 @@ queries.forEach(query => {
 		it("Search All", async () => {
 			const results = await ytmusic.search(query)
 			expect(results, z.array(SearchResult))
+		})
+
+            it("Get Next", async () => {
+			const results = await ytmusic.getNext.apply(ytmusic, nextQueries[index]);
+			expect(results, z.array(NextResult))
 		})
 
 		it("Get lyrics of the first song result", async () => {
