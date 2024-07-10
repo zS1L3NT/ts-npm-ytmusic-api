@@ -1,0 +1,11 @@
+name: On Pull Request
+on:
+    workflow_dispatch:
+    pull_request:
+        branches:
+            - main
+jobs:
+    lint:
+        uses: ./.github/workflows/run-linter.yml
+    test:
+        uses: ./.github/workflows/run-tests.yml
