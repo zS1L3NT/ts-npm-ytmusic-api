@@ -25,6 +25,7 @@ export default class VideoParser {
 
 	public static parseSearchResult(item: any): VideoDetailed {
 		const columns = traverseList(item, "flexColumns", "runs").flat()
+		const listData = traverseList(item, "menu", "navigationEndpoint")
 
 		const title = columns.find(isTitle)
 		const artist = columns.find(isArtist) || columns[1]
@@ -40,10 +41,14 @@ export default class VideoParser {
 			},
 			duration: Parser.parseDuration(duration?.text),
 			thumbnails: traverseList(item, "thumbnails"),
+			listId: traverseString(listData, "playlistId") || null,
+			params: traverseString(listData, "params") || null,
 		}
 	}
 
 	public static parseArtistTopVideo(item: any, artistBasic: ArtistBasic): VideoDetailed {
+		const listData = traverseList(item, "menu", "navigationEndpoint")
+
 		return {
 			type: "VIDEO",
 			videoId: traverseString(item, "videoId"),
@@ -51,11 +56,14 @@ export default class VideoParser {
 			artist: artistBasic,
 			duration: null,
 			thumbnails: traverseList(item, "thumbnails"),
+			listId: traverseString(listData, "playlistId") || null,
+			params: traverseString(listData, "params") || null,
 		}
 	}
 
 	public static parsePlaylistVideo(item: any): VideoDetailed {
 		const columns = traverseList(item, "flexColumns", "runs").flat()
+		const listData = traverseList(item, "menu", "navigationEndpoint")
 
 		const title = columns.find(isTitle) || columns[0]
 		const artist = columns.find(isArtist) || columns[1]
@@ -76,6 +84,8 @@ export default class VideoParser {
 				},
 				duration: Parser.parseDuration(duration?.text),
 				thumbnails: traverseList(item, "thumbnails"),
+				listId: traverseString(listData, "playlistId") || null,
+				params: traverseString(listData, "params") || null,
 			},
 			VideoDetailed,
 		)
