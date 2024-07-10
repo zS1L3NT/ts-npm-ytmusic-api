@@ -542,14 +542,14 @@ export default class YTMusic {
 	 */
 	public async getNext(
 		videoId: string,
-		playlistId: string,
-		paramString?: string,
+		listId: string,
+		params?: string,
 	): Promise<NextResult[]> {
 		const data = await this.constructRequest("next", {
 			enablePersistentPlaylistPanel: true,
 			isAudioOnly: true,
-			params: paramString,
-			playlistId: playlistId,
+			params: params,
+			playlistId: listId,
 			tunerSettingValue: "AUTOMIX_SETTING_NORMAL",
 			videoId: videoId,
 		})
