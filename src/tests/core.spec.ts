@@ -23,7 +23,7 @@ const errors: ZodError[] = []
 const queries = ["Lilac", "Weekend", "Eill", "Eminem", "Lisa Hannigan"]
 
 const nextQueries: [string, string][] = [
-	//   videoId        playlistId
+	//   videoId        listId
 	["0-q1KafFCLU", "RDAMVMv7bnOxV4jAc"],
 	["3_g2un5M350", "RDAOHSpo_Uv9STIRtF73zMywLg"],
 	["k9r74T2d5zc", "RDAO58VCzmAxo6veMZY49UqvQw"],

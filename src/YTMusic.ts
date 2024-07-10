@@ -535,8 +535,8 @@ export default class YTMusic {
 	 * Get content for next song.
 	 *
 	 * @param videoId Video ID
-	 * @param playlistId Playlist ID
-	 * @param paramString
+	 * @param listId list ID
+	 * @param params
 	 *
 	 * @returns List of the next song
 	 */
