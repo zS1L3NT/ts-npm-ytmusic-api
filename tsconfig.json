@@ -4,16 +4,15 @@
 		"target": "esnext",
 		"lib": ["esnext"],
 		"module": "esnext",
-		"moduleResolution": "node",
+		"moduleResolution": "bundler",
 		"esModuleInterop": true,
 		"allowSyntheticDefaultImports": true,
 
 		/** Project */
 		"rootDir": "src",
-		"outDir": "dist/esm",
+		"outDir": "dist",
+		// "typeRoots": ["./node_modules/@types", "./src/@types"],
 		"types": ["bun-types"],
-		"declaration": true,
-		"declarationDir": "dist/types",
 
 		/** Type Checking */
 		"strict": true,
@@ -30,16 +29,14 @@
 		"allowUnusedLabels": true,
 		"resolveJsonModule": true,
 		"forceConsistentCasingInFileNames": true,
-		"exactOptionalPropertyTypes": true,
 
 		/** Other */
-		// "noEmit": false,
+		// "noEmit": true,
 		// "allowJs": true,
 		// "jsx": "react-jsx",
-		"skipLibCheck": true
+		"skipLibCheck": true,
 		// "isolatedModules": true,
 		// "incremental": true
 	},
-	"include": ["src"],
-	"exclude": ["src/tests"]
+	"include": ["src"]
 }

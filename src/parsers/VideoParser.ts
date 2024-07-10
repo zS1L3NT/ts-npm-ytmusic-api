@@ -25,7 +25,7 @@ export default class VideoParser {
 
 	public static parseSearchResult(item: any): VideoDetailed {
 		const columns = traverseList(item, "flexColumns", "runs").flat()
-            const playlistData = traverseList(item, "menu", "navigationEndpoint")
+		const playlistData = traverseList(item, "menu", "navigationEndpoint")
 
 		const title = columns.find(isTitle)
 		const artist = columns.find(isArtist) || columns[1]
@@ -41,13 +41,13 @@ export default class VideoParser {
 			},
 			duration: Parser.parseDuration(duration?.text),
 			thumbnails: traverseList(item, "thumbnails"),
-                  playlistId: traverseString(playlistData, "playlistId"),
-                  params: traverseString(playlistData, "params")
+			playlistId: traverseString(playlistData, "playlistId"),
+			params: traverseString(playlistData, "params"),
 		}
 	}
 
 	public static parseArtistTopVideo(item: any, artistBasic: ArtistBasic): VideoDetailed {
-            const playlistData = traverseList(item, "menu", "navigationEndpoint")
+		const playlistData = traverseList(item, "menu", "navigationEndpoint")
 
 		return {
 			type: "VIDEO",
@@ -56,14 +56,14 @@ export default class VideoParser {
 			artist: artistBasic,
 			duration: null,
 			thumbnails: traverseList(item, "thumbnails"),
-                  playlistId: traverseString(playlistData, "playlistId"),
-                  params: traverseString(playlistData, "params")
+			playlistId: traverseString(playlistData, "playlistId"),
+			params: traverseString(playlistData, "params"),
 		}
 	}
 
 	public static parsePlaylistVideo(item: any): VideoDetailed {
 		const columns = traverseList(item, "flexColumns", "runs").flat()
-            const playlistData = traverseList(item, "menu", "navigationEndpoint")
+		const playlistData = traverseList(item, "menu", "navigationEndpoint")
 
 		const title = columns.find(isTitle) || columns[0]
 		const artist = columns.find(isArtist) || columns[1]
@@ -84,8 +84,8 @@ export default class VideoParser {
 				},
 				duration: Parser.parseDuration(duration?.text),
 				thumbnails: traverseList(item, "thumbnails"),
-                        playlistId: traverseString(playlistData, "playlistId"),
-                        params: traverseString(playlistData, "params")
+				playlistId: traverseString(playlistData, "playlistId"),
+				params: traverseString(playlistData, "params"),
 			},
 			VideoDetailed,
 		)

@@ -9,6 +9,7 @@ import {
 	AlbumFull,
 	ArtistDetailed,
 	ArtistFull,
+	NextResult,
 	PlaylistDetailed,
 	PlaylistFull,
 	SearchResult,
@@ -16,19 +17,18 @@ import {
 	SongFull,
 	VideoDetailed,
 	VideoFull,
-	NextResult
 } from "../types"
 
 const errors: ZodError[] = []
 const queries = ["Lilac", "Weekend", "Eill", "Eminem", "Lisa Hannigan"]
 
-const nextQueries = [
-      //   videoId        playlistId
-      ["0-q1KafFCLU", "RDAMVMv7bnOxV4jAc"], 
-      ["3_g2un5M350", "RDAOHSpo_Uv9STIRtF73zMywLg"],
-      ["k9r74T2d5zc", "RDAO58VCzmAxo6veMZY49UqvQw"],
-      ["2JFLxtcMQBM", "RDAOASZzAB4N6PSfsOwzAhxYyQ"],
-      ["g9m6oj9JvnE", "RDAOjWghT6s3mcT8SVl7jgbCXw"]
+const nextQueries: [string, string][] = [
+	//   videoId        playlistId
+	["0-q1KafFCLU", "RDAMVMv7bnOxV4jAc"],
+	["3_g2un5M350", "RDAOHSpo_Uv9STIRtF73zMywLg"],
+	["k9r74T2d5zc", "RDAO58VCzmAxo6veMZY49UqvQw"],
+	["2JFLxtcMQBM", "RDAOASZzAB4N6PSfsOwzAhxYyQ"],
+	["g9m6oj9JvnE", "RDAOjWghT6s3mcT8SVl7jgbCXw"],
 ]
 
 const expect = (data: any, type: ZodType) => {
@@ -87,8 +87,8 @@ queries.forEach((query, index) => {
 			expect(results, z.array(SearchResult))
 		})
 
-            it("Get Next", async () => {
-			const results = await ytmusic.getNext.apply(ytmusic, nextQueries[index]);
+		it("Get Next", async () => {
+			const results = await ytmusic.getNext(...nextQueries[index]!)
 			expect(results, z.array(NextResult))
 		})
 

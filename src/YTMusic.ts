@@ -4,12 +4,12 @@ import { Cookie, CookieJar } from "tough-cookie"
 import { FE_MUSIC_HOME } from "./constants"
 import AlbumParser from "./parsers/AlbumParser"
 import ArtistParser from "./parsers/ArtistParser"
+import NextParser from "./parsers/NextParser"
 import Parser from "./parsers/Parser"
 import PlaylistParser from "./parsers/PlaylistParser"
 import SearchParser from "./parsers/SearchParser"
 import SongParser from "./parsers/SongParser"
 import VideoParser from "./parsers/VideoParser"
-import NextParser from "./parsers/NextParser"
 import {
 	AlbumDetailed,
 	AlbumFull,
@@ -531,7 +531,7 @@ export default class YTMusic {
 		return sections.map(Parser.parseHomeSection)
 	}
 
-      /**
+	/**
 	 * Get content for next song.
 	 *
 	 * @param videoId Video ID
@@ -540,7 +540,11 @@ export default class YTMusic {
 	 *
 	 * @returns List of the next song
 	 */
-	public async getNext(videoId: string, playlistId: string, paramString?: string): Promise<NextResult[]> {
+	public async getNext(
+		videoId: string,
+		playlistId: string,
+		paramString?: string,
+	): Promise<NextResult[]> {
 		const data = await this.constructRequest("next", {
 			enablePersistentPlaylistPanel: true,
 			isAudioOnly: true,

@@ -5,12 +5,12 @@ import { traverse, traverseList, traverseString } from "../utils/traverse"
 export default class NextParser {
 	public static parse(data: any): NextResult {
 		const nextData = traverseString(data, "playlistPanelVideoRenderer")
-            const artistData = traverse(nextData, "longBylineText");
+		const artistData = traverse(nextData, "longBylineText")
 		const artistBasic: ArtistBasic = {
 			artistId: traverseString(artistData, "browseId") || null,
 			name: traverseString(artistData, "text"),
 		}
-            
+
 		return checkType(
 			{
 				index: +traverseString(nextData, "navigationEndpoint", "index"),
