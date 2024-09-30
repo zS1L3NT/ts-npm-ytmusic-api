@@ -55,12 +55,13 @@ export default class VideoParser {
 	}
 
 	public static parsePlaylistVideo(item: any): VideoDetailed {
-		const columns = traverseList(item, "flexColumns", "runs").flat()
+		const flexColumns = traverseList(item, "flexColumns", "runs").flat()
+		const fixedcolumns = traverseList(item, "fixedColumns", "runs").flat()
 
-		const title = columns.find(isTitle) || columns[0]
-		const artist = columns.find(isArtist) || columns[1]
-		const duration = columns.find(isDuration)
-
+		const title = flexColumns.find(isTitle) || flexColumns[0]
+		const artist = flexColumns.find(isArtist) || flexColumns[1]
+		const duration = fixedcolumns.find(isDuration)
+		
 		return checkType(
 			{
 				type: "VIDEO",
