@@ -499,6 +499,8 @@ export default class YTMusic {
 			"musicResponsiveListItemRenderer",
 		)
 		let continuation = traverse(playlistData, "continuation")
+		continuation = continuation[0]
+
 		while (!(continuation instanceof Array)) {
 			const songsData = await this.constructRequest("browse", {}, { continuation })
 			songs.push(...traverseList(songsData, "musicResponsiveListItemRenderer"))
