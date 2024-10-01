@@ -54,22 +54,25 @@ export default class VideoParser {
 		}
 	}
 
-	public static parsePlaylistVideo(item: any): VideoDetailed {
+	public static parsePlaylistVideo(item: any): VideoDetailed | undefined {
 		const flexColumns = traverseList(item, "flexColumns", "runs").flat()
 		const fixedcolumns = traverseList(item, "fixedColumns", "runs").flat()
 
 		const title = flexColumns.find(isTitle) || flexColumns[0]
 		const artist = flexColumns.find(isArtist) || flexColumns[1]
 		const duration = fixedcolumns.find(isDuration)
-		
+
+		const videoId1: string = traverseString(item, "playNavigationEndpoint", "videoId")
+		const videoId2: string[] = traverseList(item, "thumbnails")[0].url.match(/https:\/\/i\.ytimg\.com\/vi\/(.+)\//,)
+
+		if (videoId1 == '' && videoId2 == null) {
+			return
+		}
+
 		return checkType(
 			{
 				type: "VIDEO",
-				videoId:
-					traverseString(item, "playNavigationEndpoint", "videoId") ||
-					traverseList(item, "thumbnails")[0].url.match(
-						/https:\/\/i\.ytimg\.com\/vi\/(.+)\//,
-					)[1],
+				videoId: videoId1 || videoId2[1] as string,
 				name: traverseString(title, "text"),
 				artist: {
 					name: traverseString(artist, "text"),

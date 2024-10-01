@@ -499,7 +499,10 @@ export default class YTMusic {
 			"musicResponsiveListItemRenderer",
 		)
 		let continuation = traverse(playlistData, "continuation")
-		continuation = continuation[0]
+		// Sometimes it returns array, dunno why
+		if (continuation instanceof Array) {
+			continuation = continuation[0]
+		}
 
 		while (!(continuation instanceof Array)) {
 			const songsData = await this.constructRequest("browse", {}, { continuation })
@@ -507,7 +510,7 @@ export default class YTMusic {
 			continuation = traverse(songsData, "continuation")
 		}
 
-		return songs.map(VideoParser.parsePlaylistVideo)
+		return songs.map(VideoParser.parsePlaylistVideo).filter((video): video is VideoDetailed => video !== undefined)
 	}
 
 	/**
