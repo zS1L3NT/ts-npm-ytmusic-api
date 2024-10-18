@@ -1,5 +1,5 @@
 {
-	"name": "@mirantee/ytmusic-api",
+	"name": "ytmusic-api",
 	"version": "5.2.4",
 	"description": "YouTube Music API",
 	"main": "./dist/index.js",
@@ -9,7 +9,7 @@
 	"license": "GPL-3.0",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Miran-Mirantee/ts-npm-ytmusic-api"
+		"url": "https://github.com/zS1L3NT/ts-npm-ytmusic-api"
 	},
 	"files": ["dist", "package.json"],
 	"exports": {
