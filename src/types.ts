@@ -114,6 +114,18 @@ export const VideoFull = z
 	})
 	.strict()
 
+export type UpNextsDetails = z.infer<typeof UpNextsDetails>
+export const UpNextsDetails = z
+		.object({
+		type: z.literal("SONG"),
+		videoId: z.string(),
+		title: z.string(),
+		artists: ArtistBasic,
+		duration: z.number(),
+		thumbnails: z.array(ThumbnailFull),
+		})
+		.strict()
+		
 export type ArtistFull = z.infer<typeof ArtistFull>
 export const ArtistFull = z
 	.object({
