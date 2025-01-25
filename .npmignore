@@ -1,9 +1,6 @@
 /node_modules
-/src
 /.github
 .gitignore
 .prettierrc
 .editorconfig
 .npmrc
-tsconfig.json
-.eslintrc.json
