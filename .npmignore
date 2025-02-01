@@ -1,9 +1,8 @@
+/.github
 /node_modules
 /src
-/.github
 .gitignore
-.prettierrc
-.editorconfig
-.npmrc
+.npmignore
+biome.json
 tsconfig.json
-.eslintrc.json
+tsup.config.ts
