@@ -487,6 +487,31 @@ export default class YTMusic {
 	}
 
 	/**
+	 * Get all of Artist's Singles
+	 *
+	 * @param artistId Artist ID
+	 * @returns Artist's Singles
+	 */
+	public async getArtistSingles(artistId: string): Promise<AlbumDetailed[]> {
+		const artistData = await this.constructRequest("browse", {
+			browseId: artistId,
+		});
+		
+		// Le carousel des singles est le deuxième (index 1)
+		const artistSinglesData = traverseList(artistData, "musicCarouselShelfRenderer")[1];
+		const browseBody = traverse(artistSinglesData, "moreContentButton", "browseEndpoint");
+
+		const singlesData = await this.constructRequest("browse", browseBody);
+
+		return traverseList(singlesData, "musicTwoRowItemRenderer").map(item =>
+			AlbumParser.parseArtistAlbum(item, {
+				artistId,
+				name: traverseString(singlesData, "header", "runs", "text"),
+			}),
+		);
+	}
+
+	/**
 	 * Get all possible information of an Album
 	 *
 	 * @param albumId Album ID

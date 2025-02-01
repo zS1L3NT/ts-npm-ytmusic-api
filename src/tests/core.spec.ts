@@ -100,16 +100,22 @@ queries.forEach(query => {
 			expect(artist, ArtistFull)
 		})
 
+		it("Get singles of the first artist result", async () => {
+			const artists = await ytmusic.searchArtists(query)
+			const singles = await ytmusic.getArtistSingles(artists[0]!.artistId)
+			expect(singles, z.array(AlbumDetailed))
+		})
+
+		it("Get albums of the first artist result", async () => {
+			const artists = await ytmusic.searchArtists(query)
+			const albums = await ytmusic.getArtistAlbums(artists[0]!.artistId)
+			expect(albums, z.array(AlbumDetailed))
+		})
+
 		it("Get the songs of the first artist result", async () => {
 			const artists = await ytmusic.searchArtists(query)
 			const songs = await ytmusic.getArtistSongs(artists[0]!.artistId)
 			expect(songs, z.array(SongDetailed))
-		})
-
-		it("Get the albums of the first artist result", async () => {
-			const artists = await ytmusic.searchArtists(query)
-			const albums = await ytmusic.getArtistAlbums(artists[0]!.artistId)
-			expect(albums, z.array(AlbumDetailed))
 		})
 
 		it("Get details of the first album result", async () => {
