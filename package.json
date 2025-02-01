@@ -1,6 +1,6 @@
 {
 	"name": "ytmusic-api",
-	"version": "5.2.4",
+	"version": "5.3.0",
 	"description": "YouTube Music API",
 	"main": "./dist/index.js",
 	"module": "./dist/index.mjs",
