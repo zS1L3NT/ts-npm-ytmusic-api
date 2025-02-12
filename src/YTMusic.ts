@@ -168,17 +168,14 @@ export default class YTMusic {
 			key: this.config.INNERTUBE_API_KEY!,
 		})
 
-		const clientName = options?.clientName || this.config.INNERTUBE_CLIENT_NAME;
-		const clientVersion = options?.clientVersion || this.config.INNERTUBE_CLIENT_VERSION;
-
 		const res = await this.client.post(
 			`youtubei/${this.config.INNERTUBE_API_VERSION}/${endpoint}?${searchParams.toString()}`,
 			{
 				context: {
 					capabilities: {},
 					client: {
-						clientName,
-						clientVersion,
+						clientName: options?.clientName || this.config.INNERTUBE_CLIENT_NAME,
+						clientVersion: options?.clientVersion || this.config.INNERTUBE_CLIENT_VERSION,
 						experimentIds: [],
 						experimentsToken: "",
 						gl: this.config.GL,
