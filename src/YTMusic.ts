@@ -410,21 +410,22 @@ export default class YTMusic {
 	public async getLyrics(videoId: string): Promise<string[] | null>;
 	public async getLyrics(videoId: string, timestamp: boolean): Promise<TimedLyricsRes | null>;
 	public async getLyrics(
-		arg1: string,
-		arg2?: boolean
+		videoId: string,
+		timestamp?: boolean
 	): Promise<string[] | TimedLyricsRes | null> {
-		if (!arg1.match(/^[a-zA-Z0-9-_]{11}$/)) throw new Error("Invalid videoId")
-		const data = await this.constructRequest("next", { videoId: arg1 })
+		if (!videoId.match(/^[a-zA-Z0-9-_]{11}$/)) throw new Error("Invalid videoId")
+		const data = await this.constructRequest("next", { videoId })
 		const browseId = traverse(traverseList(data, "tabs", "tabRenderer")[1], "browseId")
 
-		const lyricsData = arg2 ?
-			await this.constructRequest("browse", { browseId }, {}, { clientName: ANDROID_CLIENTNAME, clientVersion: ANDROID_CLIENTVERSION }) :
-			await this.constructRequest("browse", { browseId });
-		const lyrics = traverseString(lyricsData, "description", "runs", "text")
-		const timedLyrics = traverse(lyricsData, "contents", "type", "lyricsData")
+		if ( timestamp ) {
+			const lyricsData = await this.constructRequest("browse", { browseId }, {}, { clientName: ANDROID_CLIENTNAME, clientVersion: ANDROID_CLIENTVERSION });
+			const timedLyrics = traverse(lyricsData, "contents", "type", "lyricsData")
+			return timedLyrics as TimedLyricsRes;
+		}
 
-		if ( timedLyrics ) return timedLyrics as TimedLyricsRes;
-		
+		const lyricsData = await this.constructRequest("browse", { browseId });
+		const lyrics = traverseString(lyricsData, "description", "runs", "text")
+
 		return lyrics
 			? lyrics
 					.replaceAll("\r", "")
