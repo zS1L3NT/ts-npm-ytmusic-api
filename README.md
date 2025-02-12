@@ -21,6 +21,8 @@ Because of this, I decided to build my own version of a youtube music api with T
     -   Albums
     -   Playlists
     -   Lyrics
+    -   Upcoming Songs
+
 
 ## Usage
 
