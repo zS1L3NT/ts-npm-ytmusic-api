@@ -190,6 +190,7 @@ export const TimedLyricsData = z.object({
 })
 .strict()
 
+export type TimedLyricsRes = z.infer<typeof TimedLyricsRes>
 export const TimedLyricsRes = z.object({
 		timedLyricsData: z.array(TimedLyricsData),
 		sourceMessage: z.string()

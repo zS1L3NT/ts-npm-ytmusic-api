@@ -20,7 +20,7 @@ import {
 	SearchResult,
 	SongDetailed,
 	SongFull,
-	TimedLyricsData,
+	TimedLyricsRes,
 	UpNextsDetails,
 	VideoDetailed,
 	VideoFull,
@@ -168,14 +168,17 @@ export default class YTMusic {
 			key: this.config.INNERTUBE_API_KEY!,
 		})
 
+		const clientName = options?.clientName || this.config.INNERTUBE_CLIENT_NAME;
+		const clientVersion = options?.clientVersion || this.config.INNERTUBE_CLIENT_VERSION;
+
 		const res = await this.client.post(
 			`youtubei/${this.config.INNERTUBE_API_VERSION}/${endpoint}?${searchParams.toString()}`,
 			{
 				context: {
 					capabilities: {},
 					client: {
-						clientName: options?.clientName || this.config.INNERTUBE_CLIENT_NAME,
-						clientVersion: options?.clientVersion || this.config.INNERTUBE_CLIENT_VERSION,
+						clientName,
+						clientVersion,
 						experimentIds: [],
 						experimentsToken: "",
 						gl: this.config.GL,
@@ -401,21 +404,30 @@ export default class YTMusic {
 	 * Get lyrics of a specific Song
 	 *
 	 * @param videoId Video ID
+	 * @param timestamp isTimestampLyrics
 	 * @returns Lyrics
 	 */
-	public async getLyrics(videoId: string, timestamp: boolean = false): Promise<string[] | TimedLyricsData | null> {
-		if (!videoId.match(/^[a-zA-Z0-9-_]{11}$/)) throw new Error("Invalid videoId")
-		const data = await this.constructRequest("next", { videoId })
+	public async getLyrics(videoId: string): Promise<string[] | null>;
+	public async getLyrics(videoId: string, timestamp: boolean): Promise<TimedLyricsRes | null>;
+	public async getLyrics(
+		arg1: string,
+		arg2?: boolean
+	): Promise<string[] | TimedLyricsRes | null> {
+		if (!arg1.match(/^[a-zA-Z0-9-_]{11}$/)) throw new Error("Invalid videoId")
+		const data = await this.constructRequest("next", { videoId: arg1 })
 		const browseId = traverse(traverseList(data, "tabs", "tabRenderer")[1], "browseId")
 
-		const lyricsData = timestamp ?
-			await this.constructRequest("browse", { browseId }, undefined, { clientName: ANDROID_CLIENTNAME, clientVersion: ANDROID_CLIENTVERSION }) :
+		const lyricsData = arg2 ?
+			await this.constructRequest("browse", { browseId }, {}, { clientName: ANDROID_CLIENTNAME, clientVersion: ANDROID_CLIENTVERSION }) :
 			await this.constructRequest("browse", { browseId });
 		const lyrics = traverseString(lyricsData, "description", "runs", "text")
 		const timedLyrics = traverse(lyricsData, "contents", "type", "lyricsData")
 
-		if ( timedLyrics ) return timedLyrics as TimedLyricsData;
+		console.log('lyrics', lyrics);
+		console.log('timedLyrics', timedLyrics);
 
+		if ( timedLyrics ) return timedLyrics as TimedLyricsRes;
+		
 		return lyrics
 			? lyrics
 					.replaceAll("\r", "")
