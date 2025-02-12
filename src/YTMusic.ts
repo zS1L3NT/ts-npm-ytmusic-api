@@ -423,9 +423,6 @@ export default class YTMusic {
 		const lyrics = traverseString(lyricsData, "description", "runs", "text")
 		const timedLyrics = traverse(lyricsData, "contents", "type", "lyricsData")
 
-		console.log('lyrics', lyrics);
-		console.log('timedLyrics', timedLyrics);
-
 		if ( timedLyrics ) return timedLyrics as TimedLyricsRes;
 		
 		return lyrics
