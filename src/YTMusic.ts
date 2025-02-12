@@ -420,7 +420,10 @@ export default class YTMusic {
 		if ( timestamp ) {
 			const lyricsData = await this.constructRequest("browse", { browseId }, {}, { clientName: ANDROID_CLIENTNAME, clientVersion: ANDROID_CLIENTVERSION });
 			const timedLyrics = traverse(lyricsData, "contents", "type", "lyricsData")
-			return timedLyrics as TimedLyricsRes;
+			return {
+				timedLyricsData: timedLyrics.timedLyricsData,
+				sourceMessage: timedLyrics.sourceMessage,
+			} as TimedLyricsRes;
 		}
 
 		const lyricsData = await this.constructRequest("browse", { browseId });
