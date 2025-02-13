@@ -415,7 +415,7 @@ export default class YTMusic {
 		const browseId = traverse(traverseList(data, "tabs", "tabRenderer")[1], "browseId")
 
 		if ( timestamp ) {
-			const lyricsData = await this.constructRequest("browse", { browseId }, {}, { clientName: ANDROID_CLIENTNAME, clientVersion: ANDROID_CLIENTVERSION });
+			const lyricsData = await this.constructRequest("browse", { browseId }, undefined, { clientName: ANDROID_CLIENTNAME, clientVersion: ANDROID_CLIENTVERSION });
 			const timedLyrics = traverse(lyricsData, "contents", "type", "lyricsData")
 			if ( !timedLyrics || !timedLyrics.timedLyricsData || !timedLyrics.sourceMessage ) return null;
 			return {
