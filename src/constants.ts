@@ -5,6 +5,3 @@ export enum PageType {
 }
 
 export const FE_MUSIC_HOME = "FEmusic_home"
-
-export const ANDROID_CLIENTNAME = "ANDROID_MUSIC"
-export const ANDROID_CLIENTVERSION = "8.05.50"

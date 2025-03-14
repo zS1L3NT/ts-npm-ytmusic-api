@@ -16,8 +16,6 @@ export type {
 	VideoDetailed,
 	VideoFull,
 	HomeSection,
-	TimedLyricsData,
-	TimedLyricsRes
 } from "./types"
 
 export default YTMusic
