@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios"
 import { Cookie, CookieJar } from "tough-cookie"
 
-import { FE_MUSIC_HOME } from "./constants"
+import { FE_MUSIC_HOME, ANDROID_CLIENTNAME, ANDROID_CLIENTVERSION } from "./constants"
 import AlbumParser from "./parsers/AlbumParser"
 import ArtistParser from "./parsers/ArtistParser"
 import Parser from "./parsers/Parser"
@@ -20,6 +20,7 @@ import {
 	SearchResult,
 	SongDetailed,
 	SongFull,
+	TimedLyricsRes,
 	UpNextsDetails,
 	VideoDetailed,
 	VideoFull,
@@ -139,6 +140,10 @@ export default class YTMusic {
 		endpoint: string,
 		body: Record<string, any> = {},
 		query: Record<string, string> = {},
+		options?: {
+			clientName?: string;
+			clientVersion?: string;
+		}
 	) {
 		if (!this.config) {
 			throw new Error("API not initialized. Make sure to call the initialize() method first")
@@ -169,8 +174,8 @@ export default class YTMusic {
 				context: {
 					capabilities: {},
 					client: {
-						clientName: this.config.INNERTUBE_CLIENT_NAME,
-						clientVersion: this.config.INNERTUBE_CLIENT_VERSION,
+						clientName: options?.clientName || this.config.INNERTUBE_CLIENT_NAME,
+						clientVersion: options?.clientVersion || this.config.INNERTUBE_CLIENT_VERSION,
 						experimentIds: [],
 						experimentsToken: "",
 						gl: this.config.GL,
@@ -396,14 +401,30 @@ export default class YTMusic {
 	 * Get lyrics of a specific Song
 	 *
 	 * @param videoId Video ID
+	 * @param timestamp isTimestampLyrics
 	 * @returns Lyrics
 	 */
-	public async getLyrics(videoId: string) {
+	public async getLyrics(videoId: string): Promise<string[] | null>;
+	public async getLyrics(videoId: string, timestamp: boolean): Promise<TimedLyricsRes | null>;
+	public async getLyrics(
+		videoId: string,
+		timestamp?: boolean
+	): Promise<string[] | TimedLyricsRes | null> {
 		if (!videoId.match(/^[a-zA-Z0-9-_]{11}$/)) throw new Error("Invalid videoId")
 		const data = await this.constructRequest("next", { videoId })
 		const browseId = traverse(traverseList(data, "tabs", "tabRenderer")[1], "browseId")
 
-		const lyricsData = await this.constructRequest("browse", { browseId })
+		if ( timestamp ) {
+			const lyricsData = await this.constructRequest("browse", { browseId }, undefined, { clientName: ANDROID_CLIENTNAME, clientVersion: ANDROID_CLIENTVERSION });
+			const timedLyrics = traverse(lyricsData, "contents", "type", "lyricsData")
+			if ( !timedLyrics || !timedLyrics.timedLyricsData || !timedLyrics.sourceMessage ) return null;
+			return {
+				timedLyricsData: timedLyrics.timedLyricsData,
+				sourceMessage: timedLyrics.sourceMessage,
+			} as TimedLyricsRes;
+		}
+
+		const lyricsData = await this.constructRequest("browse", { browseId });
 		const lyrics = traverseString(lyricsData, "description", "runs", "text")
 
 		return lyrics

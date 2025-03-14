@@ -177,6 +177,26 @@ export const SearchResult = z.discriminatedUnion("type", [
 	PlaylistDetailed,
 ])
 
+export type TimedLyricsData = z.infer<typeof TimedLyricsData>
+export const TimedLyricsData = z.object({
+	lyricLine: z.string(),
+	cueRange: z.object({
+		startTimeMilliseconds: z.string(),
+		endTimeMilliseconds: z.string(),
+		metadata: z.object({
+			id: z.number()
+		})
+	})
+})
+.strict()
+
+export type TimedLyricsRes = z.infer<typeof TimedLyricsRes>
+export const TimedLyricsRes = z.object({
+		timedLyricsData: z.array(TimedLyricsData),
+		sourceMessage: z.string()
+	})
+	.strict()
+
 export type HomeSection = z.infer<typeof HomeSection>
 export const HomeSection = z
 	.object({
