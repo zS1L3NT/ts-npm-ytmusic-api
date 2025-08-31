@@ -125,7 +125,17 @@ export const UpNextsDetails = z
 		thumbnails: z.array(ThumbnailFull),
 		})
 		.strict()
-		
+
+export type TimedLyric = z.infer<typeof TimedLyric>
+export const TimedLyric = z
+	.object({
+		text: z.string(),
+		start_time: z.number(),
+		end_time: z.number(),
+		id: z.number()
+	})
+	.strict()
+
 export type ArtistFull = z.infer<typeof ArtistFull>
 export const ArtistFull = z
 	.object({

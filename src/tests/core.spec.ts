@@ -14,6 +14,7 @@ import {
 	SearchResult,
 	SongDetailed,
 	SongFull,
+	TimedLyric,
 	VideoDetailed,
 	VideoFull,
 } from "../types"
@@ -80,6 +81,13 @@ queries.forEach(query => {
 			const songs = await ytmusic.searchSongs(query)
 			const lyrics = await ytmusic.getLyrics(songs[0]!.videoId)
 			expect(lyrics, z.nullable(z.array(z.string())))
+		})
+
+		it("Get timed lyrics of the first song result", async () => {
+			const songs = await ytmusic.searchSongs(query)
+			const lyrics = await ytmusic.getTimedLyrics(songs[0]!.videoId)
+			console.log(lyrics)
+			expect(lyrics, z.nullable(z.array(TimedLyric)))
 		})
 
 		it("Get details of the first song result", async () => {

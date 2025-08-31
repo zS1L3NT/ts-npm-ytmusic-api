@@ -20,6 +20,7 @@ import {
 	SearchResult,
 	SongDetailed,
 	SongFull,
+	TimedLyric,
 	UpNextsDetails,
 	VideoDetailed,
 	VideoFull,
@@ -126,6 +127,53 @@ export default class YTMusic {
 		return this
 	}
 
+	private get context() {
+		if (!this.config) {
+			throw new Error("API not initialized. Make sure to call the initialize() method first")
+		}
+		return {
+			capabilities: {},
+			client: {
+				clientName: this.config.INNERTUBE_CLIENT_NAME,
+				clientVersion: this.config.INNERTUBE_CLIENT_VERSION,
+				experimentIds: [],
+				experimentsToken: "",
+				gl: this.config.GL,
+				hl: this.config.HL,
+				locationInfo: {
+					locationPermissionAuthorizationStatus:
+						"LOCATION_PERMISSION_AUTHORIZATION_STATUS_UNSUPPORTED",
+				},
+				musicAppInfo: {
+					musicActivityMasterSwitch: "MUSIC_ACTIVITY_MASTER_SWITCH_INDETERMINATE",
+					musicLocationMasterSwitch: "MUSIC_LOCATION_MASTER_SWITCH_INDETERMINATE",
+					pwaInstallabilityStatus: "PWA_INSTALLABILITY_STATUS_UNKNOWN",
+				},
+				utcOffsetMinutes: -new Date().getTimezoneOffset(),
+			},
+			request: {
+				internalExperimentFlags: [
+					{
+						key: "force_music_enable_outertube_tastebuilder_browse",
+						value: "true",
+					},
+					{
+						key: "force_music_enable_outertube_playlist_detail_browse",
+						value: "true",
+					},
+					{
+						key: "force_music_enable_outertube_search_suggestions",
+						value: "true",
+					},
+				],
+				sessionIndex: {},
+			},
+			user: {
+				enableSafetyMode: false,
+			},
+		}
+	}
+
 	/**
 	 * Constructs a basic YouTube Music API request with all essential headers
 	 * and body parameters needed to make the API work
@@ -166,47 +214,7 @@ export default class YTMusic {
 		const res = await this.client.post(
 			`youtubei/${this.config.INNERTUBE_API_VERSION}/${endpoint}?${searchParams.toString()}`,
 			{
-				context: {
-					capabilities: {},
-					client: {
-						clientName: this.config.INNERTUBE_CLIENT_NAME,
-						clientVersion: this.config.INNERTUBE_CLIENT_VERSION,
-						experimentIds: [],
-						experimentsToken: "",
-						gl: this.config.GL,
-						hl: this.config.HL,
-						locationInfo: {
-							locationPermissionAuthorizationStatus:
-								"LOCATION_PERMISSION_AUTHORIZATION_STATUS_UNSUPPORTED",
-						},
-						musicAppInfo: {
-							musicActivityMasterSwitch: "MUSIC_ACTIVITY_MASTER_SWITCH_INDETERMINATE",
-							musicLocationMasterSwitch: "MUSIC_LOCATION_MASTER_SWITCH_INDETERMINATE",
-							pwaInstallabilityStatus: "PWA_INSTALLABILITY_STATUS_UNKNOWN",
-						},
-						utcOffsetMinutes: -new Date().getTimezoneOffset(),
-					},
-					request: {
-						internalExperimentFlags: [
-							{
-								key: "force_music_enable_outertube_tastebuilder_browse",
-								value: "true",
-							},
-							{
-								key: "force_music_enable_outertube_playlist_detail_browse",
-								value: "true",
-							},
-							{
-								key: "force_music_enable_outertube_search_suggestions",
-								value: "true",
-							},
-						],
-						sessionIndex: {},
-					},
-					user: {
-						enableSafetyMode: false,
-					},
-				},
+				context: this.context,
 				...body,
 			},
 			{
@@ -411,6 +419,36 @@ export default class YTMusic {
 					.replaceAll("\r", "")
 					.split("\n")
 					.filter(v => !!v)
+			: null
+	}
+
+	/**
+	 * Get Timed Lyrics of a specific song
+	 * 
+	 * @param videoId Video ID
+	 * @returns TimedLyrics
+	 */
+	public async getTimedLyrics(videoId: string): Promise<TimedLyric[] | null> {
+		if (!videoId.match(/^[a-zA-Z0-9-_]{11}$/)) throw new Error("Invalid videoId")
+		const data = await this.constructRequest("next", { videoId })
+		const browseId = traverse(traverseList(data, "tabs", "tabRenderer")[1], "browseId")
+
+		const modified_ctx = this.context
+		modified_ctx.client.clientName = "ANDROID_MUSIC"
+		modified_ctx.client.clientVersion = "7.21.50"
+		const lyricsData = await this.constructRequest("browse", { browseId, context: modified_ctx })
+		const lyrics = traverseList(lyricsData, "timedLyricsModel", "lyricsData", "timedLyricsData")
+		
+		return lyrics
+			? lyrics
+				.map(({ lyricLine, cueRange: { startTimeMilliseconds, endTimeMilliseconds, metadata: { id } } }) => {
+					return {
+						text: lyricLine,
+						start_time: parseInt(startTimeMilliseconds),
+						end_time: parseInt(endTimeMilliseconds),
+						id: parseInt(id)
+					}
+				})
 			: null
 	}
 
