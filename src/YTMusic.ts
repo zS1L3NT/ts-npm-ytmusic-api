@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from "axios"
 import { Cookie, CookieJar } from "tough-cookie"
 
-import { FE_MUSIC_HOME } from "./constants"
+import { ANDROID_CLIENT_NAME, ANDROID_CLIENT_VERSION, FE_MUSIC_HOME } from "./constants"
 import AlbumParser from "./parsers/AlbumParser"
 import ArtistParser from "./parsers/ArtistParser"
 import Parser from "./parsers/Parser"
@@ -434,8 +434,8 @@ export default class YTMusic {
 		const browseId = traverse(traverseList(data, "tabs", "tabRenderer")[1], "browseId")
 
 		const modified_ctx = this.context
-		modified_ctx.client.clientName = "ANDROID_MUSIC"
-		modified_ctx.client.clientVersion = "7.21.50"
+		modified_ctx.client.clientName = ANDROID_CLIENT_NAME
+		modified_ctx.client.clientVersion = ANDROID_CLIENT_VERSION
 		const lyricsData = await this.constructRequest("browse", { browseId, context: modified_ctx })
 		const lyrics = traverseList(lyricsData, "timedLyricsModel", "lyricsData", "timedLyricsData")
 		
