@@ -86,7 +86,6 @@ queries.forEach(query => {
 		it("Get timed lyrics of the first song result", async () => {
 			const songs = await ytmusic.searchSongs(query)
 			const lyrics = await ytmusic.getTimedLyrics(songs[0]!.videoId)
-			console.log(lyrics)
 			expect(lyrics, z.nullable(z.array(TimedLyric)))
 		})
 

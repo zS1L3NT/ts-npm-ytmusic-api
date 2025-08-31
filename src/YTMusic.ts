@@ -439,7 +439,7 @@ export default class YTMusic {
 		const lyricsData = await this.constructRequest("browse", { browseId, context: modified_ctx })
 		const lyrics = traverseList(lyricsData, "timedLyricsModel", "lyricsData", "timedLyricsData")
 		
-		return lyrics
+		return lyrics.length
 			? lyrics
 				.map(({ lyricLine, cueRange: { startTimeMilliseconds, endTimeMilliseconds, metadata: { id } } }) => {
 					return {
