@@ -254,15 +254,44 @@ export default class YTMusic {
 	 *
 	 * @param query Query string
 	 */
-	public async searchSongs(query: string): Promise<SongDetailed[]> {
+	public async searchSongs(query: string): Promise<{ results: SongDetailed[]; token: string | undefined }> {
 		const searchData = await this.constructRequest("search", {
 			query,
 			params: "Eg-KAQwIARAAGAAgACgAMABqChAEEAMQCRAFEAo%3D",
 		})
 
-		return traverseList(searchData, "musicResponsiveListItemRenderer").map(
-			SongParser.parseSearchResult,
-		)
+        const continuationArr = traverseList(searchData, "continuations");
+        const token = traverseString(continuationArr, "continuation");
+
+        return {
+            results: traverseList(searchData, "musicResponsiveListItemRenderer").map(
+              SongParser.parseSearchResult
+            ),
+            token,
+        };
+	}
+
+	/**
+	 * Searches Next page of YouTube Music API for songs
+	 *
+	 * @param token nextPageToken string
+	 */
+	public async searchSongsNext(token: string): Promise<{ results: SongDetailed[]; token: string | undefined }> {
+        const searchData = await this.constructRequest("search", undefined, {
+            ctoken: token,
+            continuation: token,
+            type: "next",
+        });
+
+        const continuationArr = traverseList(searchData, "continuations");
+        const newToken = traverseString(continuationArr, "continuation");
+
+        return {
+            results: traverseList(searchData, "musicResponsiveListItemRenderer").map(
+              SongParser.parseSearchResult
+            ),
+            token:newToken,
+        };
 	}
 
 	/**

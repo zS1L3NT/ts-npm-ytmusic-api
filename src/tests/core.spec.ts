@@ -48,7 +48,13 @@ queries.forEach(query => {
 
 		it("Search Songs", async () => {
 			const songs = await ytmusic.searchSongs(query)
-			expect(songs, z.array(SongDetailed))
+			expect(songs, z.object({results:z.array(SongDetailed), token:z.string().optional()}))
+		})
+
+		it("Search Songs Next page", async () => {
+			const songs = await ytmusic.searchSongs(query);
+			const songsNext = await ytmusic.searchSongsNext(songs.token!);
+			expect(songsNext, z.object({results:z.array(SongDetailed), token:z.string().optional()}))
 		})
 
 		it("Search Videos", async () => {
