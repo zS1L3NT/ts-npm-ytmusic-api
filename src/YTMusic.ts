@@ -158,7 +158,9 @@ export default class YTMusic {
 		}
 
 		const searchParams = new URLSearchParams({
-			...query,
+			...Object.fromEntries(
+        Object.entries(query).filter(([, value]) => value !== undefined)
+      ),
 			alt: "json",
 			key: this.config.INNERTUBE_API_KEY!,
 		})
