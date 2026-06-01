@@ -16,6 +16,10 @@ export type {
 	VideoDetailed,
 	VideoFull,
 	HomeSection,
+	UpNextsDetails,
 } from "./types"
+
+export { YTMusicAPIError, YTMusicError } from "./errors"
+export type { RetryOptions } from "./utils/retry"
 
 export default YTMusic

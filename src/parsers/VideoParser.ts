@@ -63,16 +63,18 @@ export default class VideoParser {
 		const duration = fixedcolumns.find(isDuration)
 
 		const videoId1: string = traverseString(item, "playNavigationEndpoint", "videoId")
-		const videoId2: string[] = traverseList(item, "thumbnails")[0].url.match(/https:\/\/i\.ytimg\.com\/vi\/(.+)\//,)
+		const videoId2: string[] = traverseList(item, "thumbnails")[0].url.match(
+			/https:\/\/i\.ytimg\.com\/vi\/(.+)\//,
+		)
 
-		if (videoId1 == '' && videoId2 == null) {
+		if (videoId1 == "" && videoId2 == null) {
 			return
 		}
 
 		return checkType(
 			{
 				type: "VIDEO",
-				videoId: videoId1 || videoId2[1] as string,
+				videoId: videoId1 || (videoId2[1] as string),
 				name: traverseString(title, "text"),
 				artist: {
 					name: traverseString(artist, "text"),
