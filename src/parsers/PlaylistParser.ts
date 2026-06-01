@@ -16,12 +16,14 @@ export default class PlaylistParser {
 					name: traverseString(artist, "text"),
 					artistId: traverseString(artist, "browseId") || null,
 				},
-				videoCount:
-					+traverseList(data, "tabs", "secondSubtitle", "text")
+				videoCount: (() => {
+					const countStr = traverseList(data, "tabs", "secondSubtitle", "text")
 						.at(2)
-						.split(" ")
-						.at(0)
-						.replaceAll(",", "") ?? null,
+						?.split(" ")
+						?.at(0)
+						?.replaceAll(",", "")
+					return countStr ? Number(countStr) : null
+				})(),
 				thumbnails: traverseList(data, "tabs", "thumbnails"),
 			},
 			PlaylistFull,

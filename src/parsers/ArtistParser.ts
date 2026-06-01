@@ -1,5 +1,6 @@
 import { ArtistDetailed, ArtistFull } from "../types"
 import checkType from "../utils/checkType"
+import { identifyCarouselType } from "../utils/filters"
 import { traverseList, traverseString } from "../utils/traverse"
 import AlbumParser from "./AlbumParser"
 import PlaylistParser from "./PlaylistParser"
@@ -13,6 +14,28 @@ export default class ArtistParser {
 			name: traverseString(data, "header", "title", "text"),
 		}
 
+		// Group every musicCarouselShelfRenderer by its content type so that
+		// lookup is independent of the order YouTube returns them.
+		const carousels = traverseList(data, "musicCarouselShelfRenderer")
+		const carouselMap = new Map<string, any>()
+		for (const carousel of carousels) {
+			const type = identifyCarouselType(carousel)
+			// Keep the first match for each type (mirrors old positional priority)
+			if (!carouselMap.has(type)) {
+				carouselMap.set(type, carousel)
+			}
+		}
+
+		/**
+		 * Returns the parsed items from the first carousel of the given type,
+		 * or an empty array when that section is absent from the response.
+		 */
+		const getItems = (type: string): any[] => {
+			const carousel = carouselMap.get(type)
+			if (!carousel) return []
+			return (carousel.contents as any[]) ?? []
+		}
+
 		return checkType(
 			{
 				type: "ARTIST",
@@ -21,34 +44,21 @@ export default class ArtistParser {
 				topSongs: traverseList(data, "musicShelfRenderer", "contents").map(item =>
 					SongParser.parseArtistTopSong(item, artistBasic),
 				),
-				topAlbums:
-					traverseList(data, "musicCarouselShelfRenderer")
-						?.at(0)
-						?.contents.map((item: any) =>
-							AlbumParser.parseArtistTopAlbum(item, artistBasic),
-						) ?? [],
-				topSingles:
-					traverseList(data, "musicCarouselShelfRenderer")
-						?.at(1)
-						?.contents.map((item: any) =>
-							AlbumParser.parseArtistTopAlbum(item, artistBasic),
-						) ?? [],
-				topVideos:
-					traverseList(data, "musicCarouselShelfRenderer")
-						?.at(2)
-						?.contents.map((item: any) =>
-							VideoParser.parseArtistTopVideo(item, artistBasic),
-						) ?? [],
-				featuredOn:
-					traverseList(data, "musicCarouselShelfRenderer")
-						?.at(3)
-						?.contents.map((item: any) =>
-							PlaylistParser.parseArtistFeaturedOn(item, artistBasic),
-						) ?? [],
-				similarArtists:
-					traverseList(data, "musicCarouselShelfRenderer")
-						?.at(4)
-						?.contents.map((item: any) => this.parseSimilarArtists(item)) ?? [],
+				topAlbums: getItems("albums").map(item =>
+					AlbumParser.parseArtistTopAlbum(item, artistBasic),
+				),
+				topSingles: getItems("singles").map(item =>
+					AlbumParser.parseArtistTopAlbum(item, artistBasic),
+				),
+				topVideos: getItems("videos").map(item =>
+					VideoParser.parseArtistTopVideo(item, artistBasic),
+				),
+				featuredOn: getItems("playlists").map(item =>
+					PlaylistParser.parseArtistFeaturedOn(item, artistBasic),
+				),
+				similarArtists: getItems("similar").map(item =>
+					ArtistParser.parseSimilarArtists(item),
+				),
 			},
 			ArtistFull,
 		)
