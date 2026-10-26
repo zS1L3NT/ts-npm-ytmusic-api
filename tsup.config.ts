@@ -8,4 +8,9 @@ export default defineConfig({
 	clean: true,
 	dts: true,
 	cjsInterop: true,
+	// Keep require("ytmusic-api") callable when named exports are added.
+	footer: ({ format }) =>
+		format === "cjs"
+			? { js: "module.exports = Object.assign(module.exports.default, module.exports)" }
+			: {},
 })

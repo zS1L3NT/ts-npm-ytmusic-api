@@ -2,9 +2,9 @@ import { afterAll, beforeEach, describe, it } from "bun:test"
 import { equal, ok } from "assert"
 
 import { ZodError, ZodType, z } from "zod"
-import YTMusic from "../YTMusic"
-import { FE_MUSIC_HOME } from "../constants"
-import { HomeSection } from "../types"
+import YTMusic from "../../YTMusic"
+import { FE_MUSIC_HOME } from "../../constants"
+import { HomeSection } from "../../types"
 
 const errors: ZodError[] = []
 const configs = [

@@ -1,0 +1,3 @@
+[test]
+# Aggregate thresholds are checked from LCOV by scripts/check-coverage.mjs.
+coveragePathIgnorePatterns = ["src/tests/**", "dist/**"]

@@ -1,5 +1,7 @@
 import YTMusic from "./YTMusic"
 
+export { default as PlayerError } from "./PlayerError"
+
 export type {
 	AlbumBasic,
 	AlbumDetailed,

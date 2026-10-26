@@ -3,7 +3,7 @@ import { equal } from "assert"
 import { z } from "zod"
 
 import { ZodError, ZodType } from "zod"
-import YTMusic from "../YTMusic"
+import YTMusic from "../../YTMusic"
 import {
 	AlbumDetailed,
 	AlbumFull,
@@ -16,7 +16,7 @@ import {
 	SongFull,
 	VideoDetailed,
 	VideoFull,
-} from "../types"
+} from "../../types"
 
 const errors: ZodError[] = []
 const queries = ["Lilac", "Weekend", "Eill", "Eminem", "Lisa Hannigan"]
@@ -47,28 +47,7 @@ const expect = (data: any, type: ZodType) => {
 }
 
 const ytmusic = new YTMusic()
-beforeAll(() => {
-	;(ytmusic as any).client.interceptors.response.use((response: any) => {
-		if (response.config.url?.includes("/player?")) {
-			const requested = JSON.parse(response.config.data).videoId
-			const received = response.data.videoDetails?.videoId
-			if (requested !== received) {
-				console.error(
-					"[DEBUG-ytmusic-player]",
-					JSON.stringify({
-						requested,
-						received: received ?? null,
-						status: response.data.playabilityStatus?.status,
-						reason: response.data.playabilityStatus?.reason,
-						responseKeys: Object.keys(response.data),
-					}),
-				)
-			}
-		}
-		return response
-	})
-	return ytmusic.initialize()
-})
+beforeAll(() => ytmusic.initialize())
 
 queries.forEach(query => {
 	describe("Query: " + query, () => {

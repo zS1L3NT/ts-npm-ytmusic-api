@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from "axios"
 import { Cookie, CookieJar } from "tough-cookie"
 
+import PlayerError from "./PlayerError"
 import { FE_MUSIC_HOME } from "./constants"
 import AlbumParser from "./parsers/AlbumParser"
 import ArtistParser from "./parsers/ArtistParser"
@@ -39,7 +40,6 @@ export default class YTMusic {
 	 */
 	public constructor() {
 		this.cookiejar = new CookieJar()
-		this.config = {}
 		this.client = axios.create({
 			baseURL: "https://music.youtube.com/",
 			headers: {
@@ -87,19 +87,19 @@ export default class YTMusic {
 		const { cookies, GL, HL } = options ?? {}
 
 		if (cookies) {
-			for (const cookieString of cookies.split("; ")) {
+			for (const cookieString of cookies.split(/;\s*/).filter(Boolean)) {
 				const cookie = Cookie.parse(`${cookieString}`)
-				if (!cookie) return
+				if (!cookie) throw new Error("Invalid cookie")
 
-				this.cookiejar.setCookieSync(cookie, "https://www.youtube.com/")
+				this.cookiejar.setCookieSync(cookie, "https://music.youtube.com/")
 			}
 		}
 
 		const html = (await this.client.get("/")).data as string
-		const setConfigs = html.match(/ytcfg\.set\(.*?\);/) || []
+		const setConfigs = [...html.matchAll(/ytcfg\.set\((.*?)\);/gs)]
 
 		const configs = setConfigs
-			.map(c => c.slice(10, -2))
+			.map(c => c[1]!)
 			.map(s => {
 				try {
 					return JSON.parse(s)
@@ -109,19 +109,19 @@ export default class YTMusic {
 			})
 			.filter(j => !!j)
 
-		for (const config of configs) {
-			this.config = {
-				...this.config,
-				...config,
-			}
+		const config: Record<string, string> = Object.assign({}, ...configs)
+		if (
+			!config.INNERTUBE_API_KEY ||
+			!config.INNERTUBE_API_VERSION ||
+			!config.INNERTUBE_CLIENT_NAME ||
+			!config.INNERTUBE_CLIENT_VERSION
+		) {
+			throw new Error("YouTube Music configuration was not found. Initialization failed.")
 		}
 
-		if (!this.config) {
-			this.config = {}
-		}
-
-		if (GL) this.config.GL = GL
-		if (HL) this.config.HL = HL
+		if (GL) config.GL = GL
+		if (HL) config.HL = HL
+		this.config = config
 
 		return this
 	}
@@ -215,7 +215,39 @@ export default class YTMusic {
 			},
 		)
 
-		return "responseContext" in res.data ? res.data : res
+		return res.data
+	}
+
+	private async getPlayerData(videoId: string) {
+		if (!videoId.match(/^[a-zA-Z0-9-_]{11}$/)) throw new Error("Invalid videoId")
+		const data = await this.constructRequest("player", { videoId })
+		if (traverseString(data, "videoDetails", "videoId") !== videoId) {
+			const status = traverseString(data, "playabilityStatus", "status")
+			if (status && status !== "OK") {
+				throw new PlayerError(
+					videoId,
+					status,
+					traverseString(data, "playabilityStatus", "reason") ||
+						"YouTube did not return video details",
+				)
+			}
+			throw new Error("Invalid videoId")
+		}
+		return data
+	}
+
+	private async getContinuationData(data: any): Promise<any[]> {
+		const pages = [data]
+		const tokens = new Set<string>()
+		let continuation = Parser.parseContinuation(data)
+		while (continuation) {
+			if (tokens.has(continuation)) throw new Error("Repeated continuation token")
+			tokens.add(continuation)
+			data = await this.constructRequest("browse", {}, { continuation })
+			pages.push(data)
+			continuation = Parser.parseContinuation(data)
+		}
+		return pages
 	}
 
 	/**
@@ -336,12 +368,7 @@ export default class YTMusic {
 	 * @returns Song Data
 	 */
 	public async getSong(videoId: string): Promise<SongFull> {
-		if (!videoId.match(/^[a-zA-Z0-9-_]{11}$/)) throw new Error("Invalid videoId")
-		const data = await this.constructRequest("player", { videoId })
-
-		const song = SongParser.parse(data)
-		if (song.videoId !== videoId) throw new Error("Invalid videoId")
-		return song
+		return SongParser.parse(await this.getPlayerData(videoId))
 	}
 
 	/**
@@ -374,12 +401,7 @@ export default class YTMusic {
 	 * @returns Video Data
 	 */
 	public async getVideo(videoId: string): Promise<VideoFull> {
-		if (!videoId.match(/^[a-zA-Z0-9-_]{11}$/)) throw new Error("Invalid videoId")
-		const data = await this.constructRequest("player", { videoId })
-
-		const video = VideoParser.parse(data)
-		if (video.videoId !== videoId) throw new Error("Invalid videoId")
-		return video
+		return VideoParser.parse(await this.getPlayerData(videoId))
 	}
 
 	/**
@@ -391,10 +413,13 @@ export default class YTMusic {
 	public async getLyrics(videoId: string) {
 		if (!videoId.match(/^[a-zA-Z0-9-_]{11}$/)) throw new Error("Invalid videoId")
 		const data = await this.constructRequest("next", { videoId })
-		const browseId = traverse(traverseList(data, "tabs", "tabRenderer")[1], "browseId")
+		const browseId = traverseString(traverseList(data, "tabs", "tabRenderer")[1], "browseId")
+		if (!browseId) return null
 
 		const lyricsData = await this.constructRequest("browse", { browseId })
-		const lyrics = traverseString(lyricsData, "description", "runs", "text")
+		const lyrics = traverseList(lyricsData, "description", "runs", "text")
+			.filter(value => typeof value === "string")
+			.join("")
 
 		return lyrics
 			? lyrics
@@ -428,20 +453,14 @@ export default class YTMusic {
 		const artistData = await this.constructRequest("browse", {
 			browseId: artistId,
 		})
-		const browseToken = traverse(artistData, "musicShelfRenderer", "title", "browseId")
-
-		if (browseToken instanceof Array) return []
+		const browseToken = traverseString(artistData, "musicShelfRenderer", "title", "browseId")
+		if (!browseToken) return []
 
 		const songsData = await this.constructRequest("browse", {
 			browseId: browseToken,
 		})
-		const songs = traverseList(songsData, "musicResponsiveListItemRenderer")
-		let continuation = Parser.parseContinuation(songsData)
-		while (continuation) {
-			const data = await this.constructRequest("browse", {}, { continuation })
-			songs.push(...traverseList(data, "musicResponsiveListItemRenderer"))
-			continuation = Parser.parseContinuation(data)
-		}
+		const pages = await this.getContinuationData(songsData)
+		const songs = pages.flatMap(page => traverseList(page, "musicResponsiveListItemRenderer"))
 
 		return songs.map(s =>
 			SongParser.parseArtistSong(s, {
@@ -463,6 +482,7 @@ export default class YTMusic {
 		})
 		const artistAlbumsData = traverseList(artistData, "musicCarouselShelfRenderer")[0]
 		const browseBody = traverse(artistAlbumsData, "moreContentButton", "browseEndpoint")
+		if (!traverseString(browseBody, "browseId")) return []
 
 		const albumsData = await this.constructRequest("browse", browseBody)
 
@@ -495,7 +515,7 @@ export default class YTMusic {
 	 * @returns Playlist Data
 	 */
 	public async getPlaylist(playlistId: string): Promise<PlaylistFull> {
-		if (playlistId.startsWith("PL")) playlistId = "VL" + playlistId
+		if (!playlistId.startsWith("VL")) playlistId = "VL" + playlistId
 		const data = await this.constructRequest("browse", {
 			browseId: playlistId,
 		})
@@ -510,7 +530,7 @@ export default class YTMusic {
 	 * @returns Playlist's Videos
 	 */
 	public async getPlaylistVideos(playlistId: string): Promise<VideoDetailed[]> {
-		if (playlistId.startsWith("PL")) playlistId = "VL" + playlistId
+		if (!playlistId.startsWith("VL")) playlistId = "VL" + playlistId
 		const playlistData = await this.constructRequest("browse", {
 			browseId: playlistId,
 		})
@@ -520,12 +540,9 @@ export default class YTMusic {
 			"musicPlaylistShelfRenderer",
 			"musicResponsiveListItemRenderer",
 		)
-		let continuation = Parser.parseContinuation(playlistData)
-
-		while (continuation) {
-			const songsData = await this.constructRequest("browse", {}, { continuation })
-			songs.push(...traverseList(songsData, "musicResponsiveListItemRenderer"))
-			continuation = Parser.parseContinuation(songsData)
+		const pages = await this.getContinuationData(playlistData)
+		for (const page of pages.slice(1)) {
+			songs.push(...traverseList(page, "musicResponsiveListItemRenderer"))
 		}
 
 		return songs
@@ -543,13 +560,11 @@ export default class YTMusic {
 			browseId: FE_MUSIC_HOME,
 		})
 
-		const sections = traverseList(data, "sectionListRenderer", "contents")
-		let continuation = Parser.parseContinuation(data)
-		while (continuation) {
-			const data = await this.constructRequest("browse", {}, { continuation })
-			sections.push(...traverseList(data, "sectionListContinuation", "contents"))
-			continuation = Parser.parseContinuation(data)
-		}
+		const pages = await this.getContinuationData(data)
+		const sections = pages.flatMap(page => [
+			...traverseList(page, "sectionListRenderer", "contents"),
+			...traverseList(page, "sectionListContinuation", "contents"),
+		])
 
 		return sections
 			.flatMap(section => traverseList(section, "musicCarouselShelfRenderer"))

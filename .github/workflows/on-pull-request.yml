@@ -1,11 +1,43 @@
 name: On Pull Request
 on:
     workflow_dispatch:
+        inputs:
+            live:
+                description: Run tests against the live YouTube Music website
+                type: boolean
+                default: false
     pull_request:
+        types: [opened, synchronize, reopened, ready_for_review]
+    push:
         branches:
             - main
+permissions:
+    contents: read
 jobs:
     lint:
         uses: ./.github/workflows/run-linter.yml
     test:
         uses: ./.github/workflows/run-tests.yml
+    build:
+        name: Build and package (Node ${{ matrix.node }})
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        strategy:
+            matrix:
+                node: [22, 24]
+        steps:
+            - uses: actions/checkout@v4
+            - uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: 1.4.2
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ matrix.node }}
+            - run: bun install --frozen-lockfile
+            - run: bun run build
+            - run: bun run test:package
+    live:
+        if: github.event_name == 'workflow_dispatch' && inputs.live
+        uses: ./.github/workflows/run-tests.yml
+        with:
+            live: true

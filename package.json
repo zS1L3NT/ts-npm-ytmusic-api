@@ -21,7 +21,13 @@
 	},
 	"scripts": {
 		"build": "tsup src/index.ts",
-		"lint": "tsc --noEmit && bunx @biomejs/biome check --write"
+		"typecheck": "tsc --noEmit -p tsconfig.tests.json",
+		"lint": "bun run typecheck && biome check .",
+		"lint:fix": "biome check --write .",
+		"test": "bun test src/tests/unit",
+		"test:coverage": "bun test src/tests/unit --coverage --coverage-reporter=text --coverage-reporter=lcov && node scripts/check-coverage.mjs",
+		"test:live": "bun test src/tests/live --timeout 30000",
+		"test:package": "node scripts/test-package.mjs"
 	},
 	"dependencies": {
 		"@biomejs/biome": "1.8.3",

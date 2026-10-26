@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, it, mock, spyOn } from "bun:test"
 
-import YTMusic from "../YTMusic"
-import Parser from "../parsers/Parser"
-import PlaylistParser from "../parsers/PlaylistParser"
-import VideoParser from "../parsers/VideoParser"
-import { HomeSection, UpNextsDetails } from "../types"
-import { traverseList } from "../utils/traverse"
-import fixtures from "./fixtures/youtube-music.json"
+import YTMusic from "../../YTMusic"
+import Parser from "../../parsers/Parser"
+import PlaylistParser from "../../parsers/PlaylistParser"
+import VideoParser from "../../parsers/VideoParser"
+import { HomeSection, UpNextsDetails } from "../../types"
+import { traverseList } from "../../utils/traverse"
+import fixtures from "../fixtures/youtube-music.json"
 
 // Reduced browse/next responses captured from music.youtube.com in the browser.
 const queue = () => structuredClone(fixtures.next)
@@ -75,6 +75,28 @@ describe("Up next parsing", () => {
 })
 
 describe("Home parsing", () => {
+	it("recognizes radio playlists and omits messages without playable content", () => {
+		const section = Parser.parseHomeSection({
+			header: { title: { runs: [{ text: "Radio" }] } },
+			contents: [
+				{
+					musicTwoRowItemRenderer: {
+						title: { runs: [{ text: "Example radio" }] },
+						navigationEndpoint: { watchPlaylistEndpoint: { playlistId: "RDradio" } },
+						subtitle: { runs: [{ text: "Example Artist" }] },
+					},
+				},
+				{ messageRenderer: { text: { runs: [{ text: "Sign in" }] } } },
+			],
+		})
+		expect(section.contents).toHaveLength(1)
+		expect(section.contents[0]).toMatchObject({
+			type: "PLAYLIST",
+			playlistId: "RDradio",
+			name: "Example radio",
+		})
+	})
+
 	it("classifies each item in a mixed shelf and omits unsupported items", () => {
 		const title = (text: string, pageType: string, browseId: string) => ({
 			runs: [

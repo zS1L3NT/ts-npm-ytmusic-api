@@ -30,7 +30,7 @@ Because of this, I decided to build my own version of a youtube music api with T
 import YTMusic from "ytmusic-api"
 
 const ytmusic = new YTMusic()
-await ytmusic.initialize(/* Optional: Custom cookies */)
+await ytmusic.initialize(/* Optional: { cookies, GL, HL } */)
 
 ytmusic.search("Never gonna give you up").then(songs => {
 	console.log(songs)
@@ -43,10 +43,66 @@ A lot of the credit should go to [youtube-music-api](https://npmjs.com/package/y
 
 ## Testing
 
-YTMusic API's data return types are tested with Bun Test. To run the tests, run the command
+Install the locked dependencies before you run the tests:
 
+```sh
+bun install --frozen-lockfile
 ```
-$ bun test
+
+Run the offline tests with this command:
+
+```sh
+bun run test
+```
+
+Offline tests use fixed responses and do not contact YouTube. They cover all public API methods, response parsing, request construction, cookies, pagination, lyrics, and error handling. The fixtures include reduced JSON captured from YouTube Music.
+
+To produce a coverage report, run:
+
+```sh
+bun run test:coverage
+```
+
+Coverage must reach 95% of lines and 90% of functions. The report excludes test helpers and generated files. CI saves the report as the `coverage` artifact.
+
+To test against the live website, run:
+
+```sh
+bun run test:live
+```
+
+The live tests remain separate because YouTube can reject requests from GitHub runners with a sign-in challenge. They can also fail when content changes or requests time out. You can run them from GitHub Actions by selecting **On Pull Request**, choosing **Run workflow**, and enabling the live-test option.
+
+CI runs on every pull request update and on pushes to `main`. It runs the offline tests, type checks, formatting checks, and package builds. Package checks test CommonJS and ES module imports on Node 22 and 24.
+
+Run the checks locally with these commands:
+
+```sh
+bun run lint
+bun run build
+bun run test:package
+```
+
+`bun run lint` checks files without changing them. To apply formatting fixes, run `bun run lint:fix`.
+
+## Unavailable metadata
+
+If YouTube omits player metadata because it requires sign-in or restricts access, `getSong()` and `getVideo()` throw `PlayerError`. The error includes `videoId`, the upstream `status`, and the upstream `reason`. Import `PlayerError` from `ytmusic-api` to handle these failures separately from invalid video IDs.
+
+```js
+import YTMusic, { PlayerError } from "ytmusic-api"
+
+const ytmusic = await new YTMusic().initialize()
+try {
+	const video = await ytmusic.getVideo("mGsOHanQwxk")
+	console.log(video)
+} catch (error) {
+	if (error instanceof PlayerError) {
+		console.error(error.status, error.reason)
+	} else {
+		throw error
+	}
+}
 ```
 
 ## Built with
