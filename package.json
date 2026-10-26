@@ -21,7 +21,7 @@
 	},
 	"scripts": {
 		"build": "tsup src/index.ts",
-		"lint": "tsc --noEmit ; bunx @biomejs/biome check --write"
+		"lint": "tsc --noEmit && bunx @biomejs/biome check --write"
 	},
 	"dependencies": {
 		"@biomejs/biome": "1.8.3",

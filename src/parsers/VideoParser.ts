@@ -62,24 +62,26 @@ export default class VideoParser {
 		const artist = flexColumns.find(isArtist) || flexColumns[1]
 		const duration = fixedcolumns.find(isDuration)
 
-		const videoId1: string = traverseString(item, "playNavigationEndpoint", "videoId")
-		const videoId2: string[] = traverseList(item, "thumbnails")[0].url.match(/https:\/\/i\.ytimg\.com\/vi\/(.+)\//,)
-
-		if (videoId1 == '' && videoId2 == null) {
-			return
-		}
+		const thumbnails = traverseList(item, "thumbnails")
+		const videoId =
+			traverseString(item, "playNavigationEndpoint", "videoId") ||
+			traverseString(item, "playlistItemData", "videoId") ||
+			thumbnails[0]?.url.match(
+				/^https:\/\/i\.ytimg\.com\/vi(?:_webp)?\/([a-zA-Z0-9_-]{11})\//,
+			)?.[1]
+		if (!videoId) return
 
 		return checkType(
 			{
 				type: "VIDEO",
-				videoId: videoId1 || videoId2[1] as string,
+				videoId,
 				name: traverseString(title, "text"),
 				artist: {
 					name: traverseString(artist, "text"),
 					artistId: traverseString(artist, "browseId") || null,
 				},
 				duration: Parser.parseDuration(duration?.text),
-				thumbnails: traverseList(item, "thumbnails"),
+				thumbnails,
 			},
 			VideoDetailed,
 		)

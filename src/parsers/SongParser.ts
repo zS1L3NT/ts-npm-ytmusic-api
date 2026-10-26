@@ -1,4 +1,11 @@
-import { AlbumBasic, ArtistBasic, SongDetailed, SongFull, ThumbnailFull } from "../types"
+import {
+	AlbumBasic,
+	ArtistBasic,
+	SongDetailed,
+	SongFull,
+	ThumbnailFull,
+	UpNextsDetails,
+} from "../types"
 import checkType from "../utils/checkType"
 import { isAlbum, isArtist, isDuration, isTitle } from "../utils/filters"
 import { traverseList, traverseString } from "../utils/traverse"
@@ -127,7 +134,46 @@ export default class SongParser {
 		)
 	}
 
-	public static parseHomeSection(item: any) {
-		return SongParser.parseSearchResult(item)
+	public static parseUpNext(item: any): UpNextsDetails {
+		const artist = traverseList(item, "longBylineText", "runs").find(isArtist)
+
+		return checkType(
+			{
+				type: "SONG",
+				videoId: traverseString(item, "videoId"),
+				title: traverseString(item, "title", "text"),
+				artists: {
+					artistId: traverseString(artist, "browseId") || null,
+					name:
+						traverseString(artist, "text") ||
+						traverseString(item, "shortBylineText", "text"),
+				},
+				duration: Parser.parseDuration(traverseString(item, "lengthText", "text")) ?? 0,
+				thumbnails: traverseList(item, "thumbnail", "thumbnails"),
+			},
+			UpNextsDetails,
+		)
+	}
+
+	public static parseHomeSection(item: any): SongDetailed {
+		if (traverseList(item, "flexColumns").length) return SongParser.parseSearchResult(item)
+
+		const subtitle = traverseList(item, "subtitle", "runs")
+		const artist = subtitle.find(isArtist) || subtitle[0]
+		return checkType(
+			{
+				type: "SONG",
+				videoId: traverseString(item, "videoId"),
+				name: traverseString(item, "title", "text"),
+				artist: {
+					artistId: traverseString(artist, "browseId") || null,
+					name: traverseString(artist, "text"),
+				},
+				album: null,
+				duration: null,
+				thumbnails: traverseList(item, "thumbnails"),
+			},
+			SongDetailed,
+		)
 	}
 }

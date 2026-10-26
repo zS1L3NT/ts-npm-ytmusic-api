@@ -1,5 +1,5 @@
 import { PageType } from "../constants"
-import { AlbumDetailed, HomeSection } from "../types"
+import { HomeSection } from "../types"
 import checkType from "../utils/checkType"
 import { traverseList, traverseString } from "../utils/traverse"
 import AlbumParser from "./AlbumParser"
@@ -36,34 +36,43 @@ export default class Parser {
 		}
 	}
 
-	public static parseHomeSection(data: any): HomeSection {
-		const pageType = traverseString(data, "contents", "title", "browseEndpoint", "pageType")
-		const playlistId = traverseString(
-			data,
-			"navigationEndpoint",
-			"watchPlaylistEndpoint",
-			"playlistId",
+	public static parseContinuation(data: any): string {
+		return (
+			traverseString(data, "nextContinuationData", "continuation") ||
+			traverseString(data, "continuationCommand", "token")
 		)
+	}
 
+	public static parseHomeSection(data: any): HomeSection {
 		return checkType(
 			{
 				title: traverseString(data, "header", "title", "text"),
-				contents: traverseList(data, "contents").map(item => {
-					switch (pageType) {
-						case PageType.MUSIC_PAGE_TYPE_ALBUM:
-							return AlbumParser.parseHomeSection(item)
-						case PageType.MUSIC_PAGE_TYPE_PLAYLIST:
-							return PlaylistParser.parseHomeSection(item)
-						case "":
-							if (playlistId) {
+				contents: traverseList(data, "contents")
+					.map(item => {
+						const pageType = traverseString(item, "title", "browseEndpoint", "pageType")
+						const playlistId = traverseString(
+							item,
+							"navigationEndpoint",
+							"watchPlaylistEndpoint",
+							"playlistId",
+						)
+						switch (pageType) {
+							case PageType.MUSIC_PAGE_TYPE_ALBUM:
+								return AlbumParser.parseHomeSection(item)
+							case PageType.MUSIC_PAGE_TYPE_PLAYLIST:
 								return PlaylistParser.parseHomeSection(item)
-							} else {
-								return SongParser.parseHomeSection(item)
-							}
-						default:
-							return null as unknown as AlbumDetailed
-					}
-				}),
+							case "":
+								if (playlistId) {
+									return PlaylistParser.parseHomeSection(item)
+								} else if (traverseString(item, "videoId")) {
+									return SongParser.parseHomeSection(item)
+								}
+								return null
+							default:
+								return null
+						}
+					})
+					.filter((item): item is HomeSection["contents"][number] => item !== null),
 			},
 			HomeSection,
 		)

@@ -26,7 +26,17 @@ const expect = (data: any, type: ZodType) => {
 	if (result.error) {
 		errors.push(result.error)
 	} else {
-		const empty = JSON.stringify(result.data).match(/"\w+":""/g)
+		const empty = JSON.stringify(result.data, (_key, value) => {
+			// Auto-generated playlists can omit their creator entirely.
+			if (
+				value?.type === "PLAYLIST" &&
+				value.artist.artistId === null &&
+				value.artist.name === ""
+			) {
+				return { ...value, artist: null }
+			}
+			return value
+		}).match(/"\w+":""/g)
 		if (empty) {
 			console.log(result.data, empty)
 		}

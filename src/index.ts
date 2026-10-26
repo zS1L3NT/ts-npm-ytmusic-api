@@ -16,6 +16,7 @@ export type {
 	VideoDetailed,
 	VideoFull,
 	HomeSection,
+	UpNextsDetails,
 } from "./types"
 
 export default YTMusic

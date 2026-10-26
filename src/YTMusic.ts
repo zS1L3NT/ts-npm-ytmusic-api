@@ -343,39 +343,29 @@ export default class YTMusic {
 		if (song.videoId !== videoId) throw new Error("Invalid videoId")
 		return song
 	}
-	
-  /**
-   * Get all possible information of a Up Nexts Song
-   *
-   * @param videoId Video ID
-   * @returns Up Nexts Data
-   */
-  
-  async getUpNexts(videoId: string): Promise<UpNextsDetails[]> {
-    if (!videoId.match(/^[a-zA-Z0-9-_]{11}$/)) throw new Error("Invalid videoId");
-  
-    const data = await this.constructRequest("next", {  
-      videoId, 
-      playlistId: `RDAMVM${videoId}`, 
-      isAudioOnly: true 
-    });
-  
-    const tabs = data?.contents?.singleColumnMusicWatchNextResultsRenderer?.tabbedRenderer?.watchNextTabbedResultsRenderer?.tabs[0]?.tabRenderer?.content?.musicQueueRenderer?.content?.playlistPanelRenderer?.contents;
-  
-    if (!tabs) throw new Error("Invalid response structure");
-  
-	return tabs.slice(1).map((item: any) => {
-      const { videoId, title, shortBylineText, lengthText, thumbnail } = item.playlistPanelVideoRenderer;
-      return {
-		type: "SONG",
-        videoId,
-        title: title?.runs[0]?.text || "Unknown",
-        artists: shortBylineText?.runs[0]?.text || "Unknown",
-        duration: lengthText?.runs[0]?.text || "Unknown",
-        thumbnail: thumbnail?.thumbnails.at(-1)?.url || "Unknown",
-      };
-    });
-  }
+
+	/**
+	 * Get the songs queued after the current video.
+	 *
+	 * @param videoId Video ID
+	 * @returns Up next songs
+	 */
+	public async getUpNexts(videoId: string): Promise<UpNextsDetails[]> {
+		if (!videoId.match(/^[a-zA-Z0-9-_]{11}$/)) throw new Error("Invalid videoId")
+
+		const data = await this.constructRequest("next", {
+			videoId,
+			playlistId: `RDAMVM${videoId}`,
+			isAudioOnly: true,
+			enablePersistentPlaylistPanel: true,
+		})
+		const panel = traverseList(data, "musicQueueRenderer", "playlistPanelRenderer")[0]
+		if (!panel) throw new Error("Invalid response structure")
+
+		const videos = traverseList(panel, "contents", "playlistPanelVideoRenderer")
+		const current = videos.findIndex(item => item.selected || item.videoId === videoId)
+		return videos.slice(current + 1).map(SongParser.parseUpNext)
+	}
 
 	/**
 	 * Get all possible information of a Video
@@ -445,17 +435,15 @@ export default class YTMusic {
 		const songsData = await this.constructRequest("browse", {
 			browseId: browseToken,
 		})
-		const continueToken = traverse(songsData, "continuation")
-		const moreSongsData = await this.constructRequest(
-			"browse",
-			{},
-			{ continuation: continueToken },
-		)
+		const songs = traverseList(songsData, "musicResponsiveListItemRenderer")
+		let continuation = Parser.parseContinuation(songsData)
+		while (continuation) {
+			const data = await this.constructRequest("browse", {}, { continuation })
+			songs.push(...traverseList(data, "musicResponsiveListItemRenderer"))
+			continuation = Parser.parseContinuation(data)
+		}
 
-		return [
-			...traverseList(songsData, "musicResponsiveListItemRenderer"),
-			...traverseList(moreSongsData, "musicResponsiveListItemRenderer"),
-		].map(s =>
+		return songs.map(s =>
 			SongParser.parseArtistSong(s, {
 				artistId,
 				name: traverseString(artistData, "header", "title", "text"),
@@ -532,19 +520,17 @@ export default class YTMusic {
 			"musicPlaylistShelfRenderer",
 			"musicResponsiveListItemRenderer",
 		)
-		let continuation = traverse(playlistData, "continuation")
-		// Sometimes it returns array, dunno why
-		if (continuation instanceof Array) {
-			continuation = continuation[0]
-		}
+		let continuation = Parser.parseContinuation(playlistData)
 
-		while (!(continuation instanceof Array)) {
+		while (continuation) {
 			const songsData = await this.constructRequest("browse", {}, { continuation })
 			songs.push(...traverseList(songsData, "musicResponsiveListItemRenderer"))
-			continuation = traverse(songsData, "continuation")
+			continuation = Parser.parseContinuation(songsData)
 		}
 
-		return songs.map(VideoParser.parsePlaylistVideo).filter((video): video is VideoDetailed => video !== undefined)
+		return songs
+			.map(VideoParser.parsePlaylistVideo)
+			.filter((video): video is VideoDetailed => video !== undefined)
 	}
 
 	/**
@@ -557,14 +543,16 @@ export default class YTMusic {
 			browseId: FE_MUSIC_HOME,
 		})
 
-		const sections = traverseList("sectionListRenderer", "contents")
-		let continuation = traverseString(data, "continuation")
+		const sections = traverseList(data, "sectionListRenderer", "contents")
+		let continuation = Parser.parseContinuation(data)
 		while (continuation) {
 			const data = await this.constructRequest("browse", {}, { continuation })
 			sections.push(...traverseList(data, "sectionListContinuation", "contents"))
-			continuation = traverseString(data, "continuation")
+			continuation = Parser.parseContinuation(data)
 		}
 
-		return sections.map(Parser.parseHomeSection)
+		return sections
+			.flatMap(section => traverseList(section, "musicCarouselShelfRenderer"))
+			.map(Parser.parseHomeSection)
 	}
 }
