@@ -18,20 +18,38 @@ export default class AlbumParser {
 		}
 
 		const thumbnails = traverseList(data, "background", "thumbnails")
+		const songs = traverseList(data, "musicResponsiveListItemRenderer").map(item => 
+			SongParser.parseAlbumSong(item, artistBasic, albumBasic, thumbnails)
+		)
+
+		let albumArtists = [artistBasic]
+
+		if (!artistBasic.artistId) {
+			const artistsMap = new Map<string, ArtistBasic>()
+
+			songs.forEach(song => {
+				song.artists.forEach(artist => {
+					const key = artist.artistId || artist.name
+					if (!artistsMap.has(key)) {
+						artistsMap.set(key, artist)
+					}
+				})
+			})
+
+			albumArtists = Array.from(artistsMap.values())
+		}
 
 		return checkType(
 			{
 				type: "ALBUM",
 				...albumBasic,
 				playlistId: traverseString(data, "musicPlayButtonRenderer", "playlistId"),
-				artist: artistBasic,
+				artists: albumArtists,
 				year: AlbumParser.processYear(
 					traverseList(data, "tabs", "subtitle", "text").at(-1),
 				),
 				thumbnails,
-				songs: traverseList(data, "musicResponsiveListItemRenderer").map(item =>
-					SongParser.parseAlbumSong(item, artistBasic, albumBasic, thumbnails),
-				),
+				songs,
 			},
 			AlbumFull,
 		)
