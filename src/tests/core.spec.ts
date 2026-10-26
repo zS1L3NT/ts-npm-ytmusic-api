@@ -47,7 +47,28 @@ const expect = (data: any, type: ZodType) => {
 }
 
 const ytmusic = new YTMusic()
-beforeAll(() => ytmusic.initialize())
+beforeAll(() => {
+	;(ytmusic as any).client.interceptors.response.use((response: any) => {
+		if (response.config.url?.includes("/player?")) {
+			const requested = JSON.parse(response.config.data).videoId
+			const received = response.data.videoDetails?.videoId
+			if (requested !== received) {
+				console.error(
+					"[DEBUG-ytmusic-player]",
+					JSON.stringify({
+						requested,
+						received: received ?? null,
+						status: response.data.playabilityStatus?.status,
+						reason: response.data.playabilityStatus?.reason,
+						responseKeys: Object.keys(response.data),
+					}),
+				)
+			}
+		}
+		return response
+	})
+	return ytmusic.initialize()
+})
 
 queries.forEach(query => {
 	describe("Query: " + query, () => {
