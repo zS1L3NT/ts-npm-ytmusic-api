@@ -1,0 +1,427 @@
+{
+	"home": {
+		"contents": {
+			"sectionListRenderer": {
+				"contents": [
+					{
+						"musicCarouselShelfRenderer": {
+							"header": {
+								"musicCarouselShelfBasicHeaderRenderer": {
+									"title": {
+										"runs": [
+											{
+												"text": "Quick picks"
+											}
+										]
+									}
+								}
+							},
+							"contents": [
+								{
+									"musicResponsiveListItemRenderer": {
+										"thumbnail": {
+											"musicThumbnailRenderer": {
+												"thumbnail": {
+													"thumbnails": [
+														{
+															"url": "https://yt3.googleusercontent.com/Kj04wERwQlPkEUgWeSwUz5RAVdlAw2KSNc23VdYE8DfaMVG2qRRrvbIJCJ9X6J0roJ75GxGOHEJdkrU=w60-h60-l90-rj",
+															"width": 60,
+															"height": 60
+														},
+														{
+															"url": "https://yt3.googleusercontent.com/Kj04wERwQlPkEUgWeSwUz5RAVdlAw2KSNc23VdYE8DfaMVG2qRRrvbIJCJ9X6J0roJ75GxGOHEJdkrU=w120-h120-l90-rj",
+															"width": 120,
+															"height": 120
+														}
+													]
+												},
+												"thumbnailCrop": "MUSIC_THUMBNAIL_CROP_UNSPECIFIED",
+												"thumbnailScale": "MUSIC_THUMBNAIL_SCALE_ASPECT_FIT"
+											}
+										},
+										"flexColumns": [
+											{
+												"musicResponsiveListItemFlexColumnRenderer": {
+													"text": {
+														"runs": [
+															{
+																"text": "Na Para Bang",
+																"navigationEndpoint": {
+																	"watchEndpoint": {
+																		"videoId": "mGsOHanQwxk",
+																		"playlistId": "RDAMVMmGsOHanQwxk",
+																		"watchEndpointMusicSupportedConfigs": {
+																			"watchEndpointMusicConfig": {
+																				"musicVideoType": "MUSIC_VIDEO_TYPE_ATV"
+																			}
+																		}
+																	}
+																}
+															}
+														]
+													},
+													"displayPriority": "MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_HIGH"
+												}
+											},
+											{
+												"musicResponsiveListItemFlexColumnRenderer": {
+													"text": {
+														"runs": [
+															{
+																"text": "Mariah Deborah",
+																"navigationEndpoint": {
+																	"browseEndpoint": {
+																		"browseId": "UCUBIpcp9MV1pl0zeheoF5Ng",
+																		"browseEndpointContextSupportedConfigs": {
+																			"browseEndpointContextMusicConfig": {
+																				"pageType": "MUSIC_PAGE_TYPE_ARTIST"
+																			}
+																		}
+																	}
+																}
+															},
+															{
+																"text": " • "
+															},
+															{
+																"text": "31m plays"
+															}
+														]
+													},
+													"displayPriority": "MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_HIGH"
+												}
+											},
+											{
+												"musicResponsiveListItemFlexColumnRenderer": {
+													"text": {
+														"runs": [
+															{
+																"text": "Na Para Bang",
+																"navigationEndpoint": {
+																	"browseEndpoint": {
+																		"browseId": "MPREb_fC0Ed7YeLaq",
+																		"browseEndpointContextSupportedConfigs": {
+																			"browseEndpointContextMusicConfig": {
+																				"pageType": "MUSIC_PAGE_TYPE_ALBUM"
+																			}
+																		}
+																	}
+																}
+															}
+														]
+													},
+													"displayPriority": "MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_MEDIUM"
+												}
+											}
+										],
+										"playlistItemData": {
+											"videoId": "mGsOHanQwxk"
+										},
+										"flexColumnDisplayStyle": "MUSIC_RESPONSIVE_LIST_ITEM_FLEX_COLUMN_DISPLAY_STYLE_TWO_LINE_STACK",
+										"itemHeight": "MUSIC_RESPONSIVE_LIST_ITEM_HEIGHT_MEDIUM_COMPACT"
+									}
+								}
+							]
+						}
+					}
+				]
+			}
+		}
+	},
+	"next": {
+		"contents": {
+			"singleColumnMusicWatchNextResultsRenderer": {
+				"tabbedRenderer": {
+					"watchNextTabbedResultsRenderer": {
+						"tabs": [
+							{
+								"tabRenderer": {
+									"content": {
+										"musicQueueRenderer": {
+											"content": {
+												"playlistPanelRenderer": {
+													"contents": [
+														{
+															"playlistPanelVideoRenderer": {
+																"videoId": "mGsOHanQwxk",
+																"title": {
+																	"runs": [
+																		{
+																			"text": "Na Para Bang"
+																		}
+																	]
+																},
+																"longBylineText": {
+																	"runs": [
+																		{
+																			"text": "Mariah Deborah",
+																			"navigationEndpoint": {
+																				"browseEndpoint": {
+																					"browseId": "UCUBIpcp9MV1pl0zeheoF5Ng",
+																					"browseEndpointContextSupportedConfigs": {
+																						"browseEndpointContextMusicConfig": {
+																							"pageType": "MUSIC_PAGE_TYPE_ARTIST"
+																						}
+																					}
+																				}
+																			}
+																		}
+																	]
+																},
+																"shortBylineText": {
+																	"runs": [
+																		{
+																			"text": "Mariah Deborah"
+																		}
+																	]
+																},
+																"lengthText": {
+																	"runs": [
+																		{
+																			"text": "3:49"
+																		}
+																	]
+																},
+																"thumbnail": {
+																	"thumbnails": [
+																		{
+																			"url": "https://yt3.googleusercontent.com/Kj04wERwQlPkEUgWeSwUz5RAVdlAw2KSNc23VdYE8DfaMVG2qRRrvbIJCJ9X6J0roJ75GxGOHEJdkrU=w60-h60-l90-rj",
+																			"width": 60,
+																			"height": 60
+																		}
+																	]
+																},
+																"selected": true
+															}
+														},
+														{
+															"playlistPanelVideoRenderer": {
+																"videoId": "4eX9JOyM2VA",
+																"title": {
+																	"runs": [
+																		{
+																			"text": "Hibang"
+																		}
+																	]
+																},
+																"longBylineText": {
+																	"runs": [
+																		{
+																			"text": "Mariah Deborah",
+																			"navigationEndpoint": {
+																				"browseEndpoint": {
+																					"browseId": "UCUBIpcp9MV1pl0zeheoF5Ng",
+																					"browseEndpointContextSupportedConfigs": {
+																						"browseEndpointContextMusicConfig": {
+																							"pageType": "MUSIC_PAGE_TYPE_ARTIST"
+																						}
+																					}
+																				}
+																			}
+																		}
+																	]
+																},
+																"shortBylineText": {
+																	"runs": [
+																		{
+																			"text": "Mariah Deborah"
+																		}
+																	]
+																},
+																"lengthText": {
+																	"runs": [
+																		{
+																			"text": "3:50"
+																		}
+																	]
+																},
+																"thumbnail": {
+																	"thumbnails": [
+																		{
+																			"url": "https://yt3.googleusercontent.com/4ZSYDA7lI_E1OTObJzUSuYXe9Wy7RYDrptoaXT9rsAkeMzaEpOIDiyeqlqVDVFsrQH4H_syTvn-ossxbSg=w60-h60-l90-rj",
+																			"width": 60,
+																			"height": 60
+																		}
+																	]
+																},
+																"selected": false
+															}
+														},
+														{
+															"playlistPanelVideoRenderer": {
+																"videoId": "eGd6FzzTg1M",
+																"title": {
+																	"runs": [
+																		{
+																			"text": "Multo"
+																		}
+																	]
+																},
+																"longBylineText": {
+																	"runs": [
+																		{
+																			"text": "Cup of Joe",
+																			"navigationEndpoint": {
+																				"browseEndpoint": {
+																					"browseId": "UCgz-JXAkpKjIli7OTg_QM5g",
+																					"browseEndpointContextSupportedConfigs": {
+																						"browseEndpointContextMusicConfig": {
+																							"pageType": "MUSIC_PAGE_TYPE_ARTIST"
+																						}
+																					}
+																				}
+																			}
+																		}
+																	]
+																},
+																"shortBylineText": {
+																	"runs": [
+																		{
+																			"text": "Cup of Joe"
+																		}
+																	]
+																},
+																"lengthText": {
+																	"runs": [
+																		{
+																			"text": "3:58"
+																		}
+																	]
+																},
+																"thumbnail": {
+																	"thumbnails": [
+																		{
+																			"url": "https://yt3.googleusercontent.com/cqPgV11psMYc0Dlqoe86lBY2REl-tgnEUwjQkM9r8Jng8queswaU0Mtta1q86bBQSEVqYbuhq48N5IE=w60-h60-l90-rj",
+																			"width": 60,
+																			"height": 60
+																		}
+																	]
+																},
+																"selected": false
+															}
+														}
+													]
+												}
+											}
+										}
+									}
+								}
+							}
+						]
+					}
+				}
+			}
+		}
+	},
+	"playlist": {
+		"contents": {
+			"twoColumnBrowseResultsRenderer": {
+				"tabs": [
+					{
+						"tabRenderer": {
+							"content": {
+								"sectionListRenderer": {
+									"contents": [
+										{
+											"musicResponsiveHeaderRenderer": {
+												"title": {
+													"runs": [
+														{
+															"text": "Best of Liliac - Hard Rock"
+														}
+													]
+												},
+												"secondSubtitle": {
+													"runs": [
+														{
+															"text": "24k views"
+														},
+														{
+															"text": " • "
+														},
+														{
+															"text": "13 tracks"
+														},
+														{
+															"text": " • "
+														},
+														{
+															"text": "56 minutes"
+														}
+													]
+												},
+												"facepile": {
+													"avatarStackViewModel": {
+														"text": {
+															"content": "Tony Lee"
+														},
+														"rendererContext": {
+															"accessibilityContext": {
+																"label": "Tony Lee"
+															},
+															"commandContext": {
+																"onTap": {
+																	"innertubeCommand": {
+																		"browseEndpoint": {
+																			"browseId": "UCFhBAaQu1zeE2t4M4tHXmVw",
+																			"browseEndpointContextSupportedConfigs": {
+																				"browseEndpointContextMusicConfig": {
+																					"pageType": "MUSIC_PAGE_TYPE_USER_CHANNEL"
+																				}
+																			}
+																		}
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
+									]
+								}
+							}
+						}
+					}
+				]
+			}
+		}
+	},
+	"playlistSearch": {
+		"flexColumns": [
+			{
+				"musicResponsiveListItemFlexColumnRenderer": {
+					"text": {
+						"runs": [
+							{
+								"text": "Top songs – The Lilac Estate"
+							}
+						]
+					},
+					"displayPriority": "MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_HIGH"
+				}
+			},
+			{
+				"musicResponsiveListItemFlexColumnRenderer": {
+					"text": {
+						"runs": [
+							{
+								"text": "7 songs"
+							}
+						]
+					},
+					"displayPriority": "MUSIC_RESPONSIVE_LIST_ITEM_COLUMN_DISPLAY_PRIORITY_HIGH"
+				}
+			}
+		],
+		"overlay": {
+			"musicPlayButtonRenderer": {
+				"playNavigationEndpoint": {
+					"watchPlaylistEndpoint": {
+						"playlistId": "OLAK5uy_mT8r3eHyGY4imWGftzgLH2ec8LgnMJ58I"
+					}
+				}
+			}
+		}
+	}
+}

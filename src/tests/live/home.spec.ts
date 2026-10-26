@@ -1,10 +1,10 @@
 import { afterAll, beforeEach, describe, it } from "bun:test"
-import { equal } from "assert"
+import { equal, ok } from "assert"
 
 import { ZodError, ZodType, z } from "zod"
-import YTMusic from "../YTMusic"
-import { FE_MUSIC_HOME } from "../constants"
-import { HomeSection } from "../types"
+import YTMusic from "../../YTMusic"
+import { FE_MUSIC_HOME } from "../../constants"
+import { HomeSection } from "../../types"
 
 const errors: ZodError[] = []
 const configs = [
@@ -39,6 +39,7 @@ describe(`Query: ${FE_MUSIC_HOME}`, () => {
 	configs.forEach(config => {
 		it(`Get ${config.GL} ${config.HL}`, async () => {
 			const sections = await ytmusic.getHomeSections()
+			ok(sections.length > 0, "Expected at least one home section")
 			expect(sections, z.array(HomeSection))
 		})
 	})

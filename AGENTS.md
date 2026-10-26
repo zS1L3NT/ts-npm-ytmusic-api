@@ -1,0 +1,2 @@
+- Code style lives in `STYLE.md`: read it before writing code, and add new style rules there.
+- Commit, branch, and pull request rules live in `COMMIT.md`: read it before any commit, branch, or PR.

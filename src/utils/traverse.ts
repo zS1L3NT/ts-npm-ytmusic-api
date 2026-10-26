@@ -34,5 +34,5 @@ export const traverseList = (data: any, ...keys: string[]): any[] => {
 }
 
 export const traverseString = (data: any, ...keys: string[]): string => {
-	return traverseList(data, ...keys).at(0) || ""
+	return traverseList(data, ...keys).find(value => typeof value === "string") ?? ""
 }

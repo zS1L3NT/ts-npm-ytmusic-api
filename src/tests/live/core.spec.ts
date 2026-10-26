@@ -3,7 +3,7 @@ import { equal } from "assert"
 import { z } from "zod"
 
 import { ZodError, ZodType } from "zod"
-import YTMusic from "../YTMusic"
+import YTMusic from "../../YTMusic"
 import {
 	AlbumDetailed,
 	AlbumFull,
@@ -16,7 +16,7 @@ import {
 	SongFull,
 	VideoDetailed,
 	VideoFull,
-} from "../types"
+} from "../../types"
 
 const errors: ZodError[] = []
 const queries = ["Lilac", "Weekend", "Eill", "Eminem", "Lisa Hannigan"]
@@ -26,7 +26,17 @@ const expect = (data: any, type: ZodType) => {
 	if (result.error) {
 		errors.push(result.error)
 	} else {
-		const empty = JSON.stringify(result.data).match(/"\w+":""/g)
+		const empty = JSON.stringify(result.data, (_key, value) => {
+			// Auto-generated playlists can omit their creator entirely.
+			if (
+				value?.type === "PLAYLIST" &&
+				value.artist.artistId === null &&
+				value.artist.name === ""
+			) {
+				return { ...value, artist: null }
+			}
+			return value
+		}).match(/"\w+":""/g)
 		if (empty) {
 			console.log(result.data, empty)
 		}

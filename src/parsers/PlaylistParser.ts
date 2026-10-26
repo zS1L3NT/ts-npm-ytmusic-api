@@ -6,6 +6,7 @@ import { traverse, traverseList, traverseString } from "../utils/traverse"
 export default class PlaylistParser {
 	public static parse(data: any, playlistId: string): PlaylistFull {
 		const artist = traverse(data, "tabs", "straplineTextOne")
+		const facepile = traverse(data, "tabs", "facepile", "avatarStackViewModel")
 
 		return checkType(
 			{
@@ -13,15 +14,21 @@ export default class PlaylistParser {
 				playlistId,
 				name: traverseString(data, "tabs", "title", "text"),
 				artist: {
-					name: traverseString(artist, "text"),
-					artistId: traverseString(artist, "browseId") || null,
+					name:
+						traverseString(artist, "text") ||
+						traverseString(facepile, "text", "content"),
+					artistId:
+						traverseString(artist, "browseId") ||
+						traverseString(facepile, "browseId") ||
+						null,
 				},
-				videoCount:
-					+traverseList(data, "tabs", "secondSubtitle", "text")
+				videoCount: +(
+					traverseList(data, "tabs", "secondSubtitle", "text")
 						.at(2)
-						.split(" ")
+						?.split(" ")
 						.at(0)
-						.replaceAll(",", "") ?? null,
+						?.replaceAll(",", "") ?? 0
+				),
 				thumbnails: traverseList(data, "tabs", "thumbnails"),
 			},
 			PlaylistFull,
@@ -69,7 +76,9 @@ export default class PlaylistParser {
 		return checkType(
 			{
 				type: "PLAYLIST",
-				playlistId: traverseString(item, "navigationEndpoint", "playlistId"),
+				playlistId:
+					traverseString(item, "navigationEndpoint", "playlistId") ||
+					traverseString(item, "title", "browseId"),
 				name: traverseString(item, "runs", "text"),
 				artist: {
 					name: traverseString(artist, "text"),

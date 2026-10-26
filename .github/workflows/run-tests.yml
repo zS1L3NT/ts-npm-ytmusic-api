@@ -1,13 +1,37 @@
 name: Run Tests
 on:
     workflow_dispatch:
+        inputs:
+            live:
+                description: Run tests against the live YouTube Music website
+                type: boolean
+                default: false
     workflow_call:
+        inputs:
+            live:
+                type: boolean
+                default: false
+permissions:
+    contents: read
 jobs:
     test:
         runs-on: ubuntu-latest
+        timeout-minutes: 10
         steps:
             - uses: actions/checkout@v4
             - uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: 1.4.2
 
-            - run: bun install
-            - run: bun test
+            - run: bun install --frozen-lockfile
+            - name: Run offline tests with coverage
+              if: ${{ !inputs.live }}
+              run: bun run test:coverage
+            - name: Run live API tests
+              if: inputs.live
+              run: bun run test:live
+            - uses: actions/upload-artifact@v4
+              if: ${{ always() && !inputs.live }}
+              with:
+                  name: coverage
+                  path: coverage/lcov.info
