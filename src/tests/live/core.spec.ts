@@ -1,8 +1,7 @@
-import { afterAll, beforeAll, describe, it } from "bun:test"
+import { beforeAll, describe, it } from "bun:test"
 import { equal } from "assert"
 import { z } from "zod"
 
-import { ZodError, ZodType } from "zod"
 import YTMusic from "../../YTMusic"
 import {
 	AlbumDetailed,
@@ -14,40 +13,20 @@ import {
 	SearchResult,
 	SongDetailed,
 	SongFull,
+	TimedLyric,
 	VideoDetailed,
 	VideoFull,
 } from "../../types"
+import expect from "./expect"
 
-const errors: ZodError[] = []
 const queries = ["Lilac", "Weekend", "Eill", "Eminem", "Lisa Hannigan"]
-const expect = (data: any, type: ZodType) => {
-	const result = type.safeParse(data)
-
-	if (result.error) {
-		errors.push(result.error)
-	} else {
-		const empty = JSON.stringify(result.data, (_key, value) => {
-			// Auto-generated playlists can omit their creator entirely.
-			if (
-				value?.type === "PLAYLIST" &&
-				value.artist.artistId === null &&
-				value.artist.name === ""
-			) {
-				return { ...value, artist: null }
-			}
-			return value
-		}).match(/"\w+":""/g)
-		if (empty) {
-			console.log(result.data, empty)
-		}
-		equal(empty, null)
-	}
-
-	equal(result.error, undefined)
-}
 
 const ytmusic = new YTMusic()
-beforeAll(() => ytmusic.initialize())
+// Set YTMUSIC_COOKIES to a Cookie header to run the same tests signed in
+beforeAll(() => {
+	const cookies = process.env.YTMUSIC_COOKIES
+	return ytmusic.initialize(cookies ? { cookies } : {})
+})
 
 queries.forEach(query => {
 	describe("Query: " + query, () => {
@@ -81,6 +60,13 @@ queries.forEach(query => {
 			expect(playlists, z.array(PlaylistDetailed))
 		})
 
+		it("Search Songs across pages", async () => {
+			const songs = await ytmusic.searchSongs(query, { limit: 30 })
+			equal(songs.length, 30)
+			equal(new Set(songs.map(song => song.videoId)).size, 30)
+			expect(songs, z.array(SongDetailed))
+		})
+
 		it("Search All", async () => {
 			const results = await ytmusic.search(query)
 			expect(results, z.array(SearchResult))
@@ -90,6 +76,18 @@ queries.forEach(query => {
 			const songs = await ytmusic.searchSongs(query)
 			const lyrics = await ytmusic.getLyrics(songs[0]!.videoId)
 			expect(lyrics, z.nullable(z.array(z.string())))
+		})
+
+		it("Get timed lyrics of the first song result", async () => {
+			const songs = await ytmusic.searchSongs(query)
+			const lyrics = await ytmusic.getTimedLyrics(songs[0]!.videoId)
+			expect(lyrics, z.nullable(z.array(TimedLyric)))
+		})
+
+		it("Get the songs queued after the first song result", async () => {
+			const songs = await ytmusic.searchSongs(query)
+			const upNexts = await ytmusic.getUpNexts(songs[0]!.videoId)
+			expect(upNexts, z.array(SongDetailed))
 		})
 
 		it("Get details of the first song result", async () => {
@@ -128,6 +126,13 @@ queries.forEach(query => {
 			expect(album, AlbumFull)
 		})
 
+		it("Get details of the first album result from its share link", async () => {
+			const albums = await ytmusic.searchAlbums(query)
+			const album = await ytmusic.getAlbum(albums[0]!.playlistId)
+			equal(album.albumId, albums[0]!.albumId)
+			expect(album, AlbumFull)
+		})
+
 		it("Get details of the first playlist result", async () => {
 			const playlists = await ytmusic.searchPlaylists(query)
 			const playlist = await ytmusic.getPlaylist(playlists[0]!.playlistId)
@@ -136,10 +141,11 @@ queries.forEach(query => {
 
 		it("Get the videos of the first playlist result", async () => {
 			const playlists = await ytmusic.searchPlaylists(query)
+			const playlist = await ytmusic.getPlaylist(playlists[0]!.playlistId)
 			const videos = await ytmusic.getPlaylistVideos(playlists[0]!.playlistId)
+			// Unavailable videos are counted by YouTube but cannot be listed
+			equal(videos.length > 100 || playlist.videoCount <= 100, true)
 			expect(videos, z.array(VideoDetailed))
 		})
 	})
 })
-
-afterAll(() => console.log("Issues:", errors))

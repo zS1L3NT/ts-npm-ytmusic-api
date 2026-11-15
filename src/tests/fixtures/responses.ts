@@ -12,6 +12,18 @@ export const browse = (browseId: string, pageType: string) => ({
 		browseEndpointContextSupportedConfigs: { browseEndpointContextMusicConfig: { pageType } },
 	},
 })
+export const watch = (id: string, musicVideoType?: string) => ({
+	watchEndpoint: {
+		videoId: id,
+		watchEndpointMusicSupportedConfigs: { watchEndpointMusicConfig: { musicVideoType } },
+	},
+})
+export const link = (text: string, id: string, pageType: string) => ({
+	text,
+	navigationEndpoint: browse(id, pageType),
+})
+export const artistLink = (name: string, id = `UC${name.replaceAll(" ", "")}`) =>
+	link(name, id, "MUSIC_PAGE_TYPE_ARTIST")
 export const artistRun = {
 	text: artistBasic.name,
 	navigationEndpoint: browse(artistId, "MUSIC_PAGE_TYPE_ARTIST"),
@@ -22,65 +34,106 @@ export const albumRun = {
 }
 export const titleRun = {
 	text: "Example Song",
-	navigationEndpoint: {
-		watchEndpoint: {
-			videoId,
-			watchEndpointMusicSupportedConfigs: {
-				watchEndpointMusicConfig: { musicVideoType: "MUSIC_VIDEO_TYPE_ATV" },
-			},
-		},
-	},
+	navigationEndpoint: watch(videoId, "MUSIC_VIDEO_TYPE_ATV"),
 }
+export const separator = { text: " • " }
+
 const column = (...runs: unknown[]) => ({
 	musicResponsiveListItemFlexColumnRenderer: { text: { runs } },
 })
-const separator = { text: " • " }
+export const listItem = (title: unknown, ...columns: unknown[][]) => ({
+	flexColumns: [column(title), ...columns.map(runs => column(...runs))],
+	thumbnail: { thumbnails },
+})
 
 export const songItem = {
-	flexColumns: [
-		column(titleRun),
-		column({ text: "Song" }, separator, artistRun, separator, albumRun, separator, {
-			text: "3:50",
-		}),
-	],
-	fixedColumns: [column({ text: "3:50" })],
+	...listItem(titleRun, [
+		{ text: "Song" },
+		separator,
+		artistRun,
+		separator,
+		albumRun,
+		separator,
+		{ text: "3:50" },
+	]),
 	playlistItemData: { videoId },
-	playNavigationEndpoint: titleRun.navigationEndpoint,
-	thumbnail: { thumbnails },
-}
-export const videoItem = {
-	...songItem,
-	flexColumns: [
-		column({ ...titleRun, text: "Example Video" }),
-		column({ text: "Video" }, separator, artistRun, separator, { text: "3:50" }),
-	],
-}
-export const artistItem = {
-	flexColumns: [column({ text: artistBasic.name }), column({ text: "Artist" })],
-	navigationEndpoint: browse(artistId, "MUSIC_PAGE_TYPE_ARTIST"),
-	thumbnail: { thumbnails },
 }
 export const albumItem = {
-	flexColumns: [
-		column({ text: albumBasic.name }),
-		column({ text: "Album" }, separator, artistRun, separator, { text: "2024" }),
-	],
+	...listItem({ text: albumBasic.name }, [
+		{ text: "Album" },
+		separator,
+		artistRun,
+		separator,
+		{ text: "2024" },
+	]),
 	navigationEndpoint: browse(albumId, "MUSIC_PAGE_TYPE_ALBUM"),
 	overlay: { playlistId },
-	thumbnail: { thumbnails },
 }
-export const playlistItem = {
-	flexColumns: [
-		column({ text: "Example Playlist" }),
-		column({ text: "Playlist" }, separator, artistRun),
-	],
-	overlay: { playlistId },
-	thumbnail: { thumbnails },
-}
+
+const row = (item: unknown) => ({ musicResponsiveListItemRenderer: item })
 export const searchResponse = (...items: unknown[]) => ({
+	contents: { musicShelfRenderer: { contents: items.map(row) } },
+})
+export const card = (title: unknown, subtitle: unknown[], ...items: unknown[]) => ({
+	musicCardShelfRenderer: {
+		title: { runs: [title] },
+		subtitle: { runs: subtitle },
+		contents: items.map(row),
+	},
+})
+export const sections = (...sections: unknown[]) => ({
+	contents: { sectionListRenderer: { contents: sections } },
+})
+export const section = (item: unknown) => ({ itemSectionRenderer: { contents: [row(item)] } })
+
+export const nextPage = (continuation: string) => ({
+	continuations: [{ nextContinuationData: { continuation } }],
+})
+export const rowsToken = (token: string) => ({
+	continuationItemRenderer: { continuationEndpoint: { continuationCommand: { token } } },
+})
+export const playlistRows = (items: unknown[], token?: string) => ({
+	musicPlaylistShelfRenderer: {
+		contents: [...items.map(row), ...(token ? [rowsToken(token)] : [])],
+	},
+})
+
+export const playlistHeader = (...facts: string[]) => ({
 	contents: {
-		musicShelfRenderer: {
-			contents: items.map(item => ({ musicResponsiveListItemRenderer: item })),
+		tabs: [
+			{
+				musicResponsiveHeaderRenderer: {
+					title: { runs: [{ text: "Example Playlist" }] },
+					secondSubtitle: {
+						runs: facts.flatMap((text, i) => (i ? [separator, { text }] : [{ text }])),
+					},
+				},
+			},
+		],
+	},
+})
+
+export const twoRow = (title: unknown, subtitle: unknown[], navigationEndpoint?: unknown) => ({
+	musicTwoRowItemRenderer: {
+		title: { runs: [title] },
+		subtitle: { runs: subtitle },
+		navigationEndpoint,
+	},
+})
+export const shelf = (title: string, ...items: unknown[]) => ({
+	musicCarouselShelfRenderer: {
+		header: { musicCarouselShelfBasicHeaderRenderer: { title: { runs: [{ text: title }] } } },
+		contents: items,
+	},
+})
+
+export const timedLyrics = (...lines: [string, number, number][]) => ({
+	timedLyricsModel: {
+		lyricsData: {
+			timedLyricsData: lines.map(([lyricLine, start, end]) => ({
+				lyricLine,
+				cueRange: { startTimeMilliseconds: `${start}`, endTimeMilliseconds: `${end}` },
+			})),
 		},
 	},
 })
@@ -104,115 +157,4 @@ export const playerResponse = {
 		},
 	},
 	streamingData: { formats: [{ itag: 18 }], adaptiveFormats: [{ itag: 140 }] },
-}
-
-export const albumRow = {
-	title: { runs: [albumRun] },
-	subtitle: { runs: [{ text: "2024" }] },
-	thumbnail: { thumbnails },
-	navigationEndpoint: browse(albumId, "MUSIC_PAGE_TYPE_ALBUM"),
-	thumbnailOverlay: { playlistId },
-	musicPlayButtonRenderer: { playlistId },
-}
-export const albumResponse = {
-	contents: {
-		tabs: [
-			{
-				musicResponsiveHeaderRenderer: {
-					title: { runs: [{ text: albumBasic.name }] },
-					straplineTextOne: { runs: [artistRun] },
-					subtitle: { runs: [{ text: "Album" }, separator, { text: "2024" }] },
-				},
-			},
-		],
-		musicShelfRenderer: { contents: [{ musicResponsiveListItemRenderer: songItem }] },
-	},
-	background: { thumbnails },
-	musicPlayButtonRenderer: { playlistId },
-}
-export const playlistResponse = {
-	contents: {
-		tabs: [
-			{
-				musicResponsiveHeaderRenderer: {
-					title: { runs: [{ text: "Example Playlist" }] },
-					straplineTextOne: { runs: [artistRun] },
-					secondSubtitle: {
-						runs: [{ text: "100 views" }, separator, { text: "2 songs" }],
-					},
-					thumbnail: { thumbnails },
-				},
-			},
-		],
-		musicPlaylistShelfRenderer: { contents: [{ musicResponsiveListItemRenderer: songItem }] },
-	},
-}
-export const artistResponse = {
-	header: {
-		musicImmersiveHeaderRenderer: {
-			title: { runs: [{ text: artistBasic.name }] },
-			thumbnail: { thumbnails },
-		},
-	},
-	contents: [
-		{
-			musicShelfRenderer: {
-				title: {
-					runs: [
-						{
-							text: "Songs",
-							navigationEndpoint: { browseEndpoint: { browseId: "artist-songs" } },
-						},
-					],
-				},
-				contents: [{ musicResponsiveListItemRenderer: songItem }],
-			},
-		},
-		{
-			musicCarouselShelfRenderer: {
-				moreContentButton: {
-					browseEndpoint: { browseId: "artist-albums", params: "albums" },
-				},
-				contents: [{ musicTwoRowItemRenderer: albumRow }],
-			},
-		},
-		{ musicCarouselShelfRenderer: { contents: [{ musicTwoRowItemRenderer: albumRow }] } },
-		{
-			musicCarouselShelfRenderer: {
-				contents: [
-					{
-						musicTwoRowItemRenderer: {
-							title: { runs: [titleRun] },
-							thumbnail: { thumbnails },
-						},
-					},
-				],
-			},
-		},
-		{
-			musicCarouselShelfRenderer: {
-				contents: [
-					{
-						musicTwoRowItemRenderer: {
-							title: { runs: [{ text: "Featured playlist" }] },
-							navigationEndpoint: { browseEndpoint: { browseId: playlistId } },
-							thumbnail: { thumbnails },
-						},
-					},
-				],
-			},
-		},
-		{
-			musicCarouselShelfRenderer: {
-				contents: [
-					{
-						musicTwoRowItemRenderer: {
-							title: { runs: [artistRun] },
-							thumbnail: { thumbnails },
-						},
-					},
-				],
-			},
-		},
-	],
 }
