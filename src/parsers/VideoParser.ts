@@ -1,86 +1,57 @@
 import { ArtistBasic, VideoDetailed, VideoFull } from "../types"
 import checkType from "../utils/checkType"
-import { isArtist, isDuration, isTitle } from "../utils/filters"
+import { isDuration } from "../utils/filters"
 import { traverse, traverseList, traverseString } from "../utils/traverse"
 import Parser from "./Parser"
 
 export default class VideoParser {
 	public static parse(data: any): VideoFull {
-		return {
-			type: "VIDEO",
-			videoId: traverseString(data, "videoDetails", "videoId"),
-			name: traverseString(data, "videoDetails", "title"),
-			artist: {
-				artistId: traverseString(data, "videoDetails", "channelId"),
-				name: traverseString(data, "author"),
-			},
-			duration: +traverseString(data, "videoDetails", "lengthSeconds"),
-			thumbnails: traverseList(data, "videoDetails", "thumbnails"),
-			unlisted: traverse(data, "unlisted"),
-			familySafe: traverse(data, "familySafe"),
-			paid: traverse(data, "paid"),
-			tags: traverseList(data, "tags"),
+		const artist = {
+			artistId: traverseString(data, "videoDetails", "channelId"),
+			name: traverseString(data, "author"),
 		}
-	}
-
-	public static parseSearchResult(item: any): VideoDetailed {
-		const columns = traverseList(item, "flexColumns", "runs").flat()
-
-		const title = columns.find(isTitle)
-		const artist = columns.find(isArtist) || columns[1]
-		const duration = columns.find(isDuration)
-
-		return {
-			type: "VIDEO",
-			videoId: traverseString(item, "playNavigationEndpoint", "videoId"),
-			name: traverseString(title, "text"),
-			artist: {
-				artistId: traverseString(artist, "browseId") || null,
-				name: traverseString(artist, "text"),
-			},
-			duration: Parser.parseDuration(duration?.text),
-			thumbnails: traverseList(item, "thumbnails"),
-		}
-	}
-
-	public static parseArtistTopVideo(item: any, artistBasic: ArtistBasic): VideoDetailed {
-		return {
-			type: "VIDEO",
-			videoId: traverseString(item, "videoId"),
-			name: traverseString(item, "runs", "text"),
-			artist: artistBasic,
-			duration: null,
-			thumbnails: traverseList(item, "thumbnails"),
-		}
-	}
-
-	public static parsePlaylistVideo(item: any): VideoDetailed | undefined {
-		const flexColumns = traverseList(item, "flexColumns", "runs").flat()
-		const fixedcolumns = traverseList(item, "fixedColumns", "runs").flat()
-
-		const title = flexColumns.find(isTitle) || flexColumns[0]
-		const artist = flexColumns.find(isArtist) || flexColumns[1]
-		const duration = fixedcolumns.find(isDuration)
-
-		const thumbnails = traverseList(item, "thumbnails")
-		const videoId =
-			traverseString(item, "playNavigationEndpoint", "videoId") ||
-			traverseString(item, "playlistItemData", "videoId") ||
-			thumbnails[0]?.url.match(
-				/^https:\/\/i\.ytimg\.com\/vi(?:_webp)?\/([a-zA-Z0-9_-]{11})\//,
-			)?.[1]
-		if (!videoId) return
 
 		return checkType(
 			{
 				type: "VIDEO",
-				videoId,
+				videoId: traverseString(data, "videoDetails", "videoId"),
+				name: traverseString(data, "videoDetails", "title"),
+				artist,
+				// YouTube only names the channel a video is on
+				artists: [artist],
+				duration: +traverseString(data, "videoDetails", "lengthSeconds"),
+				thumbnails: traverseList(data, "videoDetails", "thumbnails"),
+				unlisted: traverse(data, "unlisted"),
+				familySafe: traverse(data, "familySafe"),
+				paid: traverse(data, "paid"),
+				tags: traverseList(data, "tags"),
+			},
+			VideoFull,
+		)
+	}
+
+	public static parseItem(
+		item: any,
+		options: { artists?: ArtistBasic[]; labelled?: boolean } = {},
+	): VideoDetailed {
+		const { title, segments, endpoint, thumbnails } = Parser.parseFields(item)
+		const artists = Parser.parseArtists(segments, options)
+
+		return checkType(
+			{
+				type: "VIDEO",
+				// Unavailable playlist videos keep their ID only in the thumbnail URL
+				videoId:
+					traverseString(endpoint, "videoId") ||
+					traverseString(item, "videoId") ||
+					(thumbnails[0]?.url.match(
+						/^https:\/\/i\.ytimg\.com\/vi(?:_webp)?\/([a-zA-Z0-9_-]{11})\//,
+					)?.[1] ??
+						""),
 				name: traverseString(title, "text"),
-				artist: {
-					name: traverseString(artist, "text"),
-					artistId: traverseString(artist, "browseId") || null,
-				},
-				duration: Parser.parseDuration(duration?.text),
+				artist: artists[0] ?? Parser.UNKNOWN_ARTIST,
+				artists,
+				duration: Parser.parseDuration(segments.flat().find(isDuration)?.text),
 				thumbnails,
 			},
 			VideoDetailed,

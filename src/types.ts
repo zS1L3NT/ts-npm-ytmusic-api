@@ -32,8 +32,10 @@ export const SongDetailed = z
 		videoId: z.string(),
 		name: z.string(),
 		artist: ArtistBasic,
+		artists: z.array(ArtistBasic),
 		album: z.nullable(AlbumBasic),
 		duration: z.nullable(z.number()),
+		explicit: z.boolean(),
 		thumbnails: z.array(ThumbnailFull),
 	})
 	.strict()
@@ -45,6 +47,7 @@ export const VideoDetailed = z
 		videoId: z.string(),
 		name: z.string(),
 		artist: ArtistBasic,
+		artists: z.array(ArtistBasic),
 		duration: z.nullable(z.number()),
 		thumbnails: z.array(ThumbnailFull),
 	})
@@ -53,9 +56,9 @@ export const VideoDetailed = z
 export type ArtistDetailed = z.infer<typeof ArtistDetailed>
 export const ArtistDetailed = z
 	.object({
+		type: z.literal("ARTIST"),
 		artistId: z.string(),
 		name: z.string(),
-		type: z.literal("ARTIST"),
 		thumbnails: z.array(ThumbnailFull),
 	})
 	.strict()
@@ -68,6 +71,7 @@ export const AlbumDetailed = z
 		playlistId: z.string(),
 		name: z.string(),
 		artist: ArtistBasic,
+		artists: z.array(ArtistBasic),
 		year: z.nullable(z.number()),
 		thumbnails: z.array(ThumbnailFull),
 	})
@@ -91,6 +95,7 @@ export const SongFull = z
 		videoId: z.string(),
 		name: z.string(),
 		artist: ArtistBasic,
+		artists: z.array(ArtistBasic),
 		duration: z.number(),
 		thumbnails: z.array(ThumbnailFull),
 		formats: z.array(z.any()),
@@ -105,6 +110,7 @@ export const VideoFull = z
 		videoId: z.string(),
 		name: z.string(),
 		artist: ArtistBasic,
+		artists: z.array(ArtistBasic),
 		duration: z.number(),
 		thumbnails: z.array(ThumbnailFull),
 		unlisted: z.boolean(),
@@ -114,24 +120,24 @@ export const VideoFull = z
 	})
 	.strict()
 
-export type UpNextsDetails = z.infer<typeof UpNextsDetails>
-export const UpNextsDetails = z
+/** @deprecated Queued songs are plain SongDetailed */
+export type UpNextsDetails = SongDetailed
+
+export type TimedLyric = z.infer<typeof TimedLyric>
+export const TimedLyric = z
 	.object({
-		type: z.literal("SONG"),
-		videoId: z.string(),
-		title: z.string(),
-		artists: ArtistBasic,
-		duration: z.number(),
-		thumbnails: z.array(ThumbnailFull),
+		text: z.string(),
+		startTime: z.number(),
+		endTime: z.number(),
 	})
 	.strict()
 
 export type ArtistFull = z.infer<typeof ArtistFull>
 export const ArtistFull = z
 	.object({
+		type: z.literal("ARTIST"),
 		artistId: z.string(),
 		name: z.string(),
-		type: z.literal("ARTIST"),
 		thumbnails: z.array(ThumbnailFull),
 		topSongs: z.array(SongDetailed),
 		topAlbums: z.array(AlbumDetailed),
@@ -150,6 +156,7 @@ export const AlbumFull = z
 		playlistId: z.string(),
 		name: z.string(),
 		artist: ArtistBasic,
+		artists: z.array(ArtistBasic),
 		year: z.nullable(z.number()),
 		thumbnails: z.array(ThumbnailFull),
 		songs: z.array(SongDetailed),
@@ -181,6 +188,6 @@ export type HomeSection = z.infer<typeof HomeSection>
 export const HomeSection = z
 	.object({
 		title: z.string(),
-		contents: z.array(z.union([AlbumDetailed, PlaylistDetailed, SongDetailed])),
+		contents: z.array(SearchResult),
 	})
 	.strict()
