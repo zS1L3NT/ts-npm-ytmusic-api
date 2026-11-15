@@ -14,9 +14,14 @@
 	"files": ["dist", "package.json"],
 	"exports": {
 		".": {
-			"require": "./dist/index.js",
-			"import": "./dist/index.mjs",
-			"types": "./dist/index.d.ts"
+			"import": {
+				"types": "./dist/index.d.mts",
+				"default": "./dist/index.mjs"
+			},
+			"require": {
+				"types": "./dist/index.d.ts",
+				"default": "./dist/index.js"
+			}
 		}
 	},
 	"scripts": {
@@ -30,12 +35,12 @@
 		"test:package": "node scripts/test-package.mjs"
 	},
 	"dependencies": {
-		"@biomejs/biome": "1.8.3",
 		"axios": "^1.7.2",
 		"tough-cookie": "^4.1.4",
 		"zod": "^3.23.8"
 	},
 	"devDependencies": {
+		"@biomejs/biome": "1.8.3",
 		"@types/tough-cookie": "^4.0.5",
 		"bun-types": "^1.1.18",
 		"tsup": "^8.1.0",
