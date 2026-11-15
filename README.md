@@ -20,9 +20,9 @@ Because of this, I decided to build my own version of a youtube music api with T
     -   Artists
     -   Albums
     -   Playlists
-    -   Lyrics
+    -   Lyrics, with or without timestamps
     -   Upcoming Songs
-
+    -   Home sections
 
 ## Usage
 
@@ -36,6 +36,89 @@ ytmusic.search("Never gonna give you up").then(songs => {
 	console.log(songs)
 })
 ```
+
+## API
+
+Call `initialize()` once before any other method. `GL` is the country code and `HL` is the language code that YouTube Music uses for results.
+
+| Method | Returns |
+| --- | --- |
+| `getSearchSuggestions(query)` | `string[]` |
+| `search(query)` | Mixed `SearchResult[]`, with the top result first |
+| `searchSongs(query, options?)` | `SongDetailed[]` |
+| `searchVideos(query, options?)` | `VideoDetailed[]` |
+| `searchArtists(query, options?)` | `ArtistDetailed[]` |
+| `searchAlbums(query, options?)` | `AlbumDetailed[]` |
+| `searchPlaylists(query, options?)` | `PlaylistDetailed[]` |
+| `getSong(videoId)` | `SongFull` |
+| `getVideo(videoId)` | `VideoFull` |
+| `getUpNexts(videoId)` | `SongDetailed[]` queued after the song |
+| `getLyrics(videoId)` | `string[]`, or `null` when there are no lyrics |
+| `getTimedLyrics(videoId)` | `TimedLyric[]` with times in milliseconds, or `null` |
+| `getArtist(artistId)` | `ArtistFull` |
+| `getArtistSongs(artistId)` | Every `SongDetailed` of the artist |
+| `getArtistAlbums(artistId)` | The `AlbumDetailed[]` of the artist, without singles and EPs |
+| `getAlbum(albumId)` | `AlbumFull` |
+| `getPlaylist(playlistId)` | `PlaylistFull` |
+| `getPlaylistVideos(playlistId)` | Every `VideoDetailed` in the playlist |
+| `getHomeSections()` | `HomeSection[]` |
+| `getHighresThumbnail(thumbnails)` | A larger `ThumbnailFull` of a video, or `null` |
+
+A filtered search returns the first page of about 20 results. To load more, pass `limit`:
+
+```js
+const songs = await ytmusic.searchSongs("Never gonna give you up", { limit: 50 })
+```
+
+Songs, videos and albums list every artist in `artists`. `artist` is the first of them. Songs also have `explicit`.
+
+`getAlbum()` accepts the ID from an album's share link, which starts with `OLAK5uy_`. `getPlaylist()` and `getPlaylistVideos()` accept radio playlists, whose IDs start with `RD`.
+
+Cover art and artist images end with a 1200 pixel wide thumbnail that Google's image host makes on request. Video thumbnails cannot be resized this way. For a video, `getHighresThumbnail()` looks for a larger image and returns it only when it exists.
+
+YouTube Music only shows the album and duration of a song in a filtered search. Songs from `search()` have `album: null`, and most have `duration: null`.
+
+## Signing in
+
+Some servers, such as cloud hosts, get a sign-in challenge from YouTube instead of data. To sign in, pass the cookies of a YouTube Music session:
+
+```js
+await ytmusic.initialize({ cookies: "SID=...; SAPISID=...; __Secure-3PAPISID=..." })
+```
+
+To get the cookies, open [music.youtube.com](https://music.youtube.com) while signed in. In the browser's developer tools, open the Network tab and select a request named `browse`. Copy the full value of its `cookie` request header.
+
+When you sign in, the results are personal. For example, `getHomeSections()` returns your own recommendations and `getPlaylistVideos("LM")` returns your liked songs.
+
+Cookies stay with the `YTMusic` instance, also when you call `initialize()` again. To use another account or to sign out, make a new instance.
+
+The cookies give full access to the account, so store them like a password. YouTube can restrict an account that makes automated requests. Use an account that you can afford to lose.
+
+## Failed requests
+
+When YouTube limits requests, has a server error, or cannot be reached, the request is tried again up to 3 times. The wait starts at 1 second and doubles each time. To change this, pass `retry`:
+
+```js
+await ytmusic.initialize({ retry: { retries: 5, delay: 500 } })
+```
+
+Each attempt waits 30 seconds for a response. To change this, pass `timeout` in milliseconds.
+
+A request that still fails throws `RequestError`. The error includes the `endpoint`, the HTTP `status` (`null` when YouTube could not be reached) and the `reason` that YouTube gave. Import `RequestError` from `ytmusic-api` to handle it.
+
+## Caching
+
+To reuse the response of a repeated request, pass `cache` with the time to keep responses for in milliseconds:
+
+```js
+await ytmusic.initialize({ cache: { ttl: 5 * 60 * 1000 } })
+```
+
+Responses are kept in memory, 100 at most. To change the number, pass `size` next to `ttl`. `clearCache()` removes them, and so does another call to `initialize()`.
+
+## Playing songs
+
+`getSong()` returns stream formats in `formats` and `adaptiveFormats` only when you sign in. Without cookies, YouTube returns the details of the song but no streams, and both lists are empty. The stream URLs are protected by YouTube and this package does not decode them. To download or play audio, give the `videoId` to a tool made for that, such as [yt-dlp](https://github.com/yt-dlp/yt-dlp).
 
 ## Credits
 
@@ -55,7 +138,7 @@ Run the offline tests with this command:
 bun run test
 ```
 
-Offline tests use fixed responses and do not contact YouTube. They cover all public API methods, response parsing, request construction, cookies, pagination, lyrics, and error handling. The fixtures include reduced JSON captured from YouTube Music.
+Offline tests use fixed responses and do not contact YouTube. They cover all public API methods, response parsing, request construction, cookies, sign-in headers, pagination, lyrics, and error handling. The fixtures include reduced JSON captured from YouTube Music.
 
 To produce a coverage report, run:
 
@@ -70,6 +153,8 @@ To test against the live website, run:
 ```sh
 bun run test:live
 ```
+
+To run the live tests signed in, put the cookies in the `YTMUSIC_COOKIES` environment variable.
 
 The live tests remain separate because YouTube can reject requests from GitHub runners with a sign-in challenge. They can also fail when content changes or requests time out. You can run them from GitHub Actions by selecting **On Pull Request**, choosing **Run workflow**, and enabling the live-test option.
 
