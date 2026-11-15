@@ -4,6 +4,12 @@ Rules for every commit, branch, and pull request an AI agent makes in this repos
 
 <!-- setup-conventions:generated-start -->
 
+## Explicitness
+
+Branches and pull requests change what the user has to review, so act on them only when the user says so explicitly, or after you ask directly and get an explicit yes. A request to commit, push, prepare, or run CI is not a request for a new branch or pull request. When unsure, ask.
+
+Pull requests are the costlier mistake: a PR number is permanent and cannot be taken back. A wrong branch is cheap to fix, until a pull request is opened from it.
+
 ## Commits
 
 - **Signed only.** Commit with `git commit -S` using the GPG key. Before the first commit, confirm `git config gpg.format` is unset or `openpgp` and `git config user.signingkey` names a key listed by `gpg --list-secret-keys`. With no GPG key, or if signing fails, leave the changes uncommitted and tell the user. Never pass `--no-gpg-sign` or disable `commit.gpgsign`.
@@ -39,10 +45,13 @@ Common gitmojis (full list at [gitmoji.dev](https://gitmoji.dev)):
 
 - Name new branches `ai/<short-kebab-description>`, independent of the AI tool.
 - **Rename, never fork.** When working on a tool-named branch (`claude/`, `codex/`, `t3code/`), rename it in place with `git branch -m ai/<short-kebab-description>` before the first push or pull request, so no tool-named branch is left behind. `git switch -c` or `git checkout -b` would create a second branch instead.
+- **Stay on the thread's branch.** Follow-up work in a thread is committed to that thread's branch, including work handed to delegates. Branch off it only when the user explicitly asks; otherwise ask first.
+- **Branch from `main`.** A new branch starts from `main` unless the user explicitly asks for a branch based on another one, for example a large sub-feature with its own review.
 
 ## Pull Requests
 
-- **Ask first.** Pull request numbers are permanent, so a PR is irreversible. Open one only after the user approves that specific PR in the conversation.
+- **Explicit only.** Open a pull request only when the user explicitly asks for one, or after you ask directly and the user explicitly confirms that specific PR. The same applies to closing, retargeting, or stacking one.
+- **Target `main`.** A pull request targets `main` unless the user explicitly approves a stacked PR.
 - Open it from the `ai/` branch.
 - **Title:** a plain sentence with the first letter capitalized and no emoji, for example `Add CSV export to reports page`.
 - **Body:** write it with the `/pr` skill (mattpocock's).
