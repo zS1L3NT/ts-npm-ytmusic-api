@@ -20,13 +20,7 @@ export const traverse = (data: any, ...keys: string[]) => {
 		return res.length === 1 ? res[0] : res
 	}
 
-	let value = data
-	const lastKey = keys.at(-1)
-	for (const key of keys) {
-		value = again(value, key, lastKey === key)
-	}
-
-	return value
+	return keys.reduce((value, key, i) => again(value, key, i === keys.length - 1), data)
 }
 
 export const traverseList = (data: any, ...keys: string[]): any[] => {

@@ -1,40 +1,53 @@
 import { describe, expect, it } from "bun:test"
+import type { InternalAxiosRequestConfig } from "axios"
 import { PlayerError } from "../../index"
 import {
 	AlbumDetailed,
 	AlbumFull,
 	ArtistDetailed,
 	ArtistFull,
+	HomeSection,
 	PlaylistDetailed,
 	PlaylistFull,
 	SearchResult,
 	SongDetailed,
 	SongFull,
+	TimedLyric,
 	VideoDetailed,
 	VideoFull,
 } from "../../types"
+import { traverseList } from "../../utils/traverse"
 import * as responses from "../fixtures/responses"
 import real from "../fixtures/youtube-music.json"
 import { setup } from "./client"
 
+const url = (request: InternalAxiosRequestConfig) => new URL(request.url!, request.baseURL)
+const bodies = (calls: { mock: { calls: [InternalAxiosRequestConfig][] } }) =>
+	calls.mock.calls.map(([request]) => (request.data ? JSON.parse(request.data) : undefined))
+const continuations = (calls: { mock: { calls: [InternalAxiosRequestConfig][] } }) =>
+	calls.mock.calls.map(([request]) => url(request).searchParams.get("continuation"))
+const endpoints = (calls: { mock: { calls: [InternalAxiosRequestConfig][] } }) =>
+	calls.mock.calls.slice(1).map(([request]) => url(request).pathname.split("/").pop())
+
 describe("Search API", () => {
 	it.each([
-		["searchSongs", responses.songItem, SongDetailed, "SONG"],
-		["searchVideos", responses.videoItem, VideoDetailed, "VIDEO"],
-		["searchArtists", responses.artistItem, ArtistDetailed, "ARTIST"],
-		["searchAlbums", responses.albumItem, AlbumDetailed, "ALBUM"],
-		["searchPlaylists", responses.playlistItem, PlaylistDetailed, "PLAYLIST"],
+		["searchSongs", real.searchSongs, SongDetailed, "SONG"],
+		["searchVideos", real.searchVideos, VideoDetailed, "VIDEO"],
+		["searchArtists", real.searchArtists, ArtistDetailed, "ARTIST"],
+		["searchAlbums", real.searchAlbums, AlbumDetailed, "ALBUM"],
+		["searchPlaylists", real.searchPlaylists, PlaylistDetailed, "PLAYLIST"],
 	] as const)(
 		"%s returns typed results and sends the filter",
-		async (method, item, schema, type) => {
-			const { api, adapter } = await setup(responses.searchResponse(item))
+		async (method, response, schema, type) => {
+			const { api, adapter } = await setup(response)
 			const result = await api[method]("A search & its symbols")
-			expect(result).toHaveLength(1)
+			expect(result.length).toBeGreaterThan(0)
 			expect(schema.array().safeParse(result).success).toBe(true)
 			expect(result[0]).toMatchObject({ type })
-			const request = JSON.parse(adapter.mock.calls[1]![0].data)
+			const request = bodies(adapter)[1]
 			expect(request.query).toBe("A search & its symbols")
 			expect(request.params).toMatch(/^Eg-/)
+			expect(url(adapter.mock.calls[1]![0]).pathname).toBe("/youtubei/v1/search")
 		},
 	)
 
@@ -54,19 +67,13 @@ describe("Search API", () => {
 		expect(await api[method]("missing")).toEqual([])
 	})
 
-	it("returns every supported kind in a mixed search and omits unknown items", async () => {
-		const { api } = await setup(
-			responses.searchResponse(
-				responses.songItem,
-				responses.videoItem,
-				responses.artistItem,
-				responses.albumItem,
-				responses.playlistItem,
-				{},
-			),
-		)
-		const results = await api.search("example")
+	it("returns the top result first and every supported kind in a general search", async () => {
+		const { api, adapter } = await setup(real.search)
+		const results = await api.search("weekend")
 		expect(results.map(result => result.type)).toEqual([
+			"ARTIST",
+			"SONG",
+			"SONG",
 			"SONG",
 			"VIDEO",
 			"ARTIST",
@@ -74,6 +81,7 @@ describe("Search API", () => {
 			"PLAYLIST",
 		])
 		expect(SearchResult.array().safeParse(results).success).toBe(true)
+		expect(bodies(adapter)[1]).toMatchObject({ query: "weekend", params: null })
 	})
 
 	it("returns single, multiple, and empty suggestion lists", async () => {
@@ -85,6 +93,84 @@ describe("Search API", () => {
 		expect(await api.getSearchSuggestions("o")).toEqual(["one"])
 		expect(await api.getSearchSuggestions("o")).toEqual(["one", "two"])
 		expect(await api.getSearchSuggestions("absent")).toEqual([])
+	})
+})
+
+describe("Search limits", () => {
+	it("makes one request without a limit even when the response has a continuation", async () => {
+		const { api, adapter } = await setup(real.searchSongs, real.searchSongsPage)
+		expect(await api.searchSongs("weekend")).toHaveLength(3)
+		expect(adapter).toHaveBeenCalledTimes(2)
+	})
+
+	it("follows the continuation to the search endpoint until it has enough rows", async () => {
+		const { api, adapter } = await setup(
+			real.searchSongs,
+			real.searchSongsPage,
+			real.searchSongsLast,
+		)
+		const songs = await api.searchSongs("weekend", { limit: 4 })
+		expect(songs).toHaveLength(4)
+		expect(SongDetailed.array().safeParse(songs).success).toBe(true)
+		expect(songs[3]!.name).toBe("House Of Balloons / Glass Table Girls")
+		expect(adapter).toHaveBeenCalledTimes(3)
+		expect(endpoints(adapter)).toEqual(["search", "search"])
+		expect(continuations(adapter).slice(1)).toEqual([null, "page-two"])
+	})
+
+	it("returns exactly the limit when the last page holds more", async () => {
+		const { api, adapter } = await setup(real.searchSongs, real.searchSongsPage)
+		expect(await api.searchSongs("weekend", { limit: 1 })).toHaveLength(1)
+		expect(adapter).toHaveBeenCalledTimes(2)
+	})
+
+	it("returns every row once the continuation ends before the limit", async () => {
+		const { api, adapter } = await setup(
+			real.searchSongs,
+			real.searchSongsPage,
+			real.searchSongsLast,
+		)
+		const songs = await api.searchSongs("weekend", { limit: 50 })
+		expect(songs.map(song => song.videoId)).toEqual([
+			"DlFXDl_ROAM",
+			"_WfL_j6-DvM",
+			"tXOKabXyR5Q",
+			"1OZnXQQPBU0",
+			"si-g77lVJ2E",
+			"yRVotpLaCD4",
+		])
+		expect(continuations(adapter).slice(1)).toEqual([null, "page-two", "page-three"])
+	})
+
+	it.each([
+		["searchVideos", VideoDetailed],
+		["searchArtists", ArtistDetailed],
+		["searchAlbums", AlbumDetailed],
+		["searchPlaylists", PlaylistDetailed],
+	] as const)("%s stops at its limit without a continuation", async (method, schema) => {
+		const response = {
+			searchVideos: real.searchVideos,
+			searchArtists: real.searchArtists,
+			searchAlbums: real.searchAlbums,
+			searchPlaylists: real.searchPlaylists,
+		}[method]
+		const { api, adapter } = await setup(response)
+		const results = await api[method]("weekend", { limit: 5 })
+		expect(results).toHaveLength(1)
+		expect(schema.array().safeParse(results).success).toBe(true)
+		expect(adapter).toHaveBeenCalledTimes(2)
+	})
+
+	it("rejects a repeated continuation token instead of looping", async () => {
+		const page = {
+			...responses.searchResponse(responses.songItem),
+			...responses.nextPage("same"),
+		}
+		const { api, adapter } = await setup(page, page, page)
+		await expect(api.searchSongs("weekend", { limit: 5 })).rejects.toThrow(
+			"Repeated continuation token",
+		)
+		expect(adapter).toHaveBeenCalledTimes(3)
 	})
 })
 
@@ -103,6 +189,7 @@ describe("Player API", () => {
 			videoId: responses.videoId,
 			name: "Example Song",
 			artist: responses.artistBasic,
+			artists: [responses.artistBasic],
 			duration: 230,
 			thumbnails: responses.thumbnails,
 			formats: [{ itag: 18 }],
@@ -116,6 +203,7 @@ describe("Player API", () => {
 		expect(VideoFull.safeParse(video).success).toBe(true)
 		expect(video).toMatchObject({
 			videoId: responses.videoId,
+			artists: [responses.artistBasic],
 			duration: 230,
 			unlisted: false,
 			familySafe: true,
@@ -166,7 +254,7 @@ describe("Player API", () => {
 	)
 
 	it.each(
-		(["getSong", "getVideo", "getLyrics", "getUpNexts"] as const).map(
+		(["getSong", "getVideo", "getLyrics", "getTimedLyrics", "getUpNexts"] as const).map(
 			method => [method] as const,
 		),
 	)("%s rejects malformed IDs before sending a request", async method => {
@@ -178,66 +266,148 @@ describe("Player API", () => {
 	})
 })
 
-describe("Lyrics API", () => {
-	const next = {
-		contents: {
-			tabs: [
-				{ tabRenderer: {} },
-				{ tabRenderer: { endpoint: { browseEndpoint: { browseId: "lyrics-page" } } } },
-			],
-		},
-	}
+describe("Up next API", () => {
+	const queue = () => structuredClone(real.next)
+	const entries = (data: unknown) => traverseList(data, "playlistPanelVideoRenderer")
 
-	it("joins text runs and normalizes line endings", async () => {
-		const { api, adapter } = await setup(next, {
-			description: { runs: [{ text: "First line\r\n" }, { text: "\nSecond line\n" }] },
+	it("returns the songs after the selected entry through the persistent panel request", async () => {
+		const { api, adapter } = await setup(queue())
+		const songs = await api.getUpNexts("3QZOazpGIQc")
+		expect(songs.map(song => song.videoId)).toEqual(["2yqYAsUpdSc", "LztS3R1PZQA"])
+		expect(SongDetailed.array().safeParse(songs).success).toBe(true)
+		expect(SongDetailed.array().safeParse(songs).success).toBe(true)
+		expect(songs[0]).toMatchObject({
+			name: "Out of Time",
+			artist: { artistId: "UClYV6hHlupm_S_ObS1W-DYw", name: "The Weeknd" },
+			album: { name: "Dawn FM" },
+			duration: 215,
 		})
-		expect(await api.getLyrics(responses.videoId)).toEqual(["First line", "Second line"])
-		expect(JSON.parse(adapter.mock.calls[2]![0].data).browseId).toBe("lyrics-page")
+		expect(bodies(adapter)[1]).toMatchObject({
+			videoId: "3QZOazpGIQc",
+			playlistId: "RDAMVM3QZOazpGIQc",
+			isAudioOnly: true,
+			enablePersistentPlaylistPanel: true,
+		})
 	})
 
-	it("returns null without a browse request when lyrics are unavailable", async () => {
-		const { api, adapter } = await setup({
-			tabs: [{ tabRenderer: {} }, { tabRenderer: { unselectable: true } }],
+	it("starts after the selected entry and skips continuation rows", async () => {
+		const data = queue()
+		entries(data)[0].selected = false
+		entries(data)[1].selected = true
+		traverseList(data, "playlistPanelRenderer")[0].contents.push({
+			continuationItemRenderer: { trigger: "CONTINUATION_TRIGGER_ON_ITEM_SHOWN" },
 		})
-		expect(await api.getLyrics(responses.videoId)).toBeNull()
-		expect(adapter).toHaveBeenCalledTimes(2)
-	})
-
-	it("returns null for an empty lyrics page", async () => {
-		const { api } = await setup(next, {})
-		expect(await api.getLyrics(responses.videoId)).toBeNull()
-	})
-})
-
-describe("Browse API", () => {
-	it("returns album details with song metadata, artist, and artwork", async () => {
-		const { api } = await setup(responses.albumResponse)
-		const album = await api.getAlbum(responses.albumId)
-		expect(AlbumFull.safeParse(album).success).toBe(true)
-		expect(album).toMatchObject({
-			...responses.albumBasic,
-			artist: responses.artistBasic,
-			year: 2024,
-			playlistId: responses.playlistId,
-		})
-		expect(album.songs).toEqual([
-			{
-				type: "SONG",
-				videoId: responses.videoId,
-				name: "Example Song",
-				artist: responses.artistBasic,
-				album: responses.albumBasic,
-				duration: 230,
-				thumbnails: responses.thumbnails,
-			},
+		const { api } = await setup(data)
+		expect((await api.getUpNexts("2yqYAsUpdSc")).map(song => song.videoId)).toEqual([
+			"LztS3R1PZQA",
 		])
 	})
 
+	it("falls back to the requested video when no entry is selected", async () => {
+		const data = queue()
+		for (const entry of entries(data)) entry.selected = false
+		const { api } = await setup(data)
+		expect((await api.getUpNexts("2yqYAsUpdSc")).map(song => song.videoId)).toEqual([
+			"LztS3R1PZQA",
+		])
+	})
+
+	it("accepts an empty queue and rejects a missing queue", async () => {
+		const data = queue()
+		traverseList(data, "playlistPanelRenderer")[0].contents = []
+		const { api } = await setup(data, {})
+		expect(await api.getUpNexts("3QZOazpGIQc")).toEqual([])
+		await expect(api.getUpNexts("3QZOazpGIQc")).rejects.toThrow("Invalid response structure")
+	})
+})
+
+describe("Lyrics API", () => {
+	it("returns the lines of the lyrics tab and requests its page", async () => {
+		const { api, adapter } = await setup(real.next, real.lyrics)
+		expect(await api.getLyrics("3QZOazpGIQc")).toEqual([
+			"There was something in the air",
+			"I knew that in that moment",
+			"I would burn the world to keep you warm",
+			"But my life won't let me stay",
+		])
+		expect(bodies(adapter)[2]).toMatchObject({ browseId: "MPLYt_5qHogi2HE7p-1" })
+		expect(endpoints(adapter)).toEqual(["next", "browse"])
+	})
+
+	it("finds the lyrics tab by its page type rather than its position", async () => {
+		const data = structuredClone(real.next)
+		const tabs = traverseList(data, "watchNextTabbedResultsRenderer")[0].tabs
+		tabs.reverse()
+		const { api, adapter } = await setup(data, real.lyrics)
+		expect(await api.getLyrics("3QZOazpGIQc")).toHaveLength(4)
+		expect(bodies(adapter)[2].browseId).toBe("MPLYt_5qHogi2HE7p-1")
+	})
+
+	it.each((["getLyrics", "getTimedLyrics"] as const).map(method => [method] as const))(
+		"%s returns null without a browse request when there is no lyrics tab",
+		async method => {
+			const data = structuredClone(real.next)
+			const watch = traverseList(data, "watchNextTabbedResultsRenderer")[0]
+			watch.tabs = watch.tabs.filter(
+				(tab: unknown) => !JSON.stringify(tab).includes("TRACK_LYRICS"),
+			)
+			const { api, adapter } = await setup(data)
+			expect(await api[method]("3QZOazpGIQc")).toBeNull()
+			expect(adapter).toHaveBeenCalledTimes(2)
+		},
+	)
+
+	it("returns null for an empty lyrics page", async () => {
+		const { api } = await setup(real.next, {})
+		expect(await api.getLyrics("3QZOazpGIQc")).toBeNull()
+	})
+
+	it("returns timed lines from the mobile client", async () => {
+		const { api, adapter } = await setup(
+			real.next,
+			responses.timedLyrics(["First line", 1000, 2500], ["Second line", 2500, 4000]),
+		)
+		const lines = await api.getTimedLyrics("3QZOazpGIQc")
+		expect(lines).toEqual([
+			{ text: "First line", startTime: 1000, endTime: 2500 },
+			{ text: "Second line", startTime: 2500, endTime: 4000 },
+		])
+		expect(TimedLyric.array().safeParse(lines).success).toBe(true)
+		const [web, mobile] = [adapter.mock.calls[1]![0], adapter.mock.calls[2]![0]]
+		expect(bodies(adapter)[1].context.client.clientName).toBe("WEB_REMIX")
+		expect(bodies(adapter)[2]).toMatchObject({
+			browseId: "MPLYt_5qHogi2HE7p-1",
+			context: { client: { clientName: "ANDROID_MUSIC" } },
+		})
+		expect(mobile.headers.get("X-YouTube-Client-Version")).toBe(
+			bodies(adapter)[2].context.client.clientVersion,
+		)
+		expect(web.headers.get("X-YouTube-Client-Version")).toBe("1.20260101.01.00")
+		expect(mobile.headers.get("X-YouTube-Client-Version")).not.toBe("1.20260101.01.00")
+	})
+
+	it("reads only the first timed lyrics model", async () => {
+		const { api } = await setup(real.next, [
+			responses.timedLyrics(["Kept", 0, 1]),
+			responses.timedLyrics(["Repeated", 0, 1]),
+		])
+		expect(await api.getTimedLyrics("3QZOazpGIQc")).toEqual([
+			{ text: "Kept", startTime: 0, endTime: 1 },
+		])
+	})
+
+	it("returns null when the response has no timed lyrics", async () => {
+		const { api } = await setup(real.next, real.lyrics)
+		expect(await api.getTimedLyrics("3QZOazpGIQc")).toBeNull()
+	})
+})
+
+describe("Artist API", () => {
 	it("returns an artist with each supported kind of related content", async () => {
-		const { api } = await setup(responses.artistResponse)
-		const artist = await api.getArtist(responses.artistId)
+		const { api, adapter } = await setup(real.artist)
+		const artist = await api.getArtist("UCartist")
 		expect(ArtistFull.safeParse(artist).success).toBe(true)
+		expect(artist).toMatchObject({ artistId: "UCartist", name: "The Weeknd" })
 		for (const field of [
 			"topSongs",
 			"topAlbums",
@@ -246,143 +416,305 @@ describe("Browse API", () => {
 			"featuredOn",
 			"similarArtists",
 		] as const)
-			expect(artist[field]).toHaveLength(1)
-		expect(artist).toMatchObject(responses.artistBasic)
+			expect(artist[field].length).toBeGreaterThan(0)
+		expect(bodies(adapter)[1]).toMatchObject({ browseId: "UCartist" })
+	})
+
+	it("returns no albums for an artist with only singles", async () => {
+		const { api } = await setup(real.artistSingles)
+		const artist = await api.getArtist("UCsingles")
+		expect(artist.topAlbums).toEqual([])
+		expect(artist.topSingles).toHaveLength(1)
 	})
 
 	it("returns empty related lists for an artist without shelves", async () => {
-		const { api } = await setup({ header: responses.artistResponse.header })
-		const artist = await api.getArtist(responses.artistId)
+		const { api } = await setup({ header: real.artist.header })
+		const artist = await api.getArtist("UCartist")
 		expect(ArtistFull.safeParse(artist).success).toBe(true)
 		expect(artist.topSongs).toEqual([])
 		expect(artist.topAlbums).toEqual([])
 		expect(artist.similarArtists).toEqual([])
 	})
 
-	it("retrieves artist albums using the browse endpoint", async () => {
-		const { api, adapter } = await setup(responses.artistResponse, {
-			header: { runs: [{ text: responses.artistBasic.name }] },
-			contents: [{ musicTwoRowItemRenderer: responses.albumRow }],
-		})
-		const albums = await api.getArtistAlbums(responses.artistId)
+	it("retrieves the artist's albums from the browse endpoint of the Albums shelf", async () => {
+		const { api, adapter } = await setup(real.artist, real.artistAlbums)
+		const albums = await api.getArtistAlbums("UCartist")
 		expect(AlbumDetailed.array().safeParse(albums).success).toBe(true)
-		expect(albums[0]).toMatchObject({
-			...responses.albumBasic,
-			artist: responses.artistBasic,
-			year: 2024,
-		})
-		expect(JSON.parse(adapter.mock.calls[2]![0].data)).toMatchObject({
-			browseId: "artist-albums",
-			params: "albums",
+		expect(albums).toMatchObject([
+			{
+				albumId: "MPREb_YWjvGjCFaW6",
+				name: "Hurry Up Tomorrow",
+				artist: { artistId: "UCartist", name: "The Weeknd" },
+				year: 2025,
+			},
+		])
+		expect(bodies(adapter)[2]).toMatchObject({
+			browseId: "MPADUClYV6hHlupm_S_ObS1W-DYw",
+			params: expect.any(String),
 		})
 	})
 
-	it.each((["getArtistSongs", "getArtistAlbums"] as const).map(method => [method] as const))(
-		"%s returns an empty list when its browse link is absent",
-		async method => {
-			const { api, adapter } = await setup({ header: responses.artistResponse.header })
-			expect(await api[method](responses.artistId)).toEqual([])
-			expect(adapter).toHaveBeenCalledTimes(2)
-		},
-	)
+	it("returns the shelf's own albums without a second request when it has no endpoint", async () => {
+		const data = structuredClone(real.artist)
+		const title = traverseList(data, "musicCarouselShelfRenderer")[1].header
+			.musicCarouselShelfBasicHeaderRenderer.title.runs[0]
+		delete title.navigationEndpoint
+		const { api, adapter } = await setup(data)
+		const albums = await api.getArtistAlbums("UCartist")
+		expect(albums.map(album => album.name)).toEqual(["Hurry Up Tomorrow"])
+		expect(adapter).toHaveBeenCalledTimes(2)
+	})
 
+	it("returns no albums for an artist without any", async () => {
+		const { api, adapter } = await setup({ header: real.artist.header })
+		expect(await api.getArtistAlbums("UCartist")).toEqual([])
+		expect(adapter).toHaveBeenCalledTimes(2)
+	})
+
+	it("returns every song of the artist across row continuations", async () => {
+		const { api, adapter } = await setup(real.artist, real.artistSongs, real.artistSongsMore)
+		const songs = await api.getArtistSongs("UCartist")
+		expect(SongDetailed.array().safeParse(songs).success).toBe(true)
+		expect(songs).toHaveLength(2)
+		expect(songs.every(song => song.artist.name === "The Weeknd")).toBe(true)
+		expect(bodies(adapter)[2].browseId).toBe("VLOLAK5uy_m9NcLauVzADCRC6rfmtow_Z6a6TuIO8g8")
+		expect(continuations(adapter).slice(1)).toEqual([null, null, "rows-two"])
+	})
+
+	it("gives songs the artist when their rows name none", async () => {
+		const row = { musicResponsiveListItemRenderer: responses.listItem(responses.titleRun) }
+		const { api } = await setup(real.artist, {
+			musicPlaylistShelfRenderer: { contents: [row] },
+		})
+		expect(await api.getArtistSongs("UCartist")).toMatchObject([
+			{
+				artist: { artistId: "UCartist", name: "The Weeknd" },
+				artists: [{ artistId: "UCartist" }],
+			},
+		])
+	})
+
+	it("returns an empty list when the artist has no songs link", async () => {
+		const { api, adapter } = await setup({ header: real.artist.header })
+		expect(await api.getArtistSongs("UCartist")).toEqual([])
+		expect(adapter).toHaveBeenCalledTimes(2)
+	})
+})
+
+describe("Album API", () => {
+	it("returns album details with song metadata, artist, and artwork", async () => {
+		const { api, adapter } = await setup(real.album)
+		const album = await api.getAlbum("MPREb_CL1trLyE0AA")
+		expect(AlbumFull.safeParse(album).success).toBe(true)
+		expect(album).toMatchObject({
+			albumId: "MPREb_CL1trLyE0AA",
+			name: "Weekend",
+			artists: [{ artistId: "UC1F_z9eS5tNT1-EXUyJzj0A", name: "wtfstro" }],
+			year: 2026,
+			playlistId: "OLAK5uy_n2ceO4flWC7fWl5J30a4f6qzfC4RWD658",
+		})
+		expect(album.songs[0]).toMatchObject({
+			artists: album.artists,
+			album: { albumId: "MPREb_CL1trLyE0AA", name: "Weekend" },
+			thumbnails: album.thumbnails,
+		})
+		expect(adapter).toHaveBeenCalledTimes(2)
+		expect(bodies(adapter)[1].browseId).toBe("MPREb_CL1trLyE0AA")
+	})
+
+	it("resolves an album's playlist ID through its songs' album link", async () => {
+		const { api, adapter } = await setup(real.albumPlaylist, real.albumOLAK)
+		const album = await api.getAlbum("OLAK5uy_npqCTkmCJbXOn7gEIb5XTAGf1aL4no54o")
+		expect(album).toMatchObject({ albumId: "MPREb_D5nUoJGAKIO", name: "Till Next Time" })
+		expect(
+			bodies(adapter)
+				.slice(1)
+				.map(body => body.browseId),
+		).toEqual(["VLOLAK5uy_npqCTkmCJbXOn7gEIb5XTAGf1aL4no54o", "MPREb_D5nUoJGAKIO"])
+	})
+
+	it("rejects a playlist ID whose songs link no album", async () => {
+		const { api, adapter } = await setup({ musicPlaylistShelfRenderer: { contents: [] } })
+		await expect(api.getAlbum("OLAK5uy_unknown")).rejects.toThrow("Invalid albumId")
+		expect(adapter).toHaveBeenCalledTimes(2)
+	})
+})
+
+describe("Playlist API", () => {
 	it.each(["PLfixtureplaylist", "OLAK5uy_fixture", "VLPLfixtureplaylist"])(
 		"normalizes playlist ID %s",
 		async id => {
-			const { api, adapter } = await setup(responses.playlistResponse)
+			const { api, adapter } = await setup(real.playlist)
 			const playlist = await api.getPlaylist(id)
 			expect(PlaylistFull.safeParse(playlist).success).toBe(true)
-			expect(playlist.artist).toEqual(responses.artistBasic)
-			expect(JSON.parse(adapter.mock.calls[1]![0].data).browseId).toBe(
-				id.startsWith("VL") ? id : `VL${id}`,
-			)
+			expect(playlist.playlistId).toBe(id.replace(/^VL/, ""))
+			expect(bodies(adapter)[1].browseId).toBe(`VL${id.replace(/^VL/, "")}`)
 		},
 	)
-})
 
-describe("Pagination API", () => {
-	it("parses a captured queue through the HTTP adapter and requests a persistent panel", async () => {
-		const { api, adapter } = await setup(real.next)
-		const songs = await api.getUpNexts("mGsOHanQwxk")
-		expect(songs.map(song => song.videoId)).toEqual(["4eX9JOyM2VA", "eGd6FzzTg1M"])
-		expect(songs[0]).toMatchObject({ duration: 230, artists: { name: "Mariah Deborah" } })
-		expect(JSON.parse(adapter.mock.calls[1]![0].data)).toMatchObject({
-			videoId: "mGsOHanQwxk",
-			enablePersistentPlaylistPanel: true,
+	it("returns the creator and the number of videos", async () => {
+		const { api } = await setup(real.playlist)
+		expect(await api.getPlaylist("PLfixture")).toMatchObject({
+			name: "FNF WEEKEND 1 UPDATE",
+			artist: { artistId: null, name: "laik7u7" },
+			videoCount: 16,
 		})
 	})
 
-	it("returns every artist song in order across both continuation formats", async () => {
-		const second = { ...responses.songItem, playlistItemData: { videoId: "4eX9JOyM2VA" } }
-		const { api, adapter } = await setup(
-			responses.artistResponse,
-			{
-				...responses.searchResponse(responses.songItem),
-				continuations: [{ nextContinuationData: { continuation: "page-two" } }],
-			},
-			{
-				...responses.searchResponse(second),
-				continuationItemRenderer: {
-					continuationEndpoint: { continuationCommand: { token: "page-three" } },
-				},
-			},
-			responses.searchResponse(responses.songItem),
-		)
-		const songs = await api.getArtistSongs(responses.artistId)
-		expect(songs.map(song => song.videoId)).toEqual([
-			responses.videoId,
-			"4eX9JOyM2VA",
-			responses.videoId,
-		])
-		expect(SongDetailed.array().safeParse(songs).success).toBe(true)
-		expect(
-			adapter.mock.calls
-				.slice(3)
-				.map(([request]) =>
-					new URL(request.url!, request.baseURL).searchParams.get("continuation"),
-				),
-		).toEqual(["page-two", "page-three"])
-	})
-
-	it("returns playlist pages in order and omits unavailable videos", async () => {
-		const { api, adapter } = await setup(
-			{
-				...responses.playlistResponse,
-				continuations: [{ nextContinuationData: { continuation: "next" } }],
-			},
-			responses.searchResponse({}, responses.songItem),
-		)
-		const videos = await api.getPlaylistVideos(responses.playlistId)
+	it("makes no extra request when the rows have no continuation, whatever the page leads to", async () => {
+		const { api, adapter } = await setup(real.playlist)
+		const videos = await api.getPlaylistVideos("VLPLfixture")
 		expect(VideoDetailed.array().safeParse(videos).success).toBe(true)
-		expect(videos.map(video => video.videoId)).toEqual([responses.videoId, responses.videoId])
-		expect(adapter).toHaveBeenCalledTimes(3)
+		expect(videos).toHaveLength(1)
+		expect(videos[0]).toMatchObject({ videoId: "xeDa1c-Y224", duration: 226 })
+		expect(adapter).toHaveBeenCalledTimes(2)
+		expect(bodies(adapter)[1].browseId).toBe("VLPLfixture")
 	})
 
+	it("follows the row continuation and ignores the page's related-playlists token", async () => {
+		const { api, adapter } = await setup(real.playlistRD, real.playlistMore, real.playlistLast)
+		const videos = await api.getPlaylistVideos("RDfixture")
+		expect(videos).toHaveLength(3)
+		expect(VideoDetailed.array().safeParse(videos).success).toBe(true)
+		expect(continuations(adapter).slice(1)).toEqual([null, "rows-two", "rows-three"])
+		expect(endpoints(adapter)).toEqual(["browse", "browse", "browse"])
+	})
+
+	it("drops rows without a video ID and falls back to the thumbnail URL", async () => {
+		const thumbnail = {
+			thumbnails: [
+				{ url: "https://i.ytimg.com/vi/mGsOHanQwxk/hqdefault.jpg", width: 120, height: 90 },
+			],
+		}
+		const { api } = await setup(responses.playlistRows([{}, { thumbnail }, responses.songItem]))
+		const videos = await api.getPlaylistVideos("PLfixture")
+		expect(videos.map(video => video.videoId)).toEqual(["mGsOHanQwxk", "mGsOHanQwxk"])
+	})
+})
+
+describe("Home API", () => {
+	it("returns the shelves of every page", async () => {
+		const { api, adapter } = await setup(real.home, real.homeMore, real.homeLast)
+		const sections = await api.getHomeSections()
+		expect(HomeSection.array().safeParse(sections).success).toBe(true)
+		expect(sections.map(section => section.title)).toEqual([
+			"Quick picks",
+			"New releases",
+			"Take it easy",
+			"Trending songs for you",
+			"Indian Music",
+		])
+		expect(sections.map(section => section.contents.map(item => item.type))).toEqual([
+			["SONG"],
+			["ALBUM"],
+			["PLAYLIST"],
+			["SONG"],
+			["PLAYLIST"],
+		])
+		expect(sections[0]!.contents[0]).toMatchObject({
+			name: 'Pavazha Malli (From "Think Indie")',
+			artist: { name: "Sai Abhyankkar" },
+			artists: [{ name: "Sai Abhyankkar" }, { name: "Shruti Haasan" }, { name: "Vivek" }],
+		})
+		expect(continuations(adapter).slice(1)).toEqual([null, "home-two", "home-three"])
+	})
+
+	it("returns videos, artists and other items next to songs, and omits unsupported items", async () => {
+		const [video, , artist] = traverseList(real.artist, "musicTwoRowItemRenderer").slice(3)
+		const show = responses.twoRow(
+			{ text: "Show" },
+			[{ text: "Podcast" }],
+			responses.browse("MPSPPLshow", "MUSIC_PAGE_TYPE_PODCAST_SHOW_DETAIL_PAGE"),
+		)
+		const { api } = await setup(
+			responses.sections(
+				responses.shelf(
+					"Mixed",
+					{
+						musicResponsiveListItemRenderer: traverseList(
+							real.home,
+							"musicResponsiveListItemRenderer",
+						)[0],
+					},
+					{ musicTwoRowItemRenderer: video },
+					{ musicTwoRowItemRenderer: artist },
+					show,
+				),
+			),
+		)
+		const [section] = await api.getHomeSections()
+		expect(section!.contents.map(item => item.type)).toEqual(["SONG", "VIDEO", "ARTIST"])
+	})
+
+	it("returns no sections for an empty page", async () => {
+		const { api } = await setup({})
+		expect(await api.getHomeSections()).toEqual([])
+	})
+})
+
+describe("Continuation guards", () => {
 	it.each(
 		(["getArtistSongs", "getPlaylistVideos", "getHomeSections"] as const).map(
 			method => [method] as const,
 		),
 	)("%s rejects a repeated continuation token instead of looping", async method => {
-		const repeated = {
-			continuations: [{ nextContinuationData: { continuation: "same-token" } }],
-		}
-		const pages =
-			method === "getArtistSongs"
-				? [responses.artistResponse, repeated, repeated]
-				: [repeated, repeated]
+		const page =
+			method === "getHomeSections"
+				? responses.nextPage("same-token")
+				: responses.playlistRows([responses.songItem], "same-token")
+		const pages = method === "getArtistSongs" ? [real.artist, page, page] : [page, page]
 		const { api, adapter } = await setup(...pages)
-		await expect(api[method](responses.artistId)).rejects.toThrow("Repeated continuation token")
+		await expect(api[method]("UCartist")).rejects.toThrow("Repeated continuation token")
 		expect(adapter).toHaveBeenCalledTimes(pages.length + 1)
 	})
+})
 
-	it("returns captured home content through the real request and parsing path", async () => {
-		const { api } = await setup(real.home)
-		const sections = await api.getHomeSections()
-		expect(sections).toHaveLength(1)
-		expect(sections[0]?.contents[0]).toMatchObject({
-			type: "SONG",
-			videoId: "mGsOHanQwxk",
-			name: "Na Para Bang",
+describe("Review regressions", () => {
+	it("ignores a continuation outside the playlist's own rows", async () => {
+		const { api, adapter } = await setup({
+			...responses.playlistRows([responses.songItem]),
+			...responses.rowsToken("related-shelf"),
 		})
+		expect(await api.getPlaylistVideos("PLfixture")).toHaveLength(1)
+		expect(adapter).toHaveBeenCalledTimes(2)
+	})
+
+	it("keeps search rows without an ID and drops repeated ones", async () => {
+		const page = responses.searchResponse(responses.songItem, {}, {}, responses.songItem)
+		const { api } = await setup(page, page)
+		expect(await api.searchSongs("query")).toHaveLength(3)
+		expect(await api.searchSongs("query", { limit: -1 })).toHaveLength(3)
+	})
+
+	it("omits home sections with nothing supported in them", async () => {
+		const { api } = await setup({
+			contents: {
+				sectionListRenderer: {
+					contents: [{ musicCarouselShelfRenderer: { contents: [{ unknown: {} }] } }],
+				},
+			},
+		})
+		expect(await api.getHomeSections()).toEqual([])
+	})
+})
+
+describe("Input checks", () => {
+	it.each(
+		(
+			[
+				"getArtist",
+				"getArtistSongs",
+				"getArtistAlbums",
+				"getAlbum",
+				"getPlaylist",
+				"getPlaylistVideos",
+			] as const
+		).flatMap(method =>
+			["", "https://music.youtube.com/x", "has space"].map(id => [method, id] as const),
+		),
+	)("%s rejects %p before making a request", async (method, id) => {
+		const { api, adapter } = await setup()
+		await expect(api[method](id)).rejects.toThrow(/^Invalid (artist|album|playlist)Id$/)
+		expect(adapter).toHaveBeenCalledTimes(1)
 	})
 })

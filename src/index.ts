@@ -1,6 +1,7 @@
 import YTMusic from "./YTMusic"
 
 export { default as PlayerError } from "./PlayerError"
+export { default as RequestError } from "./RequestError"
 
 export type {
 	AlbumBasic,
@@ -15,6 +16,7 @@ export type {
 	SongDetailed,
 	SongFull,
 	ThumbnailFull,
+	TimedLyric,
 	VideoDetailed,
 	VideoFull,
 	HomeSection,

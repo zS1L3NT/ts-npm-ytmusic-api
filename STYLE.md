@@ -47,3 +47,16 @@ Every line earns its place by carrying behavior, clarity, reuse, or a constraint
 - Call out the scope before changing a shared convention across many files.
 
 <!-- setup-conventions:generated-end -->
+
+## Parsers
+
+- Each parser class has `parse` for a whole response and `parseItem` for one item of a list. A new page reuses `parseItem`; it does not get its own item method.
+- Read items through `Parser.parseFields`. It reduces list rows, cards and queue entries to the same `title`, `segments`, `endpoint` and `thumbnails`.
+- Tell items and shelves apart by the page and video types in their endpoints. Position and label text change with the account, the country and the language.
+- Return every parsed object through `checkType` with its schema from `types.ts`, with fields in the schema's order.
+- Read nested data with the `traverse` helpers. Use direct property access only for a known direct child, where a deep search could match the wrong key.
+- IDs in results are the ones YouTube Music shows in URLs. Add or strip request prefixes such as `VL` inside `YTMusic.ts`.
+
+## Tests
+
+- A parsing fix comes with a fixture reduced from a real response in `src/tests/fixtures`, so the layout that broke stays pinned.
