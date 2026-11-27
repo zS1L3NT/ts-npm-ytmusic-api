@@ -57,4 +57,53 @@ Common gitmojis (full list at [gitmoji.dev](https://gitmoji.dev)):
 - **Body:** write it with the `/pr` skill (mattpocock's).
 - **Approval** belongs to humans. Leave reviews as comments; never approve a pull request.
 
+### PR Evidence
+
+- **UI changes** need before and after screenshots. **Motion or timing changes** also need a short before and after video.
+- **Upload evidence to GitHub.** Drop the files into the pull request's comment box in a signed-in browser, copy the `https://github.com/user-attachments/assets/…` URLs, discard the unsent comment, and put the URLs in the body.
+- **Never commit evidence.** Screenshots, videos, and other assets that only the pull request needs stay out of the repository, including `.github/pr-assets/`.
+- **One block per feature.** Under `## Evidence`, add one `<details>` block for each feature or part that changed. Open the first block (`<details open>`) and leave the rest closed.
+  - **Summary line:** the feature name in bold, then the tags that apply: `screenshots`, `motion`, `new` (no before state).
+  - **First line:** the route, the data state, and the theme the evidence shows.
+  - **Screenshots:** a Before | After table with one row per viewport: Desktop (1280×800) and Mobile (390×844). Both sides of a row use the same route, data, theme, and crop. Add a Dark row only when the change depends on the theme. For new UI, write `—` in the Before cell.
+  - **Motion:** a Before clip and an After clip, stacked, each with a one-line caption naming the interaction. Use MP4 clips of 10 seconds or less at the same viewport. Put each video URL on its own line, never inside a table, or GitHub shows a link instead of a player.
+  - **Blank lines:** leave one after `</summary>` and one before `</details>`, or GitHub shows the Markdown inside as raw text.
+
+Repeat this block for each feature:
+
+````markdown
+<details open>
+<summary><b>Settings form saves on blur</b> · screenshots · motion</summary>
+
+`/settings` · seeded account · light
+
+#### Screenshots
+
+<table>
+  <tr><th></th><th>Before</th><th>After</th></tr>
+  <tr>
+    <td><b>Desktop</b></td>
+    <td><img src="https://github.com/user-attachments/assets/…" width="480"></td>
+    <td><img src="https://github.com/user-attachments/assets/…" width="480"></td>
+  </tr>
+  <tr>
+    <td><b>Mobile</b></td>
+    <td><img src="https://github.com/user-attachments/assets/…" width="240"></td>
+    <td><img src="https://github.com/user-attachments/assets/…" width="240"></td>
+  </tr>
+</table>
+
+#### Motion
+
+**Before** · edit a field and tab away
+
+https://github.com/user-attachments/assets/…
+
+**After** · edit a field and tab away
+
+https://github.com/user-attachments/assets/…
+
+</details>
+````
+
 <!-- setup-conventions:generated-end -->
