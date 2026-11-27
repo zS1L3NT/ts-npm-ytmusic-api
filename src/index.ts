@@ -12,6 +12,7 @@ export type {
 	ArtistFull,
 	PlaylistDetailed,
 	PlaylistFull,
+	Page,
 	SearchResult,
 	SongDetailed,
 	SongFull,

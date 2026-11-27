@@ -1,5 +1,5 @@
 import { beforeEach, describe, it } from "bun:test"
-import { ok } from "assert"
+import { equal, ok } from "assert"
 import { z } from "zod"
 
 import YTMusic from "../../YTMusic"
@@ -30,5 +30,13 @@ describe(`Query: ${FE_MUSIC_HOME}`, () => {
 			)
 			expect(sections, z.array(HomeSection))
 		})
+	})
+
+	it("Get the home sections page by page", async () => {
+		const first = await ytmusic.getHomeSectionsPage({ limit: 2 })
+		const next = await ytmusic.getHomeSectionsPage({ limit: 2, cursor: first.cursor })
+		equal(first.items.length, 2)
+		ok(next.items.length > 0, "Expected a second page of home sections")
+		expect([...first.items, ...next.items], z.array(HomeSection))
 	})
 })

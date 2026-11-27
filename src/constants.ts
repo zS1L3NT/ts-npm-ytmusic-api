@@ -12,6 +12,15 @@ export enum VideoType {
 	MUSIC_VIDEO_TYPE_PRIVATELY_OWNED_TRACK = "MUSIC_VIDEO_TYPE_PRIVATELY_OWNED_TRACK",
 }
 
+// The params of a search that shows one kind of result
+export enum SearchFilter {
+	SONGS = "Eg-KAQwIARAAGAAgACgAMABqChAEEAMQCRAFEAo%3D",
+	VIDEOS = "Eg-KAQwIABABGAAgACgAMABqChAEEAMQCRAFEAo%3D",
+	ARTISTS = "Eg-KAQwIABAAGAAgASgAMABqChAEEAMQCRAFEAo%3D",
+	ALBUMS = "Eg-KAQwIABAAGAEgACgAMABqChAEEAMQCRAFEAo%3D",
+	PLAYLISTS = "Eg-KAQwIABAAGAAgACgBMABqChAEEAMQCRAFEAo%3D",
+}
+
 // Responses that a later attempt can succeed after
 export const TRANSIENT_STATUSES = [429, 500, 502, 503, 504]
 

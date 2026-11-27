@@ -1,5 +1,5 @@
 import { beforeAll, describe, it } from "bun:test"
-import { equal } from "assert"
+import { deepEqual, equal } from "assert"
 import { z } from "zod"
 
 import YTMusic from "../../YTMusic"
@@ -67,6 +67,15 @@ queries.forEach(query => {
 			expect(songs, z.array(SongDetailed))
 		})
 
+		it("Search Songs page by page", async () => {
+			const first = await ytmusic.searchSongsPage(query, { limit: 10 })
+			const next = await ytmusic.searchSongsPage(query, { limit: 10, cursor: first.cursor })
+			const songs = [...first.items, ...next.items]
+			equal(songs.length, 20)
+			equal(new Set(songs.map(song => song.videoId)).size, 20)
+			expect(songs, z.array(SongDetailed))
+		})
+
 		it("Search All", async () => {
 			const results = await ytmusic.search(query)
 			expect(results, z.array(SearchResult))
@@ -114,6 +123,17 @@ queries.forEach(query => {
 			expect(songs, z.array(SongDetailed))
 		})
 
+		it("Get the songs of the first artist result page by page", async () => {
+			const artists = await ytmusic.searchArtists(query)
+			const songs = await ytmusic.getArtistSongs(artists[0]!.artistId)
+			const first = await ytmusic.getArtistSongsPage(artists[0]!.artistId, { limit: 10 })
+			const next = await ytmusic.getArtistSongsPage(artists[0]!.artistId, {
+				limit: 10,
+				cursor: first.cursor,
+			})
+			deepEqual([...first.items, ...next.items], songs.slice(0, 20))
+		})
+
 		it("Get the albums of the first artist result", async () => {
 			const artists = await ytmusic.searchArtists(query)
 			const albums = await ytmusic.getArtistAlbums(artists[0]!.artistId)
@@ -146,6 +166,22 @@ queries.forEach(query => {
 			// Unavailable videos are counted by YouTube but cannot be listed
 			equal(videos.length > 100 || playlist.videoCount <= 100, true)
 			expect(videos, z.array(VideoDetailed))
+		})
+
+		it("Get the videos of the first playlist result page by page", async () => {
+			const playlists = await ytmusic.searchPlaylists(query)
+			const videos = await ytmusic.getPlaylistVideos(playlists[0]!.playlistId)
+			const pages = []
+			let cursor: string | null = null
+			do {
+				const page = await ytmusic.getPlaylistVideosPage(playlists[0]!.playlistId, {
+					limit: 30,
+					cursor,
+				})
+				pages.push(...page.items)
+				cursor = page.cursor
+			} while (cursor)
+			deepEqual(pages, videos)
 		})
 	})
 })

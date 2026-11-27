@@ -184,6 +184,12 @@ export const SearchResult = z.discriminatedUnion("type", [
 	PlaylistDetailed,
 ])
 
+/** One page of a list, with the cursor of the next page, or `null` on the last page */
+export type Page<T> = {
+	items: T[]
+	cursor: string | null
+}
+
 export type HomeSection = z.infer<typeof HomeSection>
 export const HomeSection = z
 	.object({
