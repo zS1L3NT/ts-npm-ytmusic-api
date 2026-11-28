@@ -632,26 +632,54 @@ export default class YTMusic {
 	}
 
 	/**
-	 * Get the songs queued after the current video.
+	 * Loads a page of songs queued after the current video, without repeats
 	 *
 	 * @param videoId Video ID
-	 * @returns Up next songs
+	 * @param options.limit Number of songs on the page. Defaults to 20
+	 * @param options.cursor `cursor` of the previous page. Defaults to the first page
 	 */
-	public async getUpNexts(videoId: string): Promise<SongDetailed[]> {
+	public async getUpNexts(
+		videoId: string,
+		options?: { limit?: number; cursor?: string | null },
+	): Promise<Page<SongDetailed>> {
 		this.assertVideoId(videoId)
 
-		const data = await this.constructRequest("next", {
-			videoId,
-			playlistId: `RDAMVM${videoId}`,
-			isAudioOnly: true,
-			enablePersistentPlaylistPanel: true,
-		})
-		const panel = traverseList(data, "musicQueueRenderer", "playlistPanelRenderer")[0]
-		if (!panel) throw new Error("Invalid response structure")
+		return this.getPage(
+			["getUpNexts", videoId],
+			options,
+			async token => {
+				if (token) {
+					const data = await this.constructRequest("next", {}, { continuation: token })
+					const panel = traverseList(data, "playlistPanelContinuation")[0] ?? data
+					const videos = traverseList(panel, "contents", "playlistPanelVideoRenderer")
 
-		const videos = traverseList(panel, "contents", "playlistPanelVideoRenderer")
-		const current = videos.findIndex(item => item.selected || item.videoId === videoId)
-		return videos.slice(current + 1).map(item => SongParser.parseItem(item))
+					return {
+						items: videos
+							.filter(item => item.videoId !== videoId)
+							.map(item => SongParser.parseItem(item)),
+						token: traverseString(panel, "nextRadioContinuationData", "continuation"),
+					}
+				}
+
+				const data = await this.constructRequest("next", {
+					videoId,
+					playlistId: `RDAMVM${videoId}`,
+					isAudioOnly: true,
+					enablePersistentPlaylistPanel: true,
+				})
+				const panel = traverseList(data, "musicQueueRenderer", "playlistPanelRenderer")[0]
+				if (!panel) throw new Error("Invalid response structure")
+
+				const videos = traverseList(panel, "contents", "playlistPanelVideoRenderer")
+				const current = videos.findIndex(item => item.selected || item.videoId === videoId)
+
+				return {
+					items: videos.slice(current + 1).map(item => SongParser.parseItem(item)),
+					token: traverseString(panel, "nextRadioContinuationData", "continuation"),
+				}
+			},
+			song => song.videoId,
+		)
 	}
 
 	/**

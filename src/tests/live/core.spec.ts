@@ -95,7 +95,14 @@ queries.forEach(query => {
 
 		it("Get the songs queued after the first song result", async () => {
 			const { items: songs } = await ytmusic.searchSongs(query)
-			const upNexts = await ytmusic.getUpNexts(songs[0]!.videoId)
+			const first = await ytmusic.getUpNexts(songs[0]!.videoId, { limit: 10 })
+			const next = await ytmusic.getUpNexts(songs[0]!.videoId, {
+				limit: 10,
+				cursor: first.cursor,
+			})
+			const upNexts = [...first.items, ...next.items]
+			equal(upNexts.length, 20)
+			equal(new Set(upNexts.map(song => song.videoId)).size, 20)
 			expect(upNexts, z.array(SongDetailed))
 		})
 

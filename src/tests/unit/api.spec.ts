@@ -393,9 +393,9 @@ describe("Up next API", () => {
 
 	it("returns the songs after the selected entry through the persistent panel request", async () => {
 		const { api, adapter } = await setup(queue())
-		const songs = await api.getUpNexts("3QZOazpGIQc")
+		const { items: songs, cursor } = await api.getUpNexts("3QZOazpGIQc")
 		expect(songs.map(song => song.videoId)).toEqual(["2yqYAsUpdSc", "LztS3R1PZQA"])
-		expect(SongDetailed.array().safeParse(songs).success).toBe(true)
+		expect(cursor).toBeNull()
 		expect(SongDetailed.array().safeParse(songs).success).toBe(true)
 		expect(songs[0]).toMatchObject({
 			name: "Out of Time",
@@ -411,6 +411,35 @@ describe("Up next API", () => {
 		})
 	})
 
+	it("loads up next songs page by page and skips repeats", async () => {
+		const first = queue()
+		const [seed, secondSong, thirdSong] = entries(first)
+		traverseList(first, "playlistPanelRenderer")[0].continuations = [
+			{ nextRadioContinuationData: { continuation: "radio-two" } },
+		]
+		const fourthSong = structuredClone(thirdSong)
+		fourthSong.videoId = "4eX9JOyM2VA"
+		fourthSong.navigationEndpoint.watchEndpoint.videoId = "4eX9JOyM2VA"
+		const more = {
+			continuationContents: {
+				playlistPanelContinuation: {
+					contents: [
+						{ playlistPanelVideoRenderer: seed },
+						{ playlistPanelVideoRenderer: thirdSong },
+						{ playlistPanelVideoRenderer: fourthSong },
+					],
+				},
+			},
+		}
+		const { api, adapter } = await setup(first, first, more)
+		const page1 = await api.getUpNexts("3QZOazpGIQc", { limit: 1 })
+		const page2 = await api.getUpNexts("3QZOazpGIQc", { limit: 2, cursor: page1.cursor })
+		expect(ids(page1)).toEqual([secondSong.videoId])
+		expect(ids(page2)).toEqual([thirdSong.videoId, "4eX9JOyM2VA"])
+		expect(page2.cursor).toBeNull()
+		expect(continuations(adapter).slice(1)).toEqual([null, null, "radio-two"])
+	})
+
 	it("starts after the selected entry and skips continuation rows", async () => {
 		const data = queue()
 		entries(data)[0].selected = false
@@ -419,7 +448,7 @@ describe("Up next API", () => {
 			continuationItemRenderer: { trigger: "CONTINUATION_TRIGGER_ON_ITEM_SHOWN" },
 		})
 		const { api } = await setup(data)
-		expect((await api.getUpNexts("2yqYAsUpdSc")).map(song => song.videoId)).toEqual([
+		expect((await api.getUpNexts("2yqYAsUpdSc")).items.map(song => song.videoId)).toEqual([
 			"LztS3R1PZQA",
 		])
 	})
@@ -428,7 +457,7 @@ describe("Up next API", () => {
 		const data = queue()
 		for (const entry of entries(data)) entry.selected = false
 		const { api } = await setup(data)
-		expect((await api.getUpNexts("2yqYAsUpdSc")).map(song => song.videoId)).toEqual([
+		expect((await api.getUpNexts("2yqYAsUpdSc")).items.map(song => song.videoId)).toEqual([
 			"LztS3R1PZQA",
 		])
 	})
@@ -437,7 +466,7 @@ describe("Up next API", () => {
 		const data = queue()
 		traverseList(data, "playlistPanelRenderer")[0].contents = []
 		const { api } = await setup(data, {})
-		expect(await api.getUpNexts("3QZOazpGIQc")).toEqual([])
+		expect(await api.getUpNexts("3QZOazpGIQc")).toEqual({ items: [], cursor: null })
 		await expect(api.getUpNexts("3QZOazpGIQc")).rejects.toThrow("Invalid response structure")
 	})
 })

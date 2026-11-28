@@ -58,7 +58,7 @@ Call `initialize(options?)` once before any other method. Its options are:
 | `searchPlaylists(query, options?)` | `Page<PlaylistDetailed>` |
 | `getSong(videoId)` | `SongFull`. Stream formats need `cookies` |
 | `getVideo(videoId)` | `VideoFull` |
-| `getUpNexts(videoId)` | `SongDetailed[]` queued after the song |
+| `getUpNexts(videoId, options?)` | `Page<SongDetailed>` queued after the song |
 | `getLyrics(videoId)` | `string[]`, or `null` |
 | `getTimedLyrics(videoId)` | `TimedLyric[]` with times in milliseconds, or `null` |
 | `getArtist(artistId)` | `ArtistFull` |
@@ -70,7 +70,7 @@ Call `initialize(options?)` once before any other method. Its options are:
 | `getHomeSections(options?)` | `Page<HomeSection>` |
 | `getHighresThumbnail(thumbnails)` | A larger `ThumbnailFull` of a video, or `null` |
 
-Methods returning `Page<T>` take `{ limit?, cursor? }` and return `{ items, cursor }`: `limit` items (20 by default) and the `cursor` of the next page, or `null` on the last page. Searches leave out results from earlier pages. A cursor only continues the request it came from.
+Methods returning `Page<T>` take `{ limit?, cursor? }` and return `{ items, cursor }`: `limit` items (20 by default) and the `cursor` of the next page, or `null` on the last page. Searches and `getUpNexts` leave out results from earlier pages. A cursor only continues the request it came from.
 
 ```js
 const first = await ytmusic.searchSongs("IU", { limit: 10 })
