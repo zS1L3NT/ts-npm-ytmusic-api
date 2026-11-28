@@ -1,5 +1,5 @@
 import { beforeEach, describe, it } from "bun:test"
-import { ok } from "assert"
+import { equal, ok } from "assert"
 import { z } from "zod"
 
 import YTMusic from "../../YTMusic"
@@ -22,7 +22,7 @@ beforeEach(() => {
 describe(`Query: ${FE_MUSIC_HOME}`, () => {
 	configs.forEach(config => {
 		it(`Get ${config.GL} ${config.HL}`, async () => {
-			const sections = await ytmusic.getHomeSections()
+			const { items: sections } = await ytmusic.getHomeSections()
 			ok(sections.length > 0, "Expected at least one home section")
 			ok(
 				sections.every(section => section.contents.length > 0),
@@ -30,5 +30,13 @@ describe(`Query: ${FE_MUSIC_HOME}`, () => {
 			)
 			expect(sections, z.array(HomeSection))
 		})
+	})
+
+	it("Get the home sections page by page", async () => {
+		const first = await ytmusic.getHomeSections({ limit: 2 })
+		const next = await ytmusic.getHomeSections({ limit: 2, cursor: first.cursor })
+		equal(first.items.length, 2)
+		ok(next.items.length > 0, "Expected a second page of home sections")
+		expect([...first.items, ...next.items], z.array(HomeSection))
 	})
 })

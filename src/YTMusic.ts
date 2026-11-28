@@ -3,7 +3,14 @@ import { Cookie, CookieJar } from "tough-cookie"
 
 import PlayerError from "./PlayerError"
 import RequestError from "./RequestError"
-import { FE_MUSIC_HOME, LYRICS_CLIENT, ORIGIN, PageType, TRANSIENT_STATUSES } from "./constants"
+import {
+	FE_MUSIC_HOME,
+	LYRICS_CLIENT,
+	ORIGIN,
+	PageType,
+	SearchFilter,
+	TRANSIENT_STATUSES,
+} from "./constants"
 import AlbumParser from "./parsers/AlbumParser"
 import ArtistParser from "./parsers/ArtistParser"
 import HomeSectionParser from "./parsers/HomeSectionParser"
@@ -19,6 +26,7 @@ import {
 	ArtistDetailed,
 	ArtistFull,
 	HomeSection,
+	Page,
 	PlaylistDetailed,
 	PlaylistFull,
 	SearchResult,
@@ -372,52 +380,111 @@ export default class YTMusic {
 	}
 
 	/**
-	 * Follows continuation tokens and collects every page, starting with the given one
+	 * Loads the next `limit` items of a list that YouTube Music splits into pages
 	 *
-	 * @param parse Reads the token for the next page out of a page
-	 * @param more Whether to keep going after the pages collected so far
+	 * @param key Names the list, so a cursor cannot continue another list
+	 * @param load Loads the first page without a token, or the page of a token, with the token of
+	 * the page after it. What it returns as `context` comes back with each later token
+	 * @param id Identifies items in lists that repeat items on later pages, to skip those already returned
 	 */
-	private async getContinuationData(
-		endpoint: string,
-		data: any,
-		parse: (data: any) => string,
-		more: (pages: any[]) => boolean = () => true,
-	): Promise<any[]> {
-		const pages = [data]
-		const tokens = new Set<string>()
-		let continuation = parse(data)
-		while (continuation && more(pages)) {
-			if (tokens.has(continuation)) throw new Error("Repeated continuation token")
-			tokens.add(continuation)
-			data = await this.constructRequest(endpoint, {}, { continuation })
-			pages.push(data)
-			continuation = parse(data)
+	private async getPage<T>(
+		key: unknown[],
+		options: { limit?: number; cursor?: string | null } = {},
+		load: (
+			token: string | null,
+			context: any,
+		) => Promise<{ items: T[]; token: string; context?: any }>,
+		id?: (item: T) => string,
+	): Promise<Page<T>> {
+		const limit = options.limit ?? 20
+		if (!Number.isInteger(limit) || limit < 1)
+			throw new Error("limit must be a positive integer")
+
+		const name = JSON.stringify(key)
+		let cursor: Cursor = { key: name, token: null, skip: 0, seen: [], context: null }
+		if (options.cursor) {
+			try {
+				cursor = JSON.parse(
+					new TextDecoder().decode(
+						Uint8Array.from(atob(options.cursor), char => char.charCodeAt(0)),
+					),
+				)
+			} catch {
+				throw new Error("Invalid cursor")
+			}
+			if (cursor.key !== name) throw new Error("Cursor is from another request")
 		}
-		return pages
+
+		const items: T[] = []
+		const seen = new Set(cursor.seen)
+		const tokens = new Set<string | null>()
+		while (true) {
+			if (tokens.has(cursor.token)) throw new Error("Repeated continuation token")
+			tokens.add(cursor.token)
+
+			const page = await load(cursor.token, cursor.context)
+			let rest: T[]
+			if (id) {
+				const pageSeen = new Set(seen)
+				rest = page.items.filter(item => {
+					const itemId = id(item)
+					if (!itemId) return true
+					if (pageSeen.has(itemId)) return false
+					pageSeen.add(itemId)
+					return true
+				})
+			} else {
+				rest = page.items.slice(cursor.skip)
+			}
+			const taken = rest.slice(0, limit - items.length)
+			items.push(...taken)
+			if (id) {
+				for (const item of taken) {
+					const itemId = id(item)
+					if (itemId) seen.add(itemId)
+				}
+			}
+			cursor = { ...cursor, seen: [...seen], context: page.context ?? cursor.context }
+
+			if (taken.length < rest.length) {
+				cursor.skip += taken.length
+				break
+			}
+			if (!page.token) return { items, cursor: null }
+			cursor = { ...cursor, token: page.token, skip: 0 }
+			if (items.length === limit) break
+		}
+
+		const bytes = new TextEncoder().encode(JSON.stringify(cursor))
+		return {
+			items,
+			cursor: btoa(Array.from(bytes, byte => String.fromCharCode(byte)).join("")),
+		}
 	}
 
-	private async getSearchData(query: string, params: string, limit = 0): Promise<any[]> {
-		const data = await this.constructRequest("search", { query, params })
-		const items = (pages: any[]) => {
-			const items = pages.flatMap(page =>
-				traverseList(page, "musicResponsiveListItemRenderer"),
-			)
-			// YouTube repeats some results on the next page
-			const ids = items.map(item => {
-				const { endpoint } = Parser.parseFields(item)
-				return traverseString(endpoint, "videoId") || traverseString(endpoint, "browseId")
-			})
+	private getSearchPage<T>(
+		method: string,
+		query: string,
+		params: string,
+		options: { limit?: number; cursor?: string | null } | undefined,
+		parse: (item: any) => T,
+		id: (item: T) => string,
+	): Promise<Page<T>> {
+		return this.getPage(
+			[method, query],
+			options,
+			async token => {
+				const data = token
+					? await this.constructRequest("search", {}, { continuation: token })
+					: await this.constructRequest("search", { query, params })
 
-			return items.filter((_, i) => !ids[i] || ids.indexOf(ids[i]!) === i)
-		}
-		const pages = await this.getContinuationData(
-			"search",
-			data,
-			Parser.parseSectionContinuation,
-			pages => items(pages).length < limit,
+				return {
+					items: traverseList(data, "musicResponsiveListItemRenderer").map(parse),
+					token: Parser.parseSectionContinuation(data),
+				}
+			},
+			id,
 		)
-
-		return limit > 0 ? items(pages).slice(0, limit) : items(pages)
 	}
 
 	/**
@@ -450,95 +517,108 @@ export default class YTMusic {
 	}
 
 	/**
-	 * Searches YouTube Music API for songs
+	 * Searches YouTube Music API for songs, one page at a time without repeats
 	 *
 	 * @param query Query string
-	 * @param options.limit Number of results to load, across pages. Defaults to the first page
+	 * @param options.limit Number of songs on the page. Defaults to 20
+	 * @param options.cursor `cursor` of the previous page. Defaults to the first page
 	 */
-	public async searchSongs(query: string, options?: { limit?: number }): Promise<SongDetailed[]> {
-		const items = await this.getSearchData(
+	public async searchSongs(
+		query: string,
+		options?: { limit?: number; cursor?: string | null },
+	): Promise<Page<SongDetailed>> {
+		return this.getSearchPage(
+			"searchSongs",
 			query,
-			"Eg-KAQwIARAAGAAgACgAMABqChAEEAMQCRAFEAo%3D",
-			options?.limit,
+			SearchFilter.SONGS,
+			options,
+			item => SongParser.parseItem(item),
+			song => song.videoId,
 		)
-
-		return items.map(item => SongParser.parseItem(item))
 	}
 
 	/**
-	 * Searches YouTube Music API for videos
+	 * Searches YouTube Music API for videos, one page at a time without repeats
 	 *
 	 * @param query Query string
-	 * @param options.limit Number of results to load, across pages. Defaults to the first page
+	 * @param options.limit Number of videos on the page. Defaults to 20
+	 * @param options.cursor `cursor` of the previous page. Defaults to the first page
 	 */
 	public async searchVideos(
 		query: string,
-		options?: { limit?: number },
-	): Promise<VideoDetailed[]> {
-		const items = await this.getSearchData(
+		options?: { limit?: number; cursor?: string | null },
+	): Promise<Page<VideoDetailed>> {
+		return this.getSearchPage(
+			"searchVideos",
 			query,
-			"Eg-KAQwIABABGAAgACgAMABqChAEEAMQCRAFEAo%3D",
-			options?.limit,
+			SearchFilter.VIDEOS,
+			options,
+			item => VideoParser.parseItem(item),
+			video => video.videoId,
 		)
-
-		return items.map(item => VideoParser.parseItem(item))
 	}
 
 	/**
-	 * Searches YouTube Music API for artists
+	 * Searches YouTube Music API for artists, one page at a time without repeats
 	 *
 	 * @param query Query string
-	 * @param options.limit Number of results to load, across pages. Defaults to the first page
+	 * @param options.limit Number of artists on the page. Defaults to 20
+	 * @param options.cursor `cursor` of the previous page. Defaults to the first page
 	 */
 	public async searchArtists(
 		query: string,
-		options?: { limit?: number },
-	): Promise<ArtistDetailed[]> {
-		const items = await this.getSearchData(
+		options?: { limit?: number; cursor?: string | null },
+	): Promise<Page<ArtistDetailed>> {
+		return this.getSearchPage(
+			"searchArtists",
 			query,
-			"Eg-KAQwIABAAGAAgASgAMABqChAEEAMQCRAFEAo%3D",
-			options?.limit,
+			SearchFilter.ARTISTS,
+			options,
+			item => ArtistParser.parseItem(item),
+			artist => artist.artistId,
 		)
-
-		return items.map(item => ArtistParser.parseItem(item))
 	}
 
 	/**
-	 * Searches YouTube Music API for albums
+	 * Searches YouTube Music API for albums, one page at a time without repeats
 	 *
 	 * @param query Query string
-	 * @param options.limit Number of results to load, across pages. Defaults to the first page
+	 * @param options.limit Number of albums on the page. Defaults to 20
+	 * @param options.cursor `cursor` of the previous page. Defaults to the first page
 	 */
 	public async searchAlbums(
 		query: string,
-		options?: { limit?: number },
-	): Promise<AlbumDetailed[]> {
-		const items = await this.getSearchData(
+		options?: { limit?: number; cursor?: string | null },
+	): Promise<Page<AlbumDetailed>> {
+		return this.getSearchPage(
+			"searchAlbums",
 			query,
-			"Eg-KAQwIABAAGAEgACgAMABqChAEEAMQCRAFEAo%3D",
-			options?.limit,
+			SearchFilter.ALBUMS,
+			options,
+			item => AlbumParser.parseItem(item),
+			album => album.albumId,
 		)
-
-		return items.map(item => AlbumParser.parseItem(item))
 	}
 
 	/**
-	 * Searches YouTube Music API for playlists
+	 * Searches YouTube Music API for playlists, one page at a time without repeats
 	 *
 	 * @param query Query string
-	 * @param options.limit Number of results to load, across pages. Defaults to the first page
+	 * @param options.limit Number of playlists on the page. Defaults to 20
+	 * @param options.cursor `cursor` of the previous page. Defaults to the first page
 	 */
 	public async searchPlaylists(
 		query: string,
-		options?: { limit?: number },
-	): Promise<PlaylistDetailed[]> {
-		const items = await this.getSearchData(
+		options?: { limit?: number; cursor?: string | null },
+	): Promise<Page<PlaylistDetailed>> {
+		return this.getSearchPage(
+			"searchPlaylists",
 			query,
-			"Eg-KAQwIABAAGAAgACgBMABqChAEEAMQCRAFEAo%3D",
-			options?.limit,
+			SearchFilter.PLAYLISTS,
+			options,
+			item => PlaylistParser.parseItem(item),
+			playlist => playlist.playlistId,
 		)
-
-		return items.map(item => PlaylistParser.parseItem(item))
 	}
 
 	/**
@@ -552,26 +632,54 @@ export default class YTMusic {
 	}
 
 	/**
-	 * Get the songs queued after the current video.
+	 * Loads a page of songs queued after the current video, without repeats
 	 *
 	 * @param videoId Video ID
-	 * @returns Up next songs
+	 * @param options.limit Number of songs on the page. Defaults to 20
+	 * @param options.cursor `cursor` of the previous page. Defaults to the first page
 	 */
-	public async getUpNexts(videoId: string): Promise<SongDetailed[]> {
+	public async getUpNexts(
+		videoId: string,
+		options?: { limit?: number; cursor?: string | null },
+	): Promise<Page<SongDetailed>> {
 		this.assertVideoId(videoId)
 
-		const data = await this.constructRequest("next", {
-			videoId,
-			playlistId: `RDAMVM${videoId}`,
-			isAudioOnly: true,
-			enablePersistentPlaylistPanel: true,
-		})
-		const panel = traverseList(data, "musicQueueRenderer", "playlistPanelRenderer")[0]
-		if (!panel) throw new Error("Invalid response structure")
+		return this.getPage(
+			["getUpNexts", videoId],
+			options,
+			async token => {
+				if (token) {
+					const data = await this.constructRequest("next", {}, { continuation: token })
+					const panel = traverseList(data, "playlistPanelContinuation")[0] ?? data
+					const videos = traverseList(panel, "contents", "playlistPanelVideoRenderer")
 
-		const videos = traverseList(panel, "contents", "playlistPanelVideoRenderer")
-		const current = videos.findIndex(item => item.selected || item.videoId === videoId)
-		return videos.slice(current + 1).map(item => SongParser.parseItem(item))
+					return {
+						items: videos
+							.filter(item => item.videoId !== videoId)
+							.map(item => SongParser.parseItem(item)),
+						token: traverseString(panel, "nextRadioContinuationData", "continuation"),
+					}
+				}
+
+				const data = await this.constructRequest("next", {
+					videoId,
+					playlistId: `RDAMVM${videoId}`,
+					isAudioOnly: true,
+					enablePersistentPlaylistPanel: true,
+				})
+				const panel = traverseList(data, "musicQueueRenderer", "playlistPanelRenderer")[0]
+				if (!panel) throw new Error("Invalid response structure")
+
+				const videos = traverseList(panel, "contents", "playlistPanelVideoRenderer")
+				const current = videos.findIndex(item => item.selected || item.videoId === videoId)
+
+				return {
+					items: videos.slice(current + 1).map(item => SongParser.parseItem(item)),
+					token: traverseString(panel, "nextRadioContinuationData", "continuation"),
+				}
+			},
+			song => song.videoId,
+		)
 	}
 
 	/**
@@ -620,32 +728,46 @@ export default class YTMusic {
 	}
 
 	/**
-	 * Get all of Artist's Songs
+	 * Loads a page of an Artist's Songs
 	 *
 	 * @param artistId Artist ID
-	 * @returns Artist's Songs
+	 * @param options.limit Number of songs on the page. Defaults to 20
+	 * @param options.cursor `cursor` of the previous page. Defaults to the first page
 	 */
-	public async getArtistSongs(artistId: string): Promise<SongDetailed[]> {
+	public async getArtistSongs(
+		artistId: string,
+		options?: { limit?: number; cursor?: string | null },
+	): Promise<Page<SongDetailed>> {
 		this.assertId("artistId", artistId)
-		const artistData = await this.constructRequest("browse", {
-			browseId: artistId,
-		})
-		const browseToken = traverseString(artistData, "musicShelfRenderer", "title", "browseId")
-		if (!browseToken) return []
 
-		const songsData = await this.constructRequest("browse", {
-			browseId: browseToken,
-		})
-		const pages = await this.getContinuationData(
-			"browse",
-			songsData,
-			Parser.parseItemContinuation,
-		)
-		const artists = [ArtistParser.parseBasic(artistData, artistId)]
+		return this.getPage(["getArtistSongs", artistId], options, async (token, artists) => {
+			let data: any
+			if (token) {
+				data = await this.constructRequest("browse", {}, { continuation: token })
+			} else {
+				const artistData = await this.constructRequest("browse", {
+					browseId: artistId,
+				})
+				const browseId = traverseString(
+					artistData,
+					"musicShelfRenderer",
+					"title",
+					"browseId",
+				)
+				if (!browseId) return { items: [], token: "" }
 
-		return pages
-			.flatMap(page => traverseList(page, "musicResponsiveListItemRenderer"))
-			.map(item => SongParser.parseItem(item, { artists }))
+				artists = [ArtistParser.parseBasic(artistData, artistId)]
+				data = await this.constructRequest("browse", { browseId })
+			}
+
+			return {
+				items: traverseList(data, "musicResponsiveListItemRenderer").map(item =>
+					SongParser.parseItem(item, { artists }),
+				),
+				token: Parser.parseItemContinuation(data),
+				context: artists,
+			}
+		})
 	}
 
 	/**
@@ -712,32 +834,38 @@ export default class YTMusic {
 	}
 
 	/**
-	 * Get all videos in a Playlist
+	 * Loads a page of videos in a Playlist
 	 *
 	 * @param playlistId Playlist ID
-	 * @returns Playlist's Videos
+	 * @param options.limit Number of videos on the page. Defaults to 20
+	 * @param options.cursor `cursor` of the previous page. Defaults to the first page
 	 */
-	public async getPlaylistVideos(playlistId: string): Promise<VideoDetailed[]> {
+	public async getPlaylistVideos(
+		playlistId: string,
+		options?: { limit?: number; cursor?: string | null },
+	): Promise<Page<VideoDetailed>> {
 		this.assertId("playlistId", playlistId)
-		const playlistData = await this.constructRequest("browse", {
-			browseId: `VL${playlistId.replace(/^VL/, "")}`,
+		playlistId = playlistId.replace(/^VL/, "")
+
+		return this.getPage(["getPlaylistVideos", playlistId], options, async token => {
+			const data = token
+				? await this.constructRequest("browse", {}, { continuation: token })
+				: await this.constructRequest("browse", { browseId: `VL${playlistId}` })
+			const items = token
+				? traverseList(data, "musicResponsiveListItemRenderer")
+				: traverseList(
+						data,
+						"musicPlaylistShelfRenderer",
+						"musicResponsiveListItemRenderer",
+					)
+
+			return {
+				items: items
+					.map(item => VideoParser.parseItem(item))
+					.filter(video => video.videoId),
+				token: Parser.parseItemContinuation(data),
+			}
 		})
-
-		const songs = traverseList(
-			playlistData,
-			"musicPlaylistShelfRenderer",
-			"musicResponsiveListItemRenderer",
-		)
-		const pages = await this.getContinuationData(
-			"browse",
-			playlistData,
-			Parser.parseItemContinuation,
-		)
-		for (const page of pages.slice(1)) {
-			songs.push(...traverseList(page, "musicResponsiveListItemRenderer"))
-		}
-
-		return songs.map(item => VideoParser.parseItem(item)).filter(video => video.videoId)
 	}
 
 	/**
@@ -751,31 +879,45 @@ export default class YTMusic {
 	}
 
 	/**
-	 * Get sections for the home page.
+	 * Loads a page of sections for the home page
 	 *
-	 * @returns Mixed HomeSection
+	 * @param options.limit Number of sections on the page. Defaults to 20
+	 * @param options.cursor `cursor` of the previous page. Defaults to the first page
 	 */
-	public async getHomeSections(): Promise<HomeSection[]> {
-		const data = await this.constructRequest("browse", {
-			browseId: FE_MUSIC_HOME,
+	public async getHomeSections(options?: {
+		limit?: number
+		cursor?: string | null
+	}): Promise<Page<HomeSection>> {
+		return this.getPage(["getHomeSections"], options, async token => {
+			const data = token
+				? await this.constructRequest("browse", {}, { continuation: token })
+				: await this.constructRequest("browse", { browseId: FE_MUSIC_HOME })
+
+			return {
+				items: this.getHomeSectionItems(data),
+				token: Parser.parseSectionContinuation(data),
+			}
 		})
+	}
 
-		const pages = await this.getContinuationData(
-			"browse",
-			data,
-			Parser.parseSectionContinuation,
-		)
-		const sections = pages.flatMap(page => [
-			...traverseList(page, "sectionListRenderer", "contents"),
-			...traverseList(page, "sectionListContinuation", "contents"),
-		])
-
+	private getHomeSectionItems(data: any): HomeSection[] {
 		return (
-			sections
+			[
+				...traverseList(data, "sectionListRenderer", "contents"),
+				...traverseList(data, "sectionListContinuation", "contents"),
+			]
 				.flatMap(section => traverseList(section, "musicCarouselShelfRenderer"))
 				.map(shelf => HomeSectionParser.parse(shelf))
 				// Shelves of only podcasts or profiles have nothing this package returns
 				.filter(section => section.contents.length)
 		)
 	}
+}
+
+type Cursor = {
+	key: string
+	token: string | null
+	skip: number
+	seen: string[]
+	context: any
 }

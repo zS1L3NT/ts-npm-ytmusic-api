@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test"
 import type { InternalAxiosRequestConfig } from "axios"
-import { PlayerError } from "../../index"
+import YTMusic, { PlayerError } from "../../index"
 import {
 	AlbumDetailed,
 	AlbumFull,
@@ -40,10 +40,10 @@ describe("Search API", () => {
 		"%s returns typed results and sends the filter",
 		async (method, response, schema, type) => {
 			const { api, adapter } = await setup(response)
-			const result = await api[method]("A search & its symbols")
-			expect(result.length).toBeGreaterThan(0)
-			expect(schema.array().safeParse(result).success).toBe(true)
-			expect(result[0]).toMatchObject({ type })
+			const result = await api[method]("A search & its symbols", { limit: 1 })
+			expect(result.items).toHaveLength(1)
+			expect(schema.array().safeParse(result.items).success).toBe(true)
+			expect(result.items[0]).toMatchObject({ type })
 			const request = bodies(adapter)[1]
 			expect(request.query).toBe("A search & its symbols")
 			expect(request.params).toMatch(/^Eg-/)
@@ -51,10 +51,14 @@ describe("Search API", () => {
 		},
 	)
 
+	it("search handles no results", async () => {
+		const { api } = await setup({ contents: {} })
+		expect(await api.search("missing")).toEqual([])
+	})
+
 	it.each(
 		(
 			[
-				"search",
 				"searchSongs",
 				"searchVideos",
 				"searchArtists",
@@ -64,7 +68,7 @@ describe("Search API", () => {
 		).map(method => [method] as const),
 	)("%s handles no results", async method => {
 		const { api } = await setup({ contents: {} })
-		expect(await api[method]("missing")).toEqual([])
+		expect(await api[method]("missing")).toEqual({ items: [], cursor: null })
 	})
 
 	it("returns the top result first and every supported kind in a general search", async () => {
@@ -96,11 +100,41 @@ describe("Search API", () => {
 	})
 })
 
-describe("Search limits", () => {
-	it("makes one request without a limit even when the response has a continuation", async () => {
-		const { api, adapter } = await setup(real.searchSongs, real.searchSongsPage)
-		expect(await api.searchSongs("weekend")).toHaveLength(3)
-		expect(adapter).toHaveBeenCalledTimes(2)
+const song = (id: string) => ({
+	...responses.listItem(
+		{ text: id, navigationEndpoint: responses.watch(id, "MUSIC_VIDEO_TYPE_ATV") },
+		[{ text: "Song" }, responses.separator, responses.artistRun],
+	),
+	playlistItemData: { videoId: id },
+})
+// YouTube repeats "c" on the next page, and "a" two pages later
+const searchPages = [
+	{ ...responses.searchResponse(song("a"), song("b"), song("c")), ...responses.nextPage("t2") },
+	{ ...responses.searchResponse(song("c"), song("d"), song("e")), ...responses.nextPage("t3") },
+	responses.searchResponse(song("a"), song("f")),
+]
+const ids = (page: { items: { videoId: string }[] }) => page.items.map(item => item.videoId)
+
+describe("Pages", () => {
+	it("returns pages of exactly the limit without results from earlier pages", async () => {
+		const [one, two, three] = searchPages
+		const { api, adapter } = await setup(one, one, two, two, three)
+		const first = await api.searchSongs("weekend", { limit: 2 })
+		const second = await api.searchSongs("weekend", { limit: 2, cursor: first.cursor })
+		const last = await api.searchSongs("weekend", { limit: 2, cursor: second.cursor })
+		expect([first, second, last].map(ids)).toEqual([
+			["a", "b"],
+			["c", "d"],
+			["e", "f"],
+		])
+		expect(SongDetailed.array().safeParse(first.items).success).toBe(true)
+		expect(last.cursor).toBeNull()
+		expect(bodies(adapter)[1]).toMatchObject({
+			query: "weekend",
+			params: expect.stringMatching(/^Eg-/),
+		})
+		expect(endpoints(adapter)).toEqual(["search", "search", "search", "search", "search"])
+		expect(continuations(adapter).slice(1)).toEqual([null, null, "t2", "t2", "t3"])
 	})
 
 	it("follows the continuation to the search endpoint until it has enough rows", async () => {
@@ -109,68 +143,155 @@ describe("Search limits", () => {
 			real.searchSongsPage,
 			real.searchSongsLast,
 		)
-		const songs = await api.searchSongs("weekend", { limit: 4 })
-		expect(songs).toHaveLength(4)
-		expect(SongDetailed.array().safeParse(songs).success).toBe(true)
-		expect(songs[3]!.name).toBe("House Of Balloons / Glass Table Girls")
+		const page = await api.searchSongs("weekend", { limit: 4 })
+		expect(page.items).toHaveLength(4)
+		expect(SongDetailed.array().safeParse(page.items).success).toBe(true)
+		expect(page.items[3]!.name).toBe("House Of Balloons / Glass Table Girls")
+		expect(page.cursor).not.toBeNull()
 		expect(adapter).toHaveBeenCalledTimes(3)
 		expect(endpoints(adapter)).toEqual(["search", "search"])
 		expect(continuations(adapter).slice(1)).toEqual([null, "page-two"])
 	})
 
-	it("returns exactly the limit when the last page holds more", async () => {
-		const { api, adapter } = await setup(real.searchSongs, real.searchSongsPage)
-		expect(await api.searchSongs("weekend", { limit: 1 })).toHaveLength(1)
-		expect(adapter).toHaveBeenCalledTimes(2)
+	it("defaults to 20 results and ends with a null cursor", async () => {
+		const { api, adapter } = await setup(...searchPages)
+		const page = await api.searchSongs("weekend")
+		expect(page).toMatchObject({ cursor: null })
+		expect(ids(page)).toEqual(["a", "b", "c", "d", "e", "f"])
+		expect(adapter).toHaveBeenCalledTimes(4)
 	})
 
-	it("returns every row once the continuation ends before the limit", async () => {
-		const { api, adapter } = await setup(
-			real.searchSongs,
-			real.searchSongsPage,
-			real.searchSongsLast,
-		)
-		const songs = await api.searchSongs("weekend", { limit: 50 })
-		expect(songs.map(song => song.videoId)).toEqual([
-			"DlFXDl_ROAM",
-			"_WfL_j6-DvM",
-			"tXOKabXyR5Q",
-			"1OZnXQQPBU0",
-			"si-g77lVJ2E",
-			"yRVotpLaCD4",
-		])
-		expect(continuations(adapter).slice(1)).toEqual([null, "page-two", "page-three"])
+	it("loads the next page only when it is asked for", async () => {
+		const [one, two] = searchPages
+		const { api, adapter } = await setup(one, two)
+		const first = await api.searchSongs("weekend", { limit: 3 })
+		expect(ids(first)).toEqual(["a", "b", "c"])
+		expect(adapter).toHaveBeenCalledTimes(2)
+		const second = await api.searchSongs("weekend", { limit: 2, cursor: first.cursor })
+		expect(ids(second)).toEqual(["d", "e"])
+		expect(continuations(adapter).slice(1)).toEqual([null, "t2"])
 	})
 
 	it.each([
-		["searchVideos", VideoDetailed],
-		["searchArtists", ArtistDetailed],
-		["searchAlbums", AlbumDetailed],
-		["searchPlaylists", PlaylistDetailed],
-	] as const)("%s stops at its limit without a continuation", async (method, schema) => {
-		const response = {
-			searchVideos: real.searchVideos,
-			searchArtists: real.searchArtists,
-			searchAlbums: real.searchAlbums,
-			searchPlaylists: real.searchPlaylists,
-		}[method]
+		["searchVideos", real.searchVideos, VideoDetailed],
+		["searchArtists", real.searchArtists, ArtistDetailed],
+		["searchAlbums", real.searchAlbums, AlbumDetailed],
+		["searchPlaylists", real.searchPlaylists, PlaylistDetailed],
+	] as const)("%s returns typed results", async (method, response, schema) => {
 		const { api, adapter } = await setup(response)
-		const results = await api[method]("weekend", { limit: 5 })
-		expect(results).toHaveLength(1)
-		expect(schema.array().safeParse(results).success).toBe(true)
+		const page = await api[method]("weekend", { limit: 5 })
+		expect(page.items).toHaveLength(1)
+		expect(schema.array().safeParse(page.items).success).toBe(true)
+		expect(page.cursor).toBeNull()
+		expect(bodies(adapter)[1].params).toMatch(/^Eg-/)
+	})
+
+	it("keeps a query in any script in the cursor", async () => {
+		const [one, two] = searchPages
+		const { api } = await setup(one, two)
+		const first = await api.searchSongs("周杰倫 & co", { limit: 3 })
+		const second = await api.searchSongs("周杰倫 & co", { limit: 1, cursor: first.cursor })
+		expect(ids(second)).toEqual(["d"])
+	})
+
+	it.each([
+		["another query", (api: YTMusic, cursor: string) => api.searchSongs("other", { cursor })],
+		["another kind", (api: YTMusic, cursor: string) => api.searchAlbums("weekend", { cursor })],
+		[
+			"another list",
+			(api: YTMusic, cursor: string) => api.getPlaylistVideos("PLx", { cursor }),
+		],
+	])("rejects a cursor from %s before making a request", async (_, next) => {
+		const { api, adapter } = await setup(searchPages[0])
+		const { cursor } = await api.searchSongs("weekend", { limit: 1 })
+		await expect(next(api, cursor!)).rejects.toThrow("Cursor is from another request")
 		expect(adapter).toHaveBeenCalledTimes(2)
 	})
 
+	it.each(["not a cursor", "bm90IGpzb24"])("rejects the cursor %p", async cursor => {
+		const { api, adapter } = await setup()
+		await expect(api.searchSongs("weekend", { cursor })).rejects.toThrow("Invalid cursor")
+		expect(adapter).toHaveBeenCalledTimes(1)
+	})
+
+	it.each([0, -1, 1.5])("rejects a limit of %p", async limit => {
+		const { api } = await setup()
+		await expect(api.searchSongs("weekend", { limit })).rejects.toThrow(
+			"limit must be a positive integer",
+		)
+	})
+
 	it("rejects a repeated continuation token instead of looping", async () => {
-		const page = {
-			...responses.searchResponse(responses.songItem),
-			...responses.nextPage("same"),
-		}
-		const { api, adapter } = await setup(page, page, page)
+		const page = { ...responses.searchResponse(song("a")), ...responses.nextPage("same") }
+		const { api, adapter } = await setup(page, page)
 		await expect(api.searchSongs("weekend", { limit: 5 })).rejects.toThrow(
 			"Repeated continuation token",
 		)
 		expect(adapter).toHaveBeenCalledTimes(3)
+	})
+
+	it("loads an artist's songs page by page and keeps the artist on later pages", async () => {
+		const { api, adapter } = await setup(real.artist, real.artistSongs, real.artistSongsMore)
+		const first = await api.getArtistSongs("UCartist", { limit: 1 })
+		const last = await api.getArtistSongs("UCartist", { limit: 1, cursor: first.cursor })
+		const songs = [...first.items, ...last.items]
+		expect(SongDetailed.array().safeParse(songs).success).toBe(true)
+		expect(songs).toHaveLength(2)
+		expect(songs.every(song => song.artist.name === "The Weeknd")).toBe(true)
+		expect(last.cursor).toBeNull()
+		expect(continuations(adapter).slice(1)).toEqual([null, null, "rows-two"])
+	})
+
+	it("gives songs on later pages the artist when their rows name none", async () => {
+		const row = responses.listItem(responses.titleRun)
+		const { api } = await setup(real.artist, responses.playlistRows([row], "rows-two"), {
+			contents: [{ musicResponsiveListItemRenderer: row }],
+		})
+		const first = await api.getArtistSongs("UCartist", { limit: 1 })
+		const last = await api.getArtistSongs("UCartist", { cursor: first.cursor })
+		expect(last.items).toMatchObject([{ artist: { artistId: "UCartist", name: "The Weeknd" } }])
+	})
+
+	it("loads a playlist page by page and normalizes the VL prefix", async () => {
+		const pages = [real.playlistRD, real.playlistMore, real.playlistLast]
+		const { api, adapter } = await setup(...pages, ...pages, ...pages.slice(1))
+		const every = await api.getPlaylistVideos("RDfixture")
+		const first = await api.getPlaylistVideos("RDfixture", { limit: 2 })
+		const last = await api.getPlaylistVideos("VLRDfixture", {
+			limit: 2,
+			cursor: first.cursor,
+		})
+		expect([...first.items, ...last.items]).toEqual(every.items)
+		expect(last.cursor).toBeNull()
+		expect(bodies(adapter)[4].browseId).toBe("VLRDfixture")
+	})
+
+	it("keeps a video that a playlist holds twice", async () => {
+		const page = responses.playlistRows([responses.songItem, responses.songItem])
+		const { api } = await setup(page, page)
+		const first = await api.getPlaylistVideos("PLfixture", { limit: 1 })
+		const last = await api.getPlaylistVideos("PLfixture", {
+			limit: 1,
+			cursor: first.cursor,
+		})
+		expect([first, last].map(ids)).toEqual([[responses.videoId], [responses.videoId]])
+		expect(last.cursor).toBeNull()
+	})
+
+	it("loads home sections page by page", async () => {
+		const { api } = await setup(real.home, real.homeMore, real.homeLast, real.homeLast)
+		const first = await api.getHomeSections({ limit: 2 })
+		const second = await api.getHomeSections({ limit: 2, cursor: first.cursor })
+		const last = await api.getHomeSections({ limit: 2, cursor: second.cursor })
+		expect(HomeSection.array().safeParse(first.items).success).toBe(true)
+		expect([first, second, last].map(page => page.items.map(section => section.title))).toEqual(
+			[
+				["Quick picks", "New releases"],
+				["Take it easy", "Trending songs for you"],
+				["Indian Music"],
+			],
+		)
+		expect(last.cursor).toBeNull()
 	})
 })
 
@@ -272,9 +393,9 @@ describe("Up next API", () => {
 
 	it("returns the songs after the selected entry through the persistent panel request", async () => {
 		const { api, adapter } = await setup(queue())
-		const songs = await api.getUpNexts("3QZOazpGIQc")
+		const { items: songs, cursor } = await api.getUpNexts("3QZOazpGIQc")
 		expect(songs.map(song => song.videoId)).toEqual(["2yqYAsUpdSc", "LztS3R1PZQA"])
-		expect(SongDetailed.array().safeParse(songs).success).toBe(true)
+		expect(cursor).toBeNull()
 		expect(SongDetailed.array().safeParse(songs).success).toBe(true)
 		expect(songs[0]).toMatchObject({
 			name: "Out of Time",
@@ -290,6 +411,35 @@ describe("Up next API", () => {
 		})
 	})
 
+	it("loads up next songs page by page and skips repeats", async () => {
+		const first = queue()
+		const [seed, secondSong, thirdSong] = entries(first)
+		traverseList(first, "playlistPanelRenderer")[0].continuations = [
+			{ nextRadioContinuationData: { continuation: "radio-two" } },
+		]
+		const fourthSong = structuredClone(thirdSong)
+		fourthSong.videoId = "4eX9JOyM2VA"
+		fourthSong.navigationEndpoint.watchEndpoint.videoId = "4eX9JOyM2VA"
+		const more = {
+			continuationContents: {
+				playlistPanelContinuation: {
+					contents: [
+						{ playlistPanelVideoRenderer: seed },
+						{ playlistPanelVideoRenderer: thirdSong },
+						{ playlistPanelVideoRenderer: fourthSong },
+					],
+				},
+			},
+		}
+		const { api, adapter } = await setup(first, first, more)
+		const page1 = await api.getUpNexts("3QZOazpGIQc", { limit: 1 })
+		const page2 = await api.getUpNexts("3QZOazpGIQc", { limit: 2, cursor: page1.cursor })
+		expect(ids(page1)).toEqual([secondSong.videoId])
+		expect(ids(page2)).toEqual([thirdSong.videoId, "4eX9JOyM2VA"])
+		expect(page2.cursor).toBeNull()
+		expect(continuations(adapter).slice(1)).toEqual([null, null, "radio-two"])
+	})
+
 	it("starts after the selected entry and skips continuation rows", async () => {
 		const data = queue()
 		entries(data)[0].selected = false
@@ -298,7 +448,7 @@ describe("Up next API", () => {
 			continuationItemRenderer: { trigger: "CONTINUATION_TRIGGER_ON_ITEM_SHOWN" },
 		})
 		const { api } = await setup(data)
-		expect((await api.getUpNexts("2yqYAsUpdSc")).map(song => song.videoId)).toEqual([
+		expect((await api.getUpNexts("2yqYAsUpdSc")).items.map(song => song.videoId)).toEqual([
 			"LztS3R1PZQA",
 		])
 	})
@@ -307,7 +457,7 @@ describe("Up next API", () => {
 		const data = queue()
 		for (const entry of entries(data)) entry.selected = false
 		const { api } = await setup(data)
-		expect((await api.getUpNexts("2yqYAsUpdSc")).map(song => song.videoId)).toEqual([
+		expect((await api.getUpNexts("2yqYAsUpdSc")).items.map(song => song.videoId)).toEqual([
 			"LztS3R1PZQA",
 		])
 	})
@@ -316,7 +466,7 @@ describe("Up next API", () => {
 		const data = queue()
 		traverseList(data, "playlistPanelRenderer")[0].contents = []
 		const { api } = await setup(data, {})
-		expect(await api.getUpNexts("3QZOazpGIQc")).toEqual([])
+		expect(await api.getUpNexts("3QZOazpGIQc")).toEqual({ items: [], cursor: null })
 		await expect(api.getUpNexts("3QZOazpGIQc")).rejects.toThrow("Invalid response structure")
 	})
 })
@@ -473,9 +623,10 @@ describe("Artist API", () => {
 
 	it("returns every song of the artist across row continuations", async () => {
 		const { api, adapter } = await setup(real.artist, real.artistSongs, real.artistSongsMore)
-		const songs = await api.getArtistSongs("UCartist")
+		const { items: songs, cursor } = await api.getArtistSongs("UCartist")
 		expect(SongDetailed.array().safeParse(songs).success).toBe(true)
 		expect(songs).toHaveLength(2)
+		expect(cursor).toBeNull()
 		expect(songs.every(song => song.artist.name === "The Weeknd")).toBe(true)
 		expect(bodies(adapter)[2].browseId).toBe("VLOLAK5uy_m9NcLauVzADCRC6rfmtow_Z6a6TuIO8g8")
 		expect(continuations(adapter).slice(1)).toEqual([null, null, "rows-two"])
@@ -486,7 +637,7 @@ describe("Artist API", () => {
 		const { api } = await setup(real.artist, {
 			musicPlaylistShelfRenderer: { contents: [row] },
 		})
-		expect(await api.getArtistSongs("UCartist")).toMatchObject([
+		expect((await api.getArtistSongs("UCartist")).items).toMatchObject([
 			{
 				artist: { artistId: "UCartist", name: "The Weeknd" },
 				artists: [{ artistId: "UCartist" }],
@@ -494,9 +645,9 @@ describe("Artist API", () => {
 		])
 	})
 
-	it("returns an empty list when the artist has no songs link", async () => {
+	it("returns an empty page when the artist has no songs link", async () => {
 		const { api, adapter } = await setup({ header: real.artist.header })
-		expect(await api.getArtistSongs("UCartist")).toEqual([])
+		expect(await api.getArtistSongs("UCartist")).toEqual({ items: [], cursor: null })
 		expect(adapter).toHaveBeenCalledTimes(2)
 	})
 })
@@ -563,9 +714,10 @@ describe("Playlist API", () => {
 
 	it("makes no extra request when the rows have no continuation, whatever the page leads to", async () => {
 		const { api, adapter } = await setup(real.playlist)
-		const videos = await api.getPlaylistVideos("VLPLfixture")
+		const { items: videos, cursor } = await api.getPlaylistVideos("VLPLfixture")
 		expect(VideoDetailed.array().safeParse(videos).success).toBe(true)
 		expect(videos).toHaveLength(1)
+		expect(cursor).toBeNull()
 		expect(videos[0]).toMatchObject({ videoId: "xeDa1c-Y224", duration: 226 })
 		expect(adapter).toHaveBeenCalledTimes(2)
 		expect(bodies(adapter)[1].browseId).toBe("VLPLfixture")
@@ -573,8 +725,9 @@ describe("Playlist API", () => {
 
 	it("follows the row continuation and ignores the page's related-playlists token", async () => {
 		const { api, adapter } = await setup(real.playlistRD, real.playlistMore, real.playlistLast)
-		const videos = await api.getPlaylistVideos("RDfixture")
+		const { items: videos, cursor } = await api.getPlaylistVideos("RDfixture")
 		expect(videos).toHaveLength(3)
+		expect(cursor).toBeNull()
 		expect(VideoDetailed.array().safeParse(videos).success).toBe(true)
 		expect(continuations(adapter).slice(1)).toEqual([null, "rows-two", "rows-three"])
 		expect(endpoints(adapter)).toEqual(["browse", "browse", "browse"])
@@ -587,7 +740,7 @@ describe("Playlist API", () => {
 			],
 		}
 		const { api } = await setup(responses.playlistRows([{}, { thumbnail }, responses.songItem]))
-		const videos = await api.getPlaylistVideos("PLfixture")
+		const { items: videos } = await api.getPlaylistVideos("PLfixture")
 		expect(videos.map(video => video.videoId)).toEqual(["mGsOHanQwxk", "mGsOHanQwxk"])
 	})
 })
@@ -595,8 +748,9 @@ describe("Playlist API", () => {
 describe("Home API", () => {
 	it("returns the shelves of every page", async () => {
 		const { api, adapter } = await setup(real.home, real.homeMore, real.homeLast)
-		const sections = await api.getHomeSections()
+		const { items: sections, cursor } = await api.getHomeSections()
 		expect(HomeSection.array().safeParse(sections).success).toBe(true)
+		expect(cursor).toBeNull()
 		expect(sections.map(section => section.title)).toEqual([
 			"Quick picks",
 			"New releases",
@@ -642,13 +796,15 @@ describe("Home API", () => {
 				),
 			),
 		)
-		const [section] = await api.getHomeSections()
+		const {
+			items: [section],
+		} = await api.getHomeSections()
 		expect(section!.contents.map(item => item.type)).toEqual(["SONG", "VIDEO", "ARTIST"])
 	})
 
 	it("returns no sections for an empty page", async () => {
 		const { api } = await setup({})
-		expect(await api.getHomeSections()).toEqual([])
+		expect(await api.getHomeSections()).toEqual({ items: [], cursor: null })
 	})
 })
 
@@ -664,7 +820,8 @@ describe("Continuation guards", () => {
 				: responses.playlistRows([responses.songItem], "same-token")
 		const pages = method === "getArtistSongs" ? [real.artist, page, page] : [page, page]
 		const { api, adapter } = await setup(...pages)
-		await expect(api[method]("UCartist")).rejects.toThrow("Repeated continuation token")
+		const call = method === "getHomeSections" ? api.getHomeSections() : api[method]("UCartist")
+		await expect(call).rejects.toThrow("Repeated continuation token")
 		expect(adapter).toHaveBeenCalledTimes(pages.length + 1)
 	})
 })
@@ -675,15 +832,14 @@ describe("Review regressions", () => {
 			...responses.playlistRows([responses.songItem]),
 			...responses.rowsToken("related-shelf"),
 		})
-		expect(await api.getPlaylistVideos("PLfixture")).toHaveLength(1)
+		expect((await api.getPlaylistVideos("PLfixture")).items).toHaveLength(1)
 		expect(adapter).toHaveBeenCalledTimes(2)
 	})
 
 	it("keeps search rows without an ID and drops repeated ones", async () => {
 		const page = responses.searchResponse(responses.songItem, {}, {}, responses.songItem)
-		const { api } = await setup(page, page)
-		expect(await api.searchSongs("query")).toHaveLength(3)
-		expect(await api.searchSongs("query", { limit: -1 })).toHaveLength(3)
+		const { api } = await setup(page)
+		expect((await api.searchSongs("query")).items).toHaveLength(3)
 	})
 
 	it("omits home sections with nothing supported in them", async () => {
@@ -694,7 +850,7 @@ describe("Review regressions", () => {
 				},
 			},
 		})
-		expect(await api.getHomeSections()).toEqual([])
+		expect(await api.getHomeSections()).toEqual({ items: [], cursor: null })
 	})
 })
 
