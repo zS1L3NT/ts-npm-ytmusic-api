@@ -32,7 +32,7 @@ import YTMusic from "ytmusic-api"
 const ytmusic = new YTMusic()
 await ytmusic.initialize()
 
-const songs = await ytmusic.searchSongs("Never gonna give you up")
+const { items: songs } = await ytmusic.searchSongs("Never gonna give you up")
 ```
 
 ## API
@@ -51,32 +51,30 @@ Call `initialize(options?)` once before any other method. Its options are:
 | --- | --- |
 | `getSearchSuggestions(query)` | `string[]` |
 | `search(query)` | Mixed `SearchResult[]`, with the top result first |
-| `searchSongs(query, { limit? })` | `SongDetailed[]` |
-| `searchVideos(query, { limit? })` | `VideoDetailed[]` |
-| `searchArtists(query, { limit? })` | `ArtistDetailed[]` |
-| `searchAlbums(query, { limit? })` | `AlbumDetailed[]` |
-| `searchPlaylists(query, { limit? })` | `PlaylistDetailed[]` |
+| `searchSongs(query, options?)` | `Page<SongDetailed>` |
+| `searchVideos(query, options?)` | `Page<VideoDetailed>` |
+| `searchArtists(query, options?)` | `Page<ArtistDetailed>` |
+| `searchAlbums(query, options?)` | `Page<AlbumDetailed>` |
+| `searchPlaylists(query, options?)` | `Page<PlaylistDetailed>` |
 | `getSong(videoId)` | `SongFull`. Stream formats need `cookies` |
 | `getVideo(videoId)` | `VideoFull` |
 | `getUpNexts(videoId)` | `SongDetailed[]` queued after the song |
 | `getLyrics(videoId)` | `string[]`, or `null` |
 | `getTimedLyrics(videoId)` | `TimedLyric[]` with times in milliseconds, or `null` |
 | `getArtist(artistId)` | `ArtistFull` |
-| `getArtistSongs(artistId)` | Every `SongDetailed` of the artist |
+| `getArtistSongs(artistId, options?)` | `Page<SongDetailed>` |
 | `getArtistAlbums(artistId)` | `AlbumDetailed[]`, without singles and EPs |
 | `getAlbum(albumId)` | `AlbumFull`. Also accepts an `OLAK5uy_` share link ID |
 | `getPlaylist(playlistId)` | `PlaylistFull` |
-| `getPlaylistVideos(playlistId)` | Every `VideoDetailed` in the playlist |
-| `getHomeSections()` | `HomeSection[]` |
+| `getPlaylistVideos(playlistId, options?)` | `Page<VideoDetailed>` |
+| `getHomeSections(options?)` | `Page<HomeSection>` |
 | `getHighresThumbnail(thumbnails)` | A larger `ThumbnailFull` of a video, or `null` |
 
-The filtered searches return the first page of about 20 results, or `limit` results.
-
-Each method that returns a list over many pages also has a `Page` method: `searchSongsPage`, `searchVideosPage`, `searchArtistsPage`, `searchAlbumsPage`, `searchPlaylistsPage`, `getArtistSongsPage`, `getPlaylistVideosPage` and `getHomeSectionsPage`. Each takes the same arguments and `{ limit?, cursor? }`, and returns `Page<T>`: `limit` items (20 by default) and the `cursor` of the next page, or `null` on the last page. Searches leave out results from earlier pages. A cursor only continues the request it came from.
+Methods returning `Page<T>` take `{ limit?, cursor? }` and return `{ items, cursor }`: `limit` items (20 by default) and the `cursor` of the next page, or `null` on the last page. Searches leave out results from earlier pages. A cursor only continues the request it came from.
 
 ```js
-const first = await ytmusic.searchSongsPage("IU", { limit: 10 })
-const next = await ytmusic.searchSongsPage("IU", { limit: 10, cursor: first.cursor })
+const first = await ytmusic.searchSongs("IU", { limit: 10 })
+const next = await ytmusic.searchSongs("IU", { limit: 10, cursor: first.cursor })
 ```
 
 Failed requests throw `RequestError`, and `getSong()` and `getVideo()` throw `PlayerError` when YouTube withholds the details. Import both from `ytmusic-api`.

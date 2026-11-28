@@ -22,7 +22,7 @@ beforeEach(() => {
 describe(`Query: ${FE_MUSIC_HOME}`, () => {
 	configs.forEach(config => {
 		it(`Get ${config.GL} ${config.HL}`, async () => {
-			const sections = await ytmusic.getHomeSections()
+			const { items: sections } = await ytmusic.getHomeSections()
 			ok(sections.length > 0, "Expected at least one home section")
 			ok(
 				sections.every(section => section.contents.length > 0),
@@ -33,8 +33,8 @@ describe(`Query: ${FE_MUSIC_HOME}`, () => {
 	})
 
 	it("Get the home sections page by page", async () => {
-		const first = await ytmusic.getHomeSectionsPage({ limit: 2 })
-		const next = await ytmusic.getHomeSectionsPage({ limit: 2, cursor: first.cursor })
+		const first = await ytmusic.getHomeSections({ limit: 2 })
+		const next = await ytmusic.getHomeSections({ limit: 2, cursor: first.cursor })
 		equal(first.items.length, 2)
 		ok(next.items.length > 0, "Expected a second page of home sections")
 		expect([...first.items, ...next.items], z.array(HomeSection))
